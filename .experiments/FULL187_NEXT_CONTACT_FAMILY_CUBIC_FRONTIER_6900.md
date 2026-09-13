@@ -361,3 +361,75 @@ degree about `g+e` make the remaining active heads grossly source-illegal.
 This rules out the canonical triple-root repair. It is not yet an exhaustive
 STOP for every low-degree, target-specific cancellation among more than six
 shifted quintics.
+
+## 8. Final corrected error-filtration verdict: every mixed quintic is RED
+
+The one-`H` legality result in Section 5 is a source-membership statement,
+not enough error contact.  The actual fixed retained control has
+`Q=H^2`, `Q=Q'=0` at each error, and nonzero constant residual.  In its
+contact chart, the nonconstant part of `V` is the error variable `E`, whose
+contact weight is three.  The top change from `(V,J1,J2)` to the extracted
+`(E,R,S)` coefficient is triangular with determinant `L^3`, since its
+diagonal is `(1,L,L^2)`.
+
+Consequently, lexicographic extraction of `E^b R^c S^d` does **not** force
+`H^60` for every row.  It forces the sharp power
+
+```text
+H^(60-3b).
+```
+
+This correction closes the loophole in both directions:
+
+* the blanket `H^60` claim is false for high `V`/`E` degree;
+* for a quintic, `b<=5`, so the forced power is still at least `H^45`.
+
+For all 21 triples `b+c+d=5`, with
+`ell=60-b-2c-3d`, the forced leading coefficient has degree
+
+```text
+(60-3b)e + (ell+c+2d)g.
+```
+
+After comparison with the literal shifted cutoff, the best case is already
+the pure `V^5` layer and misses by **3,431,185** degrees.  Descending through
+the triangular `(E,R,S)` shapes therefore kills every remaining quintic
+coefficient.  This is the decisive STOP for the complete 21-row mixed
+quintic family, not merely for one carrier.  The determinant, fixed-node
+root-multiplicity transfer, and target inequality are Lean-checked in
+`Full187NormalMonomialErrorFiltration6900.lean`.
+
+The same calculation gives the exact next frontier.  Every extracted layer
+with `b<=13` is red; the sharp last one is `(13,16,5)`, still over by 38,697.
+The first legal high-error-degree escape is `(14,17,4)`, whose forced `H^18`
+coefficient has 255,837 degrees of room.  Thus larger normal-monomial
+families remain open, beginning at `V`/`E` degree fourteen.
+
+## 9. Error-flat unit products are locally sound but source-impossible
+
+The Taylor retractions themselves are exact.  In the local chart
+
+```text
+Y = 1+E+T*R-T^2*S/2+Z*Q,
+```
+
+`1-Y` has order one; replacing `Y` by `Y-tau1*R` with
+`tau1=T+O(T^2)` gives order two; and
+
+```text
+Y-tau2*R+tau2^2*S/2-Z*Q,   tau2=T+O(T^3),
+```
+
+gives an order-three error-flat unit.  However the proposed correction
+`Fi*(1-K)` cannot lie in the literal source.  Restricting to
+`R=S=Z=0` shows that any polynomial projector which is zero at `Y=0` and
+equals one through order sixty at `Y=1+E` must have `Y`-degree at least 20:
+`(Y-1)^20 | 1-P(Y)`.  Multiplication by `Fi` then leaves a top
+`Y^n*(Y/R/S)` coefficient containing `L^59`, while its shifted source cutoff
+is already below `59g` for every `n>=1`.  At the unavoidable `n=20`, the
+three diagonal overruns are 2,572,078, 2,572,077, and 2,572,076.
+
+This stops multiplicative Taylor projectors even before inverse-`H'`
+denominator costs.  It does not stop a coupled cancellation among unrelated
+literal rows.  The exact identities, Hermite degree lower bound, and source
+gaps are checked in `Full187ErrorFlatProjectorHeadStop6900.lean`.
