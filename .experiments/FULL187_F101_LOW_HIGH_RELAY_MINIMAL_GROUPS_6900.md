@@ -23,8 +23,8 @@ The low columns were grouped before minimization by
 (boundary degree, passive-seed exponent, R exponent, S exponent).
 ```
 
-There are 41 such groups. Four deterministic delta-deletion orders gave the
-following one-group-deletion-minimal repairs:
+There are 41 such groups. Four deterministic delta-deletion orders starting
+from all 41 groups gave the following one-group-deletion-minimal repairs:
 
 | deletion order | retained groups | retained columns | total rank |
 |---|---:|---:|---:|
@@ -38,15 +38,25 @@ groups restores positive defect; in each ordering, 31 or 32 deletions restore
 the full defect three and the remaining one to three deletions restore defect
 one or two.
 
-The four minima share 26 groups: six boundary-zero seed groups and twenty
-boundary-one groups. Their union contains 40 of all 41 groups. Therefore
-this exact control decisively rejects a repair consisting of one or a few
-isolated low groups. Even the smallest discovered inclusion-minimal relay
-uses 80.5% of the low groups and 80.4% of the low columns.
+Those four runs are **not** cardinality minima: deletion-locality depends on
+the starting set.  As an explicit guard, the invariant grade-seven low shell
+`boundary degree + passive seed <= 7` is already a feasible 29-group start.
+Deleting from that start leaves a 27-group, 784-column feasible set of rank
+2,292.  Each of its 27 one-group deletions is infeasible (joint-defect
+histogram `1:2, 2:6, 3:19`).  Thus the earlier 33-group result is neither a
+global lower bound nor the smallest feasible relay discovered.
+
+The four full-start minima share 26 groups: six boundary-zero seed groups and
+twenty boundary-one groups. Their union contains 40 of all 41 groups. These
+intersection/union statistics describe only those four deletion paths. The
+stronger honest observation is that both the full-start and structured-shell
+starts reduce to broad inclusion-minimal completions (27--34 groups), while
+the separate forced-head computation proves coordinate-level necessities.
+No global minimum over group subsets was computed.
 
 ## Interpretation after the independent dual audit
 
-This breadth has a precise role. The independent forced-head receipt proves
+The observed breadth has a precise role. The independent forced-head receipt proves
 that the `d=1,z=0` normal head is fixed coordinate-by-coordinate (69 union
 positions for `F0,F1,F2`). Boundary-zero columns have no `J` coordinate and
 cannot directly break the locator-normal obstruction. They become useful
@@ -60,8 +70,10 @@ forced d=1,z=0 head
   -> high d>=2 closure.
 ```
 
-It does **not** support another search for a tiny autonomous high-V packet or
-a single low actuator. The target-scale proof should seek a closed
+It does **not** provide a theorem excluding every cleverly chosen tiny group
+set. Together with the forced-head and high-only dual receipts, however, it
+does not support another unguided search for a tiny autonomous high-V packet
+or a single low actuator. The target-scale proof should seek a closed
 generating-function / Hermite recurrence for the full seed ladder, with the
 three prescribed heads retained, rather than extrapolate any particular
 finite minimal set.
@@ -75,7 +87,8 @@ asserted necessary at the target. What is robust is the falsification of the
 small-relay hypothesis in this faithful control and its agreement with the
 separate coordinate-level forced-head theorem.
 
-The compact run used 404 exact rank tests and 190,588 KiB maximum RSS under a
+The corrected compact run used 458 distinct exact rank tests and 190,780 KiB
+maximum RSS under a
 4 GiB address-space cap. It is reproduced by
 
 ```text
@@ -87,7 +100,7 @@ Receipts:
 
 ```text
 script sha256
-  eeccafb326283712ad35ed92f1e4e98be954d17404f7f7405ef61951a666981e
+  eb4469ca7ebc98be2bd4caff6eb476ed6cecdddfe445fe16aaa9f25ea8598157
 compact canonical payload sha256
-  f88ea74d069982b8d53486a97adb75a347f5b620d6d4ee8a5a1da75aaabb354d
+  4908ffe0be646c31cf8c1d70e590bea465088b83062fad8b01cbdcbcad6d4aa0
 ```

@@ -175,6 +175,19 @@ def main():
         print(f"minimizing {name}", file=sys.stderr, flush=True)
         minima[name] = minimize(order)
 
+    # Independent invariant starting set from the already certified first
+    # closing filtration shell.  The whole source of centered total grade at
+    # most J+1=7 is contained in the fixed high block together with exactly
+    # these low groups.  Starting only from this set guards against confusing
+    # a deletion-local minimum from the complete 41 groups with a global
+    # cardinality lower bound.
+    grade_seven_low = [label for label in labels if label[0] + label[1] <= 7]
+    grade_seven_receipt = test(grade_seven_low)
+    assert grade_seven_receipt["joint"] == 0
+    print("minimizing invariant grade-seven low shell",
+          file=sys.stderr, flush=True)
+    grade_seven_minimum = minimize(grade_seven_low)
+
     payload = {
         "scope": (
             "exact faithful F101 low/high relay group minimization; "
@@ -191,6 +204,11 @@ def main():
         "high_only_defect": baseline,
         "complete_defect": complete,
         "inclusion_minimal_relays": minima,
+        "grade_seven_low_start": {
+            "labels": tuple(grade_seven_low),
+            "receipt": grade_seven_receipt,
+        },
+        "grade_seven_low_minimum": grade_seven_minimum,
         "distinct_rank_tests": len(cache),
         "maximum_rss_KiB": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
     }
@@ -245,6 +263,24 @@ def main():
             "high_only_defect": payload["high_only_defect"],
             "complete_defect": payload["complete_defect"],
             "inclusion_minimal_relays": compact_minima,
+            "grade_seven_low_start": {
+                "labels_boundary_seed_R_S": tuple(grade_seven_low),
+                "groups": len(grade_seven_low),
+                **grade_seven_receipt,
+            },
+            "grade_seven_low_minimum": {
+                "labels_boundary_seed_R_S": grade_seven_minimum["labels"],
+                "groups": len(grade_seven_minimum["labels"]),
+                **grade_seven_minimum["receipt"],
+                "one_group_deletion_joint_histogram": {
+                    str(joint): count
+                    for joint, count in sorted(Counter(
+                        result["joint"] for result in
+                        grade_seven_minimum[
+                            "one_group_deletion_defects"].values()).items())
+                },
+                "histogram": label_histogram(grade_seven_minimum["labels"]),
+            },
             "groups_common_to_all_minima": tuple(sorted(common)),
             "groups_in_union_of_minima": tuple(sorted(union)),
             "common_group_count": len(common),
