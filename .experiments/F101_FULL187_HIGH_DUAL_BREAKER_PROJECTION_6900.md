@@ -25,10 +25,11 @@ X Y,  X^2 Y,  X^3 Y                 (all with seed z=0).
 ```
 
 They have rank three, and every proper subset has rank at most two. This is
-the minimal *direct* breaker of the three-dimensional high quotient. It is
-not a solution of the bordered system: it only breaks the first three scalar
-obstructions and leaves the rest of the exact `J` head and all contact
-residuals untouched.
+the minimal direct breaker of the **displayed three-coordinate probe**, not
+of the full high quotient. In fact, the three columns do not lower the exact
+bordered joint defect at all: it remains three. They only break the first
+chosen scalar-obstruction coordinates and leave the rest of the exact `J`
+head and all contact residuals untouched.
 
 The useful design constraint is therefore sharp: boundary-zero columns are
 not direct locator-normal breakers at all. If they occur in a genuine relay,
@@ -111,6 +112,30 @@ Thus this quotient has no evidence for a broad `R/S` family, a passive seed
 recurrence, or a boundary-zero direct injector. It is only the first, local
 normal-coordinate gate.
 
+There is an exact guard against mistaking that gate for a solve. After adding
+the three displayed columns, the untouched rows
+
+```text
+J[Y,X^4], J[R,X^3], J[S,X^3]
+```
+
+give the new triangular block
+
+```text
+             F0  F1  F2
+[Y X^4]     85  94  55
+[R X^3]      0  91   9
+[S X^3]      0   0  91.
+```
+
+Its inverse gives `(82,84,62)`, `(0,10,9)`, and `(0,0,10)` on those rows.
+Those functionals annihilate both the high block and `XY,X^2Y,X^3Y`, while
+again pairing identically with `F0,F1,F2`. Therefore the actual joint defect
+after those three columns is exactly still three. Boundary-zero terms cannot
+repair this missing `J` information; all 69 forced head coordinates must be
+present first, after which a boundary-zero tail may serve its indirect
+contact-relay role.
+
 ## What is actually forced, and where seed one enters
 
 Breaking the three displayed functionals is far weaker than matching all
@@ -155,7 +180,7 @@ left-null pairings, the complete low projection census, and the forced exact
 hash is
 
 ```text
-5b0df9df68f638f22e30d33fa436c6eb8fb643b98d50e8c50c443cc2b126f3ab
+db769380a60863ec8aa8c7d0d48837269725324f1a2eb2c5ecc9825b028856fe
 ```
 
 ## Route consequence

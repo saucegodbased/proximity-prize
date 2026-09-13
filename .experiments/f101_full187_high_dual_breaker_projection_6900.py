@@ -172,6 +172,30 @@ def main():
                for values in (tuple(value for monomial, value in active.items()
                                     if monomial != omitted),))
 
+    # Crucially, this is only a three-coordinate probe of the full normal
+    # quotient.  The three active columns do not lower the actual bordered
+    # defect: a shifted Y/R/S triangular block is disjoint from their J
+    # support and supplies a new identity-pairing dual triple.
+    shifted_rows = (
+        row_index[("J", 0, 4)],
+        row_index[("J", 1, 3)],
+        row_index[("J", 2, 3)],
+    )
+    shifted_block = tuple(
+        tuple(target.get(row, 0) for target in literal.targets)
+        for row in shifted_rows)
+    assert shifted_block == ((85, 94, 55), (0, 91, 9), (0, 0, 91))
+    shifted_dual_coefficients = ((82, 84, 62), (0, 10, 9), (0, 0, 10))
+    shifted_duals = tuple({row: coefficient
+                           for row, coefficient in zip(shifted_rows, values)
+                           if coefficient}
+                          for values in shifted_dual_coefficients)
+    assert tuple(tuple(pair(dual, target) for target in literal.targets)
+                 for dual in shifted_duals) == ((1, 0, 0), (0, 1, 0), (0, 0, 1))
+    direct_indices = tuple(source_index[monomial] for monomial in active)
+    assert all(pair(dual, literal.columns[i]) == 0
+               for dual in shifted_duals for i in direct_indices)
+
     # At J level, each target has a forced, unique boundary-one/seed-zero
     # head: no high column and no seed-positive/degree-zero column has a J
     # coordinate.  The union is a useful exact lower bound for a full relay.
@@ -254,6 +278,21 @@ def main():
             "all_boundary_degree_0_columns_project_to_zero": True,
             "all_boundary_degree_1_columns_except_the_three_listed_project_to_zero": True,
         },
+        "the_three_direct_columns_do_not_lower_full_joint_defect": {
+            "joint_defect_after_adding_them": 3,
+            "replacement_J_rows_Y4_R3_S3_by_F0_F1_F2": shifted_block,
+            "replacement_dual_obstructions": tuple({
+                "normal": name,
+                "support_J_row_coefficients": tuple(
+                    (literal.row_keys[row], coefficient)
+                    for row, coefficient in zip(shifted_rows, values)
+                    if coefficient),
+            } for name, values in zip(NAMES, shifted_dual_coefficients)),
+            "reason": (
+                "the replacement duals annihilate both H and X*Y,X^2*Y,X^3*Y "
+                "and pair identically with F0,F1,F2"
+            ),
+        },
         "forced_exact_J_heads": {
             "support_F0_F1_F2": tuple(map(len, heads)),
             "union_support": len(head_union),
@@ -267,13 +306,14 @@ def main():
             **normal_low_summary(literal, source, source_index),
         } for name, source in zip(NAMES, literal.locator_normals)),
         "interpretation": (
-            "The three X,Y singleton columns break the three-dimensional "
-            "high-only quotient only. They cannot solve the full bordered "
-            "system: the full J heads are forced, and their error contacts "
-            "still require an indirect low/high relay. Boundary-zero columns "
-            "are invisible to this first dual quotient, so any useful such "
-            "column must operate by cancelling that residual contact rather "
-            "than by directly breaking a locator-normal obstruction."
+            "The three X,Y singleton columns only break the initially chosen "
+            "three-coordinate probe; an exact shifted dual triple proves that "
+            "the full bordered defect remains three. The full J heads are "
+            "forced, and their error contacts then require an indirect "
+            "low/high relay. Boundary-zero columns are invisible to every J "
+            "coordinate, so any useful such column must operate by cancelling "
+            "that residual contact rather than by directly breaking a "
+            "locator-normal obstruction."
         ),
         "maximum_rss_KiB": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
     }
