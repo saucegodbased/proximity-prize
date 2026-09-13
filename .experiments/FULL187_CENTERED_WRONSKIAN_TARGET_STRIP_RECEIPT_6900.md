@@ -154,6 +154,13 @@ produce the three error syndromes, together with the exact divisibility
 rows, verifies every exact integer inequality, checks the sharp endpoints,
 and records the conditional interpolation statement under a 4 GiB cap.
 
+`Full187CenteredWronskianTargetStrip6900.lean` independently formalizes the
+depth-three component caps, the four complete row families, the 673187
+boundary-zero margin, and the shape-cap preservation for every `Z^k` shift
+through `k=2620`. Its capped build is green without `decide` or
+`native_decide` (SHA-256
+`12a7bba992fc7aef8bb17a781d18402469aeec7d1f48b4317de050870603104f`).
+
 ```text
 canonical payload SHA-256
 7f982845329562e8bef6447ac87d137ed868763bc096a7a830d8bb103deea401
