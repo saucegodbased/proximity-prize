@@ -117,6 +117,24 @@ theorem target_low_error_degree_forced_power_overrun
         131071 * b + (131071 - 1) * c + (131071 - 2) * d := by
   omega
 
+/-- Specializing the filtration to the 21 degree-five Veronese rows closes
+the original quintic candidate outright.  The best possible extracted layer
+is the pure `V^5` layer; its forced `H^45` coefficient is still 3,431,185
+degrees beyond the corresponding strict source cutoff.  Lexicographic
+descent then repeats the same argument on every remaining layer. -/
+theorem target_all_twenty_one_quintics_forced_power_overrun
+    (b c d : Nat) (hdegree : b + c + d = 5) :
+    60 * 180413 + 3431185 ≤
+      (60 - 3 * b) * 81731 +
+        (60 - (b + 2 * c + 3 * d) + c + 2 * d) * 180413 +
+        131071 * b + (131071 - 1) * c + (131071 - 2) * d := by
+  omega
+
+theorem target_quintic_overrun_sharp_at_V5 :
+    (60 - 3 * 5) * 81731 + (60 - 5) * 180413 -
+      (60 * 180413 - 131071 * 5) = 3431185 := by
+  norm_num
+
 /-- The lower bound is sharp at the terminal red low-`E` shape
 `(b,c,d)=(13,16,5)`. -/
 theorem target_low_error_degree_overrun_sharp :
@@ -161,3 +179,4 @@ end ProximityPrize.SubmissionLower.Full187NormalMonomialErrorFiltration6900
 #print axioms ProximityPrize.SubmissionLower.Full187NormalMonomialErrorFiltration6900.leading_shape_coefficient
 #print axioms ProximityPrize.SubmissionLower.Full187NormalMonomialErrorFiltration6900.all_errors_force_multiplier_power
 #print axioms ProximityPrize.SubmissionLower.Full187NormalMonomialErrorFiltration6900.target_low_error_degree_forced_power_overrun
+#print axioms ProximityPrize.SubmissionLower.Full187NormalMonomialErrorFiltration6900.target_all_twenty_one_quintics_forced_power_overrun
