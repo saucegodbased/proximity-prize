@@ -25,8 +25,11 @@ for that active shape is smaller even for `n=1`, and at `n=20` misses by
 is source-impossible before denominator normalization is considered.
 
 This stops only multiplicative error-flat projectors preserving the locator
-normal by a factor.  It does not stop cancellations among unrelated literal
-source rows.
+normal by a factor.  The same top-head calculation stops a single mixed
+`U1/U2/U3` product with nonzero linear candidate boundary: error order sixty
+requires at least twenty error-flat factors, while its one boundary-linear
+factor has agreement order at most three.  It does not stop exact top-degree
+cancellation among several unrelated literal source rows.
 -/
 
 namespace ProximityPrize.SubmissionLower.Full187ErrorFlatProjectorHeadStop6900
@@ -130,6 +133,29 @@ theorem suggested_unit_product_head_gaps :
           (60 * 180413 - 131071 * 31 - (131071 - 2)) = 4013857 := by
   norm_num
 
+/-- Any product of order-one, order-two and order-three error-flat factors
+with total error contact sixty contains at least twenty active factors. -/
+theorem mixed_error_flat_factor_count_at_least_twenty
+    (a b c : Nat) (hcontact : 60 ≤ a + 2 * b + 3 * c) :
+    20 ≤ a + b + c := by
+  omega
+
+/-- A product with a nonzero *linear* candidate boundary has exactly one
+candidate-vanishing normal factor.  Such a linear factor has agreement order
+at most three, hence needs at least `L^57`; the other error-flat factors
+contribute at least twenty more active variables.  Even the optimistic top
+`Y^21` head is therefore 2,211,252 degrees outside the source. -/
+theorem mixed_unit_product_linear_boundary_head_red
+    (agreementOrder flatFactors : Nat)
+    (horder : agreementOrder ≤ 3) (hfactors : 20 ≤ flatFactors) :
+    60 * 180413 - 131071 * (flatFactors + 1) ≤
+      (60 - agreementOrder) * 180413 := by
+  omega
+
+theorem mixed_unit_product_best_possible_head_gap :
+    57 * 180413 - (60 * 180413 - 131071 * 21) = 2211252 := by
+  norm_num
+
 end
 
 
@@ -139,3 +165,4 @@ end ProximityPrize.SubmissionLower.Full187ErrorFlatProjectorHeadStop6900
 #print axioms ProximityPrize.SubmissionLower.Full187ErrorFlatProjectorHeadStop6900.error_projector_degree_at_least_twenty
 #print axioms ProximityPrize.SubmissionLower.Full187ErrorFlatProjectorHeadStop6900.any_nonconstant_F0_projector_head_red
 #print axioms ProximityPrize.SubmissionLower.Full187ErrorFlatProjectorHeadStop6900.target_minimum_projector_head_gaps
+#print axioms ProximityPrize.SubmissionLower.Full187ErrorFlatProjectorHeadStop6900.mixed_unit_product_linear_boundary_head_red
