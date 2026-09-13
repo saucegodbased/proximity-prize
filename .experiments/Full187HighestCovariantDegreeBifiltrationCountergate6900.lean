@@ -1,4 +1,6 @@
 import Order2SourceBasisScaffold
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.Notation
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 import Lean.Elab.Tactic.Omega
@@ -28,6 +30,7 @@ error-contact problem, where the `Z*R` and passive-seed terms remain.
 namespace ProximityPrize.SubmissionLower.Full187HighestCovariantDegreeBifiltrationCountergate6900
 
 open Polynomial
+open scoped Matrix
 open ProximityPrize.SubmissionLower.Order2SourceBasisScaffold
 
 set_option autoImplicit false
@@ -36,17 +39,18 @@ noncomputable section
 
 variable {K : Type*} [Field K]
 
-/-- Linear part of the error-chart affine normal change.  Its determinant is
-`L^3`; thus the algebraic change is invertible whenever the agreement
-locator is a unit at the error node.  The countergate is about the unequal
-contact weights, not failure of this determinant. -/
-theorem error_normal_linear_change_det
-    (L L1 L2 E R S : K) :
-    let V := E
-    let J1 := -L1 * E + L * R
-    let J2 := (2 * L1 ^ 2 - L * L2) * E - 2 * L * L1 * R + L ^ 2 * S
-    V * (L * (L ^ 2)) = L ^ 3 * E := by
-  dsimp
+/-- Linear part of the affine change `(E,R,S) -> (V,J1,J2)`. -/
+def errorNormalLinearMatrix (L L1 L2 : K) : Matrix (Fin 3) (Fin 3) K :=
+  !![1, 0, 0;
+     -L1, L, 0;
+     2 * L1 ^ 2 - L * L2, -2 * L * L1, L ^ 2]
+
+/-- Its determinant is `L^3`; thus the algebraic change really is invertible
+at every error.  The countergate is about unequal contact weights, not a
+singular coordinate transform. -/
+theorem error_normal_linear_change_det (L L1 L2 : K) :
+    (errorNormalLinearMatrix L L1 L2).det = L ^ 3 := by
+  simp [errorNormalLinearMatrix, Matrix.det_fin_three]
   ring
 
 /-- The independent `V` displacement costs three units of literal contact
