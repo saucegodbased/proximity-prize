@@ -21,8 +21,10 @@ the first passive direction.  The `(E^j R^r)` coefficient of `V^b` is
 `binom(b,r) binom(b-r,j) T^r`; consequently its remaining X-Hasse layers are
 `t < 60-r-3j`.  `--r-max 0` keeps only the top E channel, while `--r-max 1`
 also keeps the first passive Hermite layer.  Multiplier columns are included
-through their exact scaled strict source width, rather than assigning one
-scalar to a whole row.
+through their exact scaled strict source width.  This is the minimum of the
+active `Y^b` cutoff and the pure-seed `Z^b Q^b` cutoff; the latter is narrower
+here because `deg(Q)=2e>w`.  Different values of `b` have different seed
+degree, so that endpoint cannot cancel between lanes.
 """
 
 from __future__ import annotations
@@ -91,6 +93,15 @@ SCHEDULES = (
     ),
 )
 
+# This is not one of the six precommitted divergent schedules.  It is the
+# follow-up structural audit containing every b-lane with nonzero literal
+# source width in the requested range.
+ALL_SOURCE_LEGAL_HIGH_V = Schedule(
+    "all_source_legal_highV",
+    tuple(range(14, 66)),
+    "All b=14..65 lanes; b>=66 have zero width from the pure-seed endpoint.",
+)
+
 
 def conv_trunc(a: list[int], b: list[int], n: int) -> list[int]:
     out = [0] * n
@@ -122,9 +133,10 @@ def locator_taylor_at(x: int) -> list[int]:
 
 def multiplier_dimension(b: int) -> int:
     ell = max(M - b, 0)
-    cutoff = D - b * WGT
-    # strict deg(p L^ell) < cutoff
-    return max(0, cutoff - ell * G)
+    active_cutoff = D - b * WGT
+    pure_seed_cutoff = D - 2 * EDEG * b
+    # Both strict inequalities deg(p L^ell) < cutoff must hold.
+    return max(0, min(active_cutoff, pure_seed_cutoff) - ell * G)
 
 
 def row_offsets(r_max: int) -> tuple[dict[tuple[int, int, int], int], int]:
@@ -233,9 +245,13 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--schedule", action="append", default=[])
     parser.add_argument("--r-max", type=int, default=0)
+    parser.add_argument("--include-structural-audit", action="store_true")
     args = parser.parse_args()
     wanted = set(args.schedule)
-    selected = [s for s in SCHEDULES if not wanted or s.name in wanted]
+    available = SCHEDULES + ((ALL_SOURCE_LEGAL_HIGH_V,)
+        if args.include_structural_audit or ALL_SOURCE_LEGAL_HIGH_V.name in wanted
+        else ())
+    selected = [s for s in available if not wanted or s.name in wanted]
     if wanted - {s.name for s in selected}:
         raise SystemExit(f"unknown schedules: {sorted(wanted - {s.name for s in selected})}")
     if args.r_max < 0:

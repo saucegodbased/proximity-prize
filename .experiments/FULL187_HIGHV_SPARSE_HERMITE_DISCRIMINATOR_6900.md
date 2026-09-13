@@ -25,8 +25,15 @@ For each high-V lane, the source row is
 
 ```text
 p_b(X) L(X)^max(60-b,0) V^b,
-dim p_b = max(0, 660 - 8b - 11 max(60-b,0)).
+dim p_b = max(0,
+  min(660 - 8b, 660 - 10b) - 11 max(60-b,0)).
 ```
+
+The first term is the active `Y^b` cutoff.  The second is the pure-seed
+`Z^b Q^b` cutoff, with `deg Q=2e=10`.  The pure-seed cutoff is the binding
+one.  It cannot cancel between distinct `b`, because its seed degree is
+exactly `b`.  Omitting this endpoint gives invalid source widths and false
+apparent kernels; the implementation takes the minimum explicitly.
 
 The local transfer used by the discriminator is
 
@@ -54,46 +61,47 @@ packet, and a packet centered where the `L` inventory reaches zero.
 
 ## Exact pivot results
 
-At passive depth `r_max=0`:
+Already at passive depth `r_max=0`:
 
 | schedule | columns | rank | nullity | held-out payload gain |
 |---|---:|---:|---:|---:|
-| fifo contiguous low | 1512 | 1512 | 0 | 0 |
-| returns contiguous high | 1764 | 1760 | 4 | 1 |
-| even stride | 2142 | 2142 | 0 | 0 |
-| triple stride | 2332 | 2332 | 0 | 0 |
-| two hub | 955 | 955 | 0 | 0 |
-| just-in-time boundary | 3243 | 3150 | 93 | 1 |
+| fifo contiguous low | 504 | 504 | 0 | 0 |
+| returns contiguous high | 100 | 100 | 0 | 0 |
+| even stride | 714 | 714 | 0 | 0 |
+| triple stride | 634 | 634 | 0 | 0 |
+| two hub | 185 | 185 | 0 | 0 |
+| just-in-time boundary | 1059 | 1059 | 0 | 0 |
 
-The top-E system therefore leaves only two apparent escape packets, both at
-or beyond locator saturation.  The payload gain of one verifies that each
-kernel contains a combination nonzero at a held-out point; the nullity is not
-merely duplicate columns.
-
-Adding only the first passive layer (`r_max=1`) kills both survivors:
+The follow-up structural schedule contains every lane of nonzero scaled
+source width, `b=14..65`.  (The pure-seed cutoff gives width zero from `b=66`
+onward in this scale.)  Its exact result is:
 
 | schedule | rows | columns | rank | nullity | payload gain |
 |---|---:|---:|---:|---:|---:|
-| returns contiguous high, `b=62..82` | 6200 | 1764 | 1764 | 0 | 0 |
-| just-in-time boundary, `b=42..62` | 6200 | 3243 | 3243 | 0 | 0 |
-
-The other four schedules were already injective in the `r=0` row subset, so
-they remain injective after `r=1` rows are added.
+| all source-legal high-V, `b=14..65` | 3150 | 1889 | 1889 | 0 | 0 |
 
 ## Countergate and surviving loophole
 
-For all six precommitted high-V schedules, a mixed combination satisfying the
-top-E constraints and the first passive Hermite constraints is zero in this
-ratio-faithful scaled system.  This is a decisive scheduling countergate:
-the high-V kernel seen in the top channel is an artifact of omitting the first
-passive direction, not a robust carrier.
+For all six precommitted schedules—and even their union with every other
+nonzero-width pure-V lane—the top-E constraints alone are injective in this
+scaled system.  There is therefore no scaled scheduling escape to be rescued
+by adding passive layers.
 
 It does **not** prove target injectivity.  A target-sized proof still has to
-show that its exact local error expansion contains this `T R` minor with a
-unit coefficient, and must cover supports outside the six schedules (or prove
-a structural reduction to them).  The discriminator says where to spend the
-next proof effort: extract that first-passive minor rather than search more
-top-E-only packets.
+promote the scaled rank to the actual locator pair.  In particular, the actual
+locators satisfy the special full-domain derivative identity, whereas the
+five/eleven-root test pair is generic.  Also, rounding makes the target's tiny
+positive `b=66` width disappear in this scale.  These are the two remaining
+loopholes, not an observed mixed-row kernel.
+
+## Corrected-width process audit
+
+An earlier local run used only the active cutoff.  It reported spurious
+nullities 4 (`b=62..82`) and 93 (`b=42..62`), both removed by `r=1`.  Those
+columns are not literal source rows: their pure-seed coefficients exceed the
+source cutoff.  The current tables supersede those ranks.  This caught a
+general process rule for Full187 experiments: compute the minimum width over
+**every seed tail before doing a rank experiment**.
 
 ## Reproduction
 
@@ -103,10 +111,7 @@ prlimit --as=4294967296 --cpu=900 -- python3 \
   .experiments/full187_highV_sparse_hermite_discriminator_6900.py
 prlimit --as=4294967296 --cpu=900 -- python3 \
   .experiments/full187_highV_sparse_hermite_discriminator_6900.py \
-  --schedule returns_contiguous_high --r-max 1
-prlimit --as=4294967296 --cpu=900 -- python3 \
-  .experiments/full187_highV_sparse_hermite_discriminator_6900.py \
-  --schedule just_in_time_boundary --r-max 1
+  --schedule all_source_legal_highV --r-max 0
 ```
 
 The script stays below a 4 GiB address-space cap on all recorded runs.
