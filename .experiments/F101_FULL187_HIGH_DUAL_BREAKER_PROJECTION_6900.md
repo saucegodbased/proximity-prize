@@ -31,6 +31,10 @@ bordered joint defect at all: it remains three. They only break the first
 chosen scalar-obstruction coordinates and leave the rest of the exact `J`
 head and all contact residuals untouched.
 
+The earlier interpretation that these three columns might directly break the
+full high obstruction is therefore **falsified**. The probe moves; the full
+defect does not.
+
 The useful design constraint is therefore sharp: boundary-zero columns are
 not direct locator-normal breakers at all. If they occur in a genuine relay,
 their role has to be indirect—cancelling contact created by the forced
@@ -158,6 +162,27 @@ F1: Y X^(2..23), R X^(3..24),       Z X^(2..29)
 F2: Y X^(1..22), R X^(2..23), S X^(3..24), Z X^(1..28).
 ```
 
+The statement that all 69 head *positions must be available* before a
+boundary-zero relay can matter is an exact coordinate theorem, not an
+inference from the displayed small probe. The `J` map sends each
+`d=1,z=0` monomial to its own single `J[shape,X^a]` coordinate; high columns,
+all `d=0` columns, and seed-positive `d=1` columns have zero there. The
+script performs the resulting leave-one-out test for every union position:
+omitting it leaves its coordinate functional zero on every remaining allowed
+column and nonzero on at least one requested RHS. The 69 witnesses meet one,
+two, or three of `F0,F1,F2` in counts
+
+```text
+number of RHS hit     1   2   3
+head positions       26  23  20
+```
+
+For a simultaneous source family capable of all three RHS, this proves the
+69-position availability bound. It does not say that one correction for one
+normal uses all 69 terms: the individual forced heads have sizes `22,44,66`.
+Only after these exact `J` coordinates are available can a `d=0` column be a
+useful residual-contact relay.
+
 Each completion is zero on the eight agreement nodes but has an error-contact
 residual. The residual is exactly where a genuine low/high relay must act.
 This receipt does not minimize that residual relay; it explains why the
@@ -180,7 +205,7 @@ left-null pairings, the complete low projection census, and the forced exact
 hash is
 
 ```text
-db769380a60863ec8aa8c7d0d48837269725324f1a2eb2c5ecc9825b028856fe
+8a42275b1e579e264abeff1f8c9732148604f4ba847e2abbba210d2ca8f40e97
 ```
 
 ## Route consequence

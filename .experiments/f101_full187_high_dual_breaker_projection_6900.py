@@ -214,6 +214,22 @@ def main():
     assert tuple(map(len, heads)) == (22, 44, 66)
     head_union = set().union(*heads)
     assert len(head_union) == 69
+    leave_one_out = []
+    for monomial in sorted(head_union):
+        xp, yp, rp, sp, zp = monomial
+        coordinate = (yp, rp, sp, zp).index(1)
+        row = row_index[("J", coordinate, xp)]
+        hit_normals = tuple(name for name, target in zip(NAMES, literal.targets)
+                            if target.get(row, 0))
+        # This J row is carried by precisely this source monomial.  Since H,
+        # d=0, and seed-positive d=1 columns have no J component, omitting it
+        # makes every named RHS in hit_normals unreachable.
+        assert hit_normals
+        assert literal.monomials[source_index[monomial]] == monomial
+        leave_one_out.append((monomial, hit_normals))
+    head_hit_histogram = Counter(len(hit_normals)
+                                 for _monomial, hit_normals in leave_one_out)
+    assert sorted(head_hit_histogram.items()) == [(1, 26), (2, 23), (3, 20)]
 
     # The initial terms are predicted directly from Lambda=X*(10+39X+...).
     # F2_Y has order one, F1_Y order two, and F0_Y order three at X=0.
@@ -300,6 +316,17 @@ def main():
                 "J is carried only by boundary-one, seed-zero source monomials; "
                 "the requested J coordinate fixes each such coefficient"
             ),
+            "leave_one_out_coordinate_certificate": {
+                "all_69_coordinates_checked": True,
+                "targets_hit_per_coordinate_histogram": tuple(
+                    sorted(head_hit_histogram.items())),
+                "proof": (
+                    "if one listed monomial is unavailable, its unique J row "
+                    "annihilates H, every boundary-zero column, every "
+                    "seed-positive boundary-one column, and every remaining "
+                    "head monomial, but is nonzero on the named target RHS"
+                ),
+            },
         },
         "canonical_centered_low_completions": tuple({
             "normal": name,
