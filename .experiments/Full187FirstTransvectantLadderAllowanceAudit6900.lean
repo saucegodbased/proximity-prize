@@ -23,12 +23,13 @@ is equivalent to `81731*a < 16952*k`.  The resulting bands are exact:
 * `k=20..21`: `a<=4`.
 
 Combined with `Full187FirstTransvectantPowerLocalRankStop6900`, this gives a
-decisive STOP for the pure ladder as the terminal correction space.  At an
-error, positive `a` vanishes in contact weight zero.  For `a=0`, legality
-forces `k>0`, hence every weight-zero row is a polynomial with zero constant
-term in the single form `J=L*w-L'*d`.  That image contains `F1`, but the
-checked specializations exclude both `F0` and curvature-bearing `F2`.
-Mixed `T2`/curvature carrier families are not covered by this STOP.
+STOP only for a **universal symbolic formula** in the single coordinate
+`J=L*w-L'*d`: positive `a` vanishes in weight zero, while legal `a=0` has
+`k>0`, so a universal formula has zero constant term in `J`.  This does not
+by itself stop interpolation on the actual finite error jets, where
+X-dependent multipliers and translations are available.  Moreover the
+correction rows must have zero agreement boundary, which can exclude the
+`k=1` row that realizes `F1`.  No finite error-contact STOP is claimed here.
 -/
 
 namespace ProximityPrize.SubmissionLower.Full187FirstTransvectantLadderAllowanceAudit6900
@@ -133,11 +134,12 @@ theorem first_legal_positive_error_power_margins :
 
 /-! ## Quantitative local error-image bound
 
-The following theorem strengthens the two pointwise exclusions to the exact
-rank statement needed for the standard three-dimensional syndrome span.  If
-a linear combination of `(F0,F1,F2)` belongs to the nonconstant function
-algebra in the single coordinate `J`, its `F0` and `F2` coefficients vanish.
-Thus the intersection is contained in the one-dimensional `F1` line. -/
+The following theorem strengthens the two universal symbolic exclusions. If
+a linear combination of `(F0,F1,F2)` agrees for **all** symbolic `(d,w,s)`
+with a nonconstant function of the single coordinate `J`, its `F0` and `F2`
+coefficients vanish.  Thus this universal-formula intersection is contained
+in the one-dimensional `F1` line.  It is deliberately not a theorem about
+agreement on only the actual finite error jets. -/
 
 section LocalErrorRank
 

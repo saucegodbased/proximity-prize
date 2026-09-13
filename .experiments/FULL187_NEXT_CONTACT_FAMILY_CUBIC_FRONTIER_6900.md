@@ -253,7 +253,7 @@ error-locator factor. For reference, the smallest powers compatible with
 `H^a`, `a=1,2,3,4`, are `k=5,10,15,20`; even the slope cap `k=21` cannot
 carry `H^5`.
 
-## 6. Exact local rank STOP for the pure-power family
+## 6. Universal local formula obstruction for the pure-power family
 
 The quintic is a real source row but does not alone settle the three RHS.
 At an error node, write the weight-zero residual, slope, and curvature
@@ -277,8 +277,87 @@ strict source cutoff excludes the `k=0` row `L^60`. This image contains
 
 These two specializations are Lean-checked in
 `Full187FirstTransvectantPowerLocalRankStop6900.lean`. Therefore the pure
-power family has local leading rank only one on the three standard RHS. It
-can contribute the `F1` channel and supplies new high-order correction rows,
-but any actual THREE-RHS producer still needs a mixed curvature/`T2` family
-for `F0` and `F2`. This is a rank STOP for pure powers, not for the full
-187-shape source.
+power family has universal symbolic leading image only in the `F1` channel.
+This proves that a formula valid for arbitrary `(d,w,s)` needs a mixed
+curvature/`T2` family for `F0` and `F2`. It does **not** by itself disprove a
+coefficient choice on the fixed finite target error set, where multipliers
+vary with `X` and only the actual finitely many residual triples occur. Nor
+does the reachable `F1` leading term automatically have zero Y/R/S boundary.
+Those are separate global interpolation and boundary conditions.
+
+## 7. Stronger single-quintic two-error-jet STOP
+
+For one carrier with scalar multiplier
+
+```text
+p(X) * L^50 * J_L^5,
+```
+
+the source coefficient of `R^5` is exactly `p*L^55`. Matching a linear RHS
+forces this coefficient and its first X/contact derivative to vanish at
+every error node. Since `L` is nonzero on the error set, the two scalar
+equations are triangular:
+
+```text
+p(x)*L(x)^55 = 0,
+p'(x)*L(x)^55 + p(x)*55*L(x)^54*L'(x) = 0,
+```
+
+so `p(x)=p'(x)=0`. Distinct-node factorization gives
+
+```text
+H^2 divides p.
+```
+
+The pure `Z^5` degree after that forced price is
+
+```text
+2*81731 + 50*180413 + 5*(180413+2*81731-1)
+  = 10903482,
+```
+
+which is 78,702 above `60*180413=10824780`. The pointwise implication, the
+all-error product-of-squared-linear-factors theorem, and the target
+arithmetic are Lean-checked in
+`Full187SingleQuinticTwoErrorJetStop6900.lean`.
+
+This closes a **single** quintic carrier. Shifted quintics must be treated as
+a coupled top matrix. For the six shifts `A_j=X^jL`, `j=0,...,5`, the fifth
+powers of
+
+```text
+J_(A_j)=X^(j-1)*(X*J_L-j*L*V)
+```
+
+form a binary-quintic Vandermonde. After removing row/column powers of a
+nonzero NTT node `x`, its determinant is
+
+```text
+-86400000*x^60.
+```
+
+Thus six independent shifted rows do not evade the two-jet conclusion at a
+single error node. Seven or more rows have the expected exact binary-quintic
+syzygies, so one must quotient those identities before inferring individual
+multiplier divisibility. After an `H^2` price, source legality would require
+large cancellation of the seed layers `z=3,4,5`; their raw margins are
+respectively `-13920,-46311,-78702`.
+
+The natural exact cancellation is a triple root at the pure-seed direction.
+Writing
+
+```text
+u=L*H,  d=L'*H-2L*H',
+```
+
+the vanishing linear form is
+
+```text
+u*J_L+d*(L*V) = L^2*(H*W-2H'*V).
+```
+
+Cubing this factor cancels `z=3,4,5`, but its three coefficient factors of
+degree about `g+e` make the remaining active heads grossly source-illegal.
+This rules out the canonical triple-root repair. It is not yet an exhaustive
+STOP for every low-degree, target-specific cancellation among more than six
+shifted quintics.

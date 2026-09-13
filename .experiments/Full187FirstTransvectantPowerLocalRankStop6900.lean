@@ -3,13 +3,14 @@ import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
 
 /-!
-# Local rank stop for pure first-transvectant powers
+# Universal local formula obstruction for pure first-transvectant powers
 
 The quintic carrier is a real source-family breakthrough, but the family
 
 `H^a * L^(60-2k) * J_L^k`
 
-cannot by itself correct all three standard error syndromes.  At an error
+cannot furnish a universal symbolic correction formula for all three
+standard leading error syndromes.  At an error
 node, every `a>0` row vanishes in contact weight zero.  The remaining `a=0`
 rows are polynomials without constant term in the single passive linear form
 
@@ -18,8 +19,10 @@ rows are polynomials without constant term in the single passive linear form
 The leading terms of `F0,F1,F2` are respectively a nonzero multiple of `d`,
 of `j`, and of a form containing the independent curvature variable `s`.
 Only `F1` lies in the one-coordinate image.  The two elementary
-specializations below give a decisive local STOP for the pure-power family;
-mixed `T2`/curvature carriers are still required.
+specializations below give a universal/formula-family obstruction and prove
+that a symbolic producer valid for arbitrary residual jets needs mixed
+`T2`/curvature carriers.  They do not alone exclude interpolation on the one
+fixed finite target error set, where the residual triples are not arbitrary.
 -/
 
 namespace ProximityPrize.SubmissionLower.Full187FirstTransvectantPowerLocalRankStop6900

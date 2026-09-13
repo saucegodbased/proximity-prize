@@ -13,13 +13,14 @@ separated cleanly.
    order-two contact source. Honest differentiation requires
    `-(A^2/2)*V*P'`. For `A=X`, dropping it leaves exactly `3*E*R`, a
    nonzero contact-weight-three monomial.
-2. The pure first-transvectant ladder
+2. For a universal symbolic identity, the pure first-transvectant ladder
    `H^a L^(60-2k) J_L^k` has many legal rows, including the new quintic
    `H L^50 J_L^5`, but its weight-zero error image is only the nonconstant
    polynomial algebra in one form `J=L*w-L'*d`. It can reproduce the middle
-   `F1` leading syndrome, but not `F0` or curvature-bearing `F2`. Therefore
-   this pure ladder cannot supply the terminal THREE-RHS corrections, and
-   hence cannot supply THREE-RHS plus residual Z.
+   `F1` leading syndrome, but not `F0` or curvature-bearing `F2` as an
+   identity for all symbolic `(d,w,s)`. This is **not** an actual finite
+   error-contact STOP: X-dependent multipliers can interpolate the finite
+   error data, and the proof below does not control their translations.
 
 Mixed `T2`/curvature families are not excluded by the second STOP.
 
@@ -137,12 +138,12 @@ k=20..21:  a<=4.
 first positive margins for `a=1,2,3,4` are respectively
 `3029,6058,9087,12116` at `k=5,10,15,20`.
 
-## 4. Error-image STOP
+## 4. Universal single-coordinate formula STOP (finite interpolation open)
 
 At an error root of `H`, every row with `a>0` has zero contact-weight-zero
-part. Every surviving `a=0` legal row has `k>0`, so arbitrary scalar
-multipliers and linear combinations still produce a function `P(J)` with
-`P(0)=0` in the single local form
+part. Every surviving `a=0` legal row has `k>0`. If one asks for one formula
+valid for all symbolic `(d,w,s)`, scalar combinations produce a function
+`P(J)` with `P(0)=0` in the single local form
 
 ```text
 J=L*w-L'*d.
@@ -161,9 +162,13 @@ For `L!=0`, set `(d,w)=(L,L')`. Then `J=0` but `F0=L^60!=0`, excluding
 `F2=L^59!=0`, excluding `F2`. `F1` is exactly `L^58 J` and is the only one
 of the three in the one-coordinate image.
 
-This is a weight-zero projection of the actual error contact, so failure
-there already prevents equality of the full error syndromes. Adding more
-pure powers, larger legal `a`, or scalar X multipliers cannot repair it.
+This proves only a universal-formula rank-one statement.  The literal
+problem asks for equality at the fixed finite error nodes and allows
+X-dependent multipliers; their values and translated jets are not quantified
+by this theorem.  Such finite interpolation could evade the symbolic
+specializations above.  Also, correction rows require zero agreement
+boundary, so the `k=1` row realizing `F1` may itself be unavailable.  The
+actual finite pure-ladder correction problem remains open after this audit.
 
 ## Lean receipts
 
