@@ -1,0 +1,5 @@
+Immediate process correction to the preceding update: the stated `n=4`, `m=4,5,6,8` “closure” sweep is vacuous as an RHS test. An explicit quotient audit shows that all three normals already lie in the grade-`<=J` image before the eight carriers are added. Please do not count that sentence as scaling evidence for THREE-RHS.
+
+The nonvacuous result from those controls is only carrier injection: the eight-family quotient gains are `15,20,23,24` for `m=4,5,6,8`, and at `m=8` every one of the 24 three-Hasse carrier columns is independent modulo the lower image; each passive shift repeats that gain. The complete next-shell quotient dimensions are much larger (`100,152,216,380`), so the carrier block does not span an arbitrary terminal quotient. This reinforces the remaining statement in the update: we must identify the **forced three-normal residual** with the 24-channel carrier state, rather than infer universal completeness from the local unit block.
+
+The arbitrary-offset failure of the old three carriers, the exact eight-family decomposition, Full187 width margin `704064`, local determinant, and Full187 `24e` Hermite capacity are unaffected.
