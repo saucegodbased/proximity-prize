@@ -399,11 +399,14 @@ quintic family, not merely for one carrier.  The determinant, fixed-node
 root-multiplicity transfer, and target inequality are Lean-checked in
 `Full187NormalMonomialErrorFiltration6900.lean`.
 
-The same calculation gives the exact next frontier.  Every extracted layer
-with `b<=13` is red; the sharp last one is `(13,16,5)`, still over by 38,697.
-The first legal high-error-degree escape is `(14,17,4)`, whose forced `H^18`
-coefficient has 255,837 degrees of room.  Thus larger normal-monomial
-families remain open, beginning at `V`/`E` degree fourteen.
+The active-head calculation first turns green at `(14,17,4)`, whose forced
+`H^18` leading coefficient has 255,837 degrees of room, but this is not yet
+a legal expanded row: its pure-seed tail is red.  Auditing that tail sharpens
+the full-row frontier.  Every extracted layer with `b<=17` is red; the best
+`b=17` row `(17,20,1)` still misses by 91,419.  The first row passing both
+the leading-head and pure-seed gates is `(18,21,0)`, carrying `H^6` with
+170,724 degrees of pure-seed room.  Thus larger normal-monomial families
+remain open only from `V`/`E` degree eighteen.
 
 ## 9. Error-flat unit products are locally sound but source-impossible
 

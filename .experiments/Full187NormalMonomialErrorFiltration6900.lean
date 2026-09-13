@@ -16,10 +16,11 @@ is false.  After triangular extraction of the coefficient of
 
 This file records the exact triangular leading matrix, transfers that local
 root multiplicity from `p*L^n` to `p`, and proves the sharp target arithmetic
-frontier.  Every extracted layer `b <= 13` is source-impossible after its
-forced error-locator power; the first legal escape is already
-`(b,c,d)=(14,17,4)`.  Hence this is a decisive low-error-degree STOP, but
-not a STOP for the entire normal-monomial family.
+frontier.  The leading active shape is impossible through `b=13`; checking
+the pure-seed tail strengthens the full-row STOP through `b=17`.  The first
+fully source-compatible extracted layer is `(b,c,d)=(18,21,0)`.  Hence this
+is a decisive low-error-degree STOP, but not a STOP for the entire
+normal-monomial family.
 -/
 
 namespace ProximityPrize.SubmissionLower.Full187NormalMonomialErrorFiltration6900
@@ -144,15 +145,52 @@ theorem target_low_error_degree_overrun_sharp :
         (131071 - 2) * 5) = 38697 := by
   norm_num
 
-/-- The first next layer genuinely escapes the degree STOP.  Its forced
-`H^18` leading coefficient is 255,837 degrees inside the source strip. -/
-theorem target_error_degree_fourteen_first_green :
+/-- The first next layer escapes the *leading active coefficient* STOP.  Its
+forced `H^18` leading coefficient is 255,837 degrees inside that strip.
+The pure-seed theorem below shows that the whole expanded row remains red. -/
+theorem target_error_degree_fourteen_leading_head_green :
     (60 - 3 * 14) * 81731 +
         (60 - (14 + 2 * 17 + 3 * 4) + 17 + 2 * 4) * 180413 = 5981483 ∧
       60 * 180413 - 131071 * 14 - (131071 - 1) * 17 -
           (131071 - 2) * 4 = 6237320 ∧
       6237320 - 5981483 = 255837 ∧
       5981483 < 6237320 := by
+  norm_num
+
+/-- The pure-seed coefficient is the missing full-row gate.  Once the forced
+`H^(60-3b)` is included, every layer through `b=17` has a seed tail at least
+91,419 degrees beyond `60g`.  This is sharp at `(17,20,1)`. -/
+theorem target_error_degree_at_most_seventeen_pure_seed_red
+    (b c d : Nat)
+    (hb : b ≤ 17) (hdegreeLow : 2 ≤ b + c + d)
+    (hdegreeHigh : b + c + d ≤ 82)
+    (hslope : c + d ≤ 21) (hcurv : d ≤ 10) :
+    60 * 180413 + 91419 ≤
+      (60 - 3 * b) * 81731 +
+        (60 - (b + 2 * c + 3 * d)) * 180413 +
+        b * (2 * 81731) +
+        c * (180413 + 2 * 81731 - 1) +
+        d * (2 * 180413 + 2 * 81731 - 2) := by
+  omega
+
+theorem target_error_degree_seventeen_seed_stop_sharp :
+    (60 - 3 * 17) * 81731 +
+        (60 - (17 + 2 * 20 + 3 * 1)) * 180413 +
+        17 * (2 * 81731) +
+        20 * (180413 + 2 * 81731 - 1) +
+        1 * (2 * 180413 + 2 * 81731 - 2) = 10916199 ∧
+      10916199 - 60 * 180413 = 91419 := by
+  norm_num
+
+/-- The first fully expanded row which escapes both active-head and
+pure-seed gates is `(b,c,d)=(18,21,0)`, carrying `H^6`. -/
+theorem target_error_degree_eighteen_first_full_row_green :
+    (60 - 3 * 18) * 81731 +
+        (60 - (18 + 2 * 21)) * 180413 +
+        18 * (2 * 81731) +
+        21 * (180413 + 2 * 81731 - 1) = 10654056 ∧
+      60 * 180413 - 10654056 = 170724 ∧
+      10654056 < 60 * 180413 := by
   norm_num
 
 /-- The original all-`H^60` estimate remains arithmetically valid when its
@@ -180,3 +218,4 @@ end ProximityPrize.SubmissionLower.Full187NormalMonomialErrorFiltration6900
 #print axioms ProximityPrize.SubmissionLower.Full187NormalMonomialErrorFiltration6900.all_errors_force_multiplier_power
 #print axioms ProximityPrize.SubmissionLower.Full187NormalMonomialErrorFiltration6900.target_low_error_degree_forced_power_overrun
 #print axioms ProximityPrize.SubmissionLower.Full187NormalMonomialErrorFiltration6900.target_all_twenty_one_quintics_forced_power_overrun
+#print axioms ProximityPrize.SubmissionLower.Full187NormalMonomialErrorFiltration6900.target_error_degree_at_most_seventeen_pure_seed_red
