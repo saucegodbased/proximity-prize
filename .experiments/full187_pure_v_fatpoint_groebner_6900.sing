@@ -1,0 +1,86 @@
+// Exact small Groebner controls for the Full187 pure-V fat-point model.
+//
+// In K[x,v], let
+//   IG = (L,v)^m,       IE = (H,v-1)^m.
+// The two ideals are comaximal because v+(1-v)=1, so IG intersect IE is
+// IG*IE.  Each block below verifies that equality by reduction and prints
+// the leading exponent pairs of the product for wt(x)=1, wt(v)=2e.
+//
+// The first two fixtures are on the putative injective side.  The final
+// fixture is deliberately on the other side: it is a counterexample to the
+// claim that 2e<g<3e alone implies weighted initial degree >= m*g.
+
+proc report(ideal P, int ev) {
+  int i;
+  int minWeight = 1000000000;
+  intvec z;
+  for (i = 1; i <= size(P); i++) {
+    z = leadexp(P[i]);
+    if (z[1] + ev*z[2] < minWeight) { minWeight = z[1] + ev*z[2]; }
+  }
+  print("groebner_generators"); print(size(P));
+  print("least_weighted_lead_degree"); print(minWeight);
+  print("leading_exponents_x_v");
+  for (i = 1; i <= size(P); i++) { print(leadexp(P[i])); }
+}
+
+// A ratio-faithful small control: 2e=6 < g=7 < 9=3e.
+ring rA=101,(x,v),wp(1,6);
+poly LA=(x-1)*(x-2)*(x-3)*(x-4)*(x-5)*(x-6)*(x-7);
+poly HA=(x-20)*(x-21)*(x-22);
+poly WA=v-1;
+ideal IGA=LA^8,LA^7*v,LA^6*v^2,LA^5*v^3,LA^4*v^4,
+  LA^3*v^5,LA^2*v^6,LA*v^7,v^8;
+ideal IEA=HA^8,HA^7*WA,HA^6*WA^2,HA^5*WA^3,HA^4*WA^4,
+  HA^3*WA^5,HA^2*WA^6,HA*WA^7,WA^8;
+ideal PA=std(IGA*IEA);
+ideal IA=std(intersect(IGA,IEA));
+int equalityA=1;
+int iA;
+for (iA=1;iA<=size(PA);iA++) { if (reduce(PA[iA],IA)!=0) { equalityA=0; } }
+for (iA=1;iA<=size(IA);iA++) { if (reduce(IA[iA],PA)!=0) { equalityA=0; } }
+print("fixture e=3 g=7 m=8");
+print("product_equals_intersection"); print(equalityA);
+print("threshold_mg"); print(56);
+report(PA,6);
+
+// The edge g=3e-1 can attain, but not cross, the strict m*g cutoff.
+ring rB=101,(x,v),wp(1,4);
+poly LB=(x-1)*(x-2)*(x-3)*(x-4)*(x-5);
+poly HB=(x-20)*(x-21);
+poly WB=v-1;
+ideal IGB=LB^6,LB^5*v,LB^4*v^2,LB^3*v^3,LB^2*v^4,LB*v^5,v^6;
+ideal IEB=HB^6,HB^5*WB,HB^4*WB^2,HB^3*WB^3,HB^2*WB^4,HB*WB^5,WB^6;
+ideal PB=std(IGB*IEB);
+ideal IB=std(intersect(IGB,IEB));
+int equalityB=1;
+int iB;
+for (iB=1;iB<=size(PB);iB++) { if (reduce(PB[iB],IB)!=0) { equalityB=0; } }
+for (iB=1;iB<=size(IB);iB++) { if (reduce(IB[iB],PB)!=0) { equalityB=0; } }
+print("fixture e=2 g=5 m=6");
+print("product_equals_intersection"); print(equalityB);
+print("threshold_mg"); print(30);
+report(PB,4);
+
+// A certified warning fixture: 20 < 29 < 30, but the product has an
+// element with leading weight 114 < m*g=116.  Thus no theorem with only
+// the two chamber inequalities can be coefficient-independent.
+ring rC=1009,(x,v),wp(1,20);
+poly LC=(x-1)*(x-2)*(x-3)*(x-4)*(x-5)*(x-6)*(x-7)*(x-8)*(x-9)*(x-10)*
+  (x-11)*(x-12)*(x-13)*(x-14)*(x-15)*(x-16)*(x-17)*(x-18)*(x-19)*(x-20)*
+  (x-21)*(x-22)*(x-23)*(x-24)*(x-25)*(x-26)*(x-27)*(x-28)*(x-29);
+poly HC=(x-100)*(x-101)*(x-102)*(x-103)*(x-104)*(x-105)*(x-106)*(x-107)*
+  (x-108)*(x-109);
+poly WC=v-1;
+ideal IGC=LC^4,LC^3*v,LC^2*v^2,LC*v^3,v^4;
+ideal IEC=HC^4,HC^3*WC,HC^2*WC^2,HC*WC^3,WC^4;
+ideal PC=std(IGC*IEC);
+ideal IC=std(intersect(IGC,IEC));
+int equalityC=1;
+int iC;
+for (iC=1;iC<=size(PC);iC++) { if (reduce(PC[iC],IC)!=0) { equalityC=0; } }
+for (iC=1;iC<=size(IC);iC++) { if (reduce(IC[iC],PC)!=0) { equalityC=0; } }
+print("fixture e=10 g=29 m=4");
+print("product_equals_intersection"); print(equalityC);
+print("threshold_mg"); print(116);
+report(PC,20);
