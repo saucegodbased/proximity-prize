@@ -72,7 +72,8 @@ determinant is `(DET8)^3`. The literal F101 check obtains rank `24` for all
 three tested errors with direction offsets `(3,5,7)` and nontrivial residual
 values `(1,9,17)`.
 
-There is, however, a sharp global guard. The extracted multiplier bounds
+There is a sharp scale distinction. The extracted **tiny-F101** multiplier
+bounds
 
 ```text
 deg p[a,c] <= 3e-1-a-c
@@ -86,17 +87,30 @@ sum_(a,c) (3e-a-c) = 24e-16                         (DIM)
 
 coefficients, whereas arbitrary order-`0,1,2` data in eight channels at `e`
 errors has dimension `24e`. For the F101 control this is `56` versus `72`.
-Therefore local invertibility does **not** imply an unrestricted global
-three-jet CRT theorem. Exactly sixteen global compatibility conditions must
-be proved for the shifted forced-head residual, or a legal coupled gauge must
-supply the missing freedom.
+That sixteen-dimensional shortage is **not a target obstruction**. The
+independent Full187 width theorem permits the uniform bound
 
-This is now the smallest honest remaining gate for the eight-carrier route.
-The exact F101 forced `F0/F1/F2` terminal shells happen to satisfy the
-compatibilities: the independent raw-module extraction reconstructs all
-three using precisely the eight families above. What remains unproved is
-that every residual produced during the target's 2621-layer seed induction
-stays in that compatible subspace.
+```text
+deg p[a,c] <= 3e-1 = 245192
+```
+
+for every one of the eight carriers, individually, with worst endpoint
+margin `704064`. The target coefficient dimension is therefore exactly
+
+```text
+8(3e)=24e=1961544.
+```
+
+Ordinary Hermite CRT supplies arbitrary value/first/second coefficient jets
+at all errors. Combined with the local determinant, the target three-jet
+interface is green.
+
+The smallest honest remaining gate is now the **complete-state and seed
+assembly theorem**: prove that these 24 selected coordinates are a complete
+state for the forced residual modulo the already eliminated lower-grade
+image, and that all unselected leakage goes strictly to later passive seed.
+The generic scalar Toeplitz determinant handles the latter once this state
+identification is established.
 
 ## 1. Why the local matrix is triangular
 
@@ -168,8 +182,10 @@ V^2 J1, Lambda V J1, Lambda^2 J1,
 with multiplier degrees at most `3e-1-a-c`. Its `J1^2`, `V J2`, and
 `Lambda J2` multipliers are zero. Some individual covariants are outside the
 tiny raw width, but their illegal terms cancel in the coupled sum; legality
-is checked only after reconstruction. This endpoint coupling must be retained
-at the target.
+is checked only after reconstruction. This endpoint coupling is essential
+for the **tiny F101 control only**. At Full187 the uniform degree-`<3e` width
+audit proves every one of the eight families individually legal, so target
+source legality does not depend on that cancellation.
 
 ## 3. Why the old three-carrier block was not enough
 
@@ -213,28 +229,30 @@ contact theorem.
 
 ## 4. Smallest exact completion lemma
 
-Let `H_3` send the eight bounded coefficient polynomials
+Let `H_3` send the eight target coefficient polynomials
 
 ```text
-deg p[a,c] <= 3e-1-a-c
+deg p[a,c] <= 3e-1
 ```
 
-to their order-`0,1,2` Hasse data at the roots of `Xi`. Let `L` be the block
+to their order-`0,1,2` Hasse data at the roots of `Xi`. Since `Xi` is
+squarefree, Hermite CRT makes `H_3` an isomorphism. Let `L` be the block
 lower-triangular local contact map certified above. The remaining source
 statement is:
 
-> **Compatible eight-carrier seed induction (open).** At every passive seed
-> layer, after eliminating earlier layers, the residual of each forced
-> `F0/F1/F2` head lies in `L(image H_3)`. Solving there produces a coupled raw
-> source row whose endpoint cancellations keep it inside the literal width,
-> and the next residual again lies in the same compatible image.
+> **Complete-state eight-carrier seed induction (open).** Modulo the image of
+> grades at most 82, the complete error-contact residual of every forced
+> `F0/F1/F2` head is determined by the 24 per-node rows
+> `T^j R^c Z^(b+a+c)`, `j=0,1,2`. After solving those rows by `L o H_3`, all
+> remaining leakage has strictly larger passive seed. Repeating this through
+> seed 2703 cancels the full residual.
 
-Since `L` is a local isomorphism, the only new content is membership in the
-codimension-at-most-sixteen global Hermite image plus coupled raw legality.
-The F101 reconstruction verifies this membership for the initial three
-terminal shells; it does not prove invariance across all target seed layers.
-One acceptable alternative is an explicit legal 16-parameter gauge that
-makes `H_3` surjective without destroying endpoint cancellation.
+There is no longer a local determinant, Hermite-dimension, or individual
+target-width gap. The new content is precisely completeness of the selected
+state modulo the lower image and compatibility of that reduction with the
+passive-seed filtration. The F101 reconstruction verifies the initial
+compound shells, and the independent shifted experiment observes a scalar
+Toeplitz block; neither finite fact alone proves the target state theorem.
 
 Even after this THREE-RHS lemma, `Z1` and downstream typed Full187 allocation
 remain separate work. No end-to-end 6900 claim is made here.
@@ -257,6 +275,6 @@ python3 -B \
 ```
 
 The Lean file proves `(DET8)`, its nonvanishing over a field, the repeated
-three-layer nonvanishing, `(DIM)`, and the exact sixteen-dimensional deficit.
-It uses no `sorry`, `decide`, or `native_decide`; printed axioms are standard
-only.
+three-layer nonvanishing, the tiny-F101 identity `(DIM)`, and the exact
+Full187 uniform `24e` parameter equality. It uses no `sorry`, `decide`, or
+`native_decide`; printed axioms are standard only.

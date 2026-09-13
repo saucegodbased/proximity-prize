@@ -17,12 +17,12 @@ diagonal Lambda^(a+c) delta^(m-a-2c).  Replacing p by (X-alpha)^j for
 j=0,1,2 gives a 24-by-24 lower-triangular three-Hasse-layer block with the
 same diagonal repeated three times.
 
-This is a local unit receipt.  It also records the important global guard:
-degree bounds deg p[a,c] <= 3e-1-a-c have total dimension 24e-16, so they
-cannot interpolate arbitrary three-jet data in all 24e coordinates.  The
-forced trellis residual must satisfy the sixteen missing global
-compatibilities (as it does in the exact F101 reconstructions), or a further
-coupled gauge is required.
+This is a local unit receipt.  It also records an important scale
+distinction.  The sharp tiny-F101 representations have bounds
+deg p[a,c] <= 3e-1-a-c and therefore 24e-16 parameters.  This is not a
+target obstruction: the independently checked Full187 widths allow the
+uniform bound deg p[a,c] < 3e for all eight families, giving exactly 24e
+parameters and hence ordinary three-jet Hermite interpolation at all errors.
 """
 
 from __future__ import annotations
@@ -185,8 +185,8 @@ def main():
 
     payload = {
         "scope": (
-            "exact local value/three-Hasse-layer unit block; global coupled "
-            "legality and trellis compatibility remain separate"
+            "exact local value/three-Hasse-layer unit block; complete-state "
+            "and passive-seed assembly remain separate"
         ),
         "field": P,
         "case": CASE,
@@ -194,15 +194,22 @@ def main():
         "carrier_formula":
             "p[a,c] Lambda^a V^(m-a-2c) J1^c Z^(b+a+c)",
         "nodes": nodes,
-        "degree_caps_3e_minus_1_minus_a_minus_c": degree_caps,
-        "coefficient_dimensions": coefficient_dimensions,
-        "total_coefficient_dimension": sum(coefficient_dimensions),
-        "arbitrary_three_jet_output_dimension": 24 * e,
-        "global_three_jet_dimension_deficit": 16,
-        "honest_global_gate": (
-            "prove every forced shifted-trellis residual obeys the sixteen "
-            "global Hermite compatibility relations, or add a legal coupled "
-            "gauge; local invertibility alone is not global surjectivity"
+        "tiny_F101_degree_caps_3e_minus_1_minus_a_minus_c": degree_caps,
+        "tiny_F101_coefficient_dimensions": coefficient_dimensions,
+        "tiny_F101_total_coefficient_dimension": sum(coefficient_dimensions),
+        "tiny_F101_arbitrary_three_jet_output_dimension": 24 * e,
+        "tiny_F101_three_jet_dimension_deficit": 16,
+        "tiny_F101_deficit_is_not_a_target_obstruction": True,
+        "Full187_uniform_degree_cap": 3 * 81731 - 1,
+        "Full187_uniform_coefficient_dimension_per_carrier": 3 * 81731,
+        "Full187_total_coefficient_dimension": 8 * 3 * 81731,
+        "Full187_arbitrary_three_jet_output_dimension": 24 * 81731,
+        "Full187_uniform_endpoint_margin_from_independent_width_audit":
+            704064,
+        "honest_remaining_gate": (
+            "identify the complete terminal residual with the selected "
+            "three-jet state and assemble its strictly higher-seed leakage; "
+            "local invertibility and target Hermite capacity are green"
         ),
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))

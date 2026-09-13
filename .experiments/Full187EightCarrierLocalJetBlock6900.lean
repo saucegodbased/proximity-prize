@@ -60,9 +60,10 @@ theorem threeLayerDiagonalProduct_ne_zero {K : Type*} [Field K]
   exact pow_ne_zero 3
     (oneLayerDiagonalProduct_ne_zero lambda delta r hlambda hdelta)
 
-/-- With caps `deg p[a,c] <= 3e-1-a-c`, the eight coefficient spaces have
-dimensions `3e-(a+c)`.  Their total is `24e-16`. -/
-theorem bounded_threeJet_coefficient_dimension (e : Nat) (he : 2 ≤ e) :
+/-- With the sharp *tiny-control* caps `deg p[a,c] <= 3e-1-a-c`, the eight
+coefficient spaces have dimensions `3e-(a+c)`.  Their total is `24e-16`.
+The Full187 width theorem permits the larger uniform cap below. -/
+theorem tiny_bounded_threeJet_coefficient_dimension (e : Nat) (he : 2 ≤ e) :
     (3 * e) +
       (3 * e - 1) + (3 * e - 1) +
       (3 * e - 2) + (3 * e - 2) +
@@ -70,10 +71,9 @@ theorem bounded_threeJet_coefficient_dimension (e : Nat) (he : 2 ≤ e) :
       (3 * e - 4) = 24 * e - 16 := by
   omega
 
-/-- Therefore these bounded multipliers miss sixteen dimensions of arbitrary
-three-jet data at `e` errors.  Local invertibility is not, by itself, global
-Hermite surjectivity. -/
-theorem bounded_threeJet_global_deficit (e : Nat) (he : 2 ≤ e) :
+/-- The sharp tiny-control representation misses sixteen dimensions of
+arbitrary data.  This is deliberately not stated as a target obstruction. -/
+theorem tiny_bounded_threeJet_global_deficit (e : Nat) (he : 2 ≤ e) :
     24 * e -
       ((3 * e) +
        (3 * e - 1) + (3 * e - 1) +
@@ -87,11 +87,21 @@ theorem f101_dimension_receipt :
       8 * 3 * 3 = 72 ∧ 72 - 56 = 16 := by
   norm_num
 
+/-- At Full187, every family may instead use the uniform inclusive degree cap
+`3e-1=245192`.  The eight spaces then have exactly the `24e` coefficients
+required for arbitrary three-jet data. -/
+theorem full187_uniform_threeJet_dimension :
+    3 * 81731 - 1 = 245192 ∧
+      8 * (245192 + 1) = 24 * 81731 ∧
+      24 * 81731 = 1961544 := by
+  norm_num
+
 #print axioms oneLayerDiagonalProduct_eq
 #print axioms oneLayerDiagonalProduct_ne_zero
 #print axioms threeLayerDiagonalProduct_ne_zero
-#print axioms bounded_threeJet_coefficient_dimension
-#print axioms bounded_threeJet_global_deficit
+#print axioms tiny_bounded_threeJet_coefficient_dimension
+#print axioms tiny_bounded_threeJet_global_deficit
 #print axioms f101_dimension_receipt
+#print axioms full187_uniform_threeJet_dimension
 
 end ProximityPrize.SubmissionLower.Full187EightCarrierLocalJetBlock6900
