@@ -125,6 +125,20 @@ cap and prints only
 It contains no `sorry`, `admit`, `decide`, `native_decide`, unsafe declaration,
 or generated table.
 
+`M69DataElevenNoLeafProtocol6900.lean` now performs the stronger integration
+check in one environment: it imports both the DataEleven bridge and the
+existing protocol wrapper and proves
+
+```text
+NoDataElevenHighEClosedLeaf6900
+  -> ProtocolClaim 6900 10461695 33554432.
+```
+
+This module also compiled under the 3.5-GiB library-backed V6 shim in about
+four seconds and reports exactly the same three standard axioms.  Hence the
+two local abbreviations really are definitionally compatible; there is no
+hidden numerical cast or proposition adapter after the no-leaf theorem.
+
 ## Completion-credit rule
 
 Only a theorem that inhabits `NoDataElevenHighEClosedLeaf6900`, or a stronger
