@@ -94,3 +94,39 @@ has enormous quotient terms and is still onto.
 The structured block split is only an oracle device.  A universal theorem
 still has to handle arbitrary coprime root-free `E,N0`, most of which do not
 preserve a small monomial residue decomposition.
+
+## Near-involution adversarial stress test
+
+The companion executable
+`m69_literal_pascal_near_involution_block_gate_6900.py` targets the most
+obvious way to defeat the long even-contact chain.  The illegal pair
+
+```text
+E=Z-2,  Nbad=Z^32 E
+```
+
+has `W=Z^32` and hence `W^2=1`; it preserves all even modes, but
+`gcd(E,Nbad)=E`, so it is excluded by the reduced leaf.  We perturb by the
+smallest root-free constant found in the exact field:
+
+```text
+N0 = Z^32 E + 2 = Z^33 - 2 Z^32 + 2,
+deg N0 = 135168,
+N0 mod E = 2.
+```
+
+This is coprime, has no zero on the 64 `Z`-nodes, and is only `2/E` away
+from the order-two ratio.  The exact literal map is still full in every
+block:
+
+```text
+source rank histogram:             {(128, 4096)}
+target containment defect:         {(0, 4096)}
+canonical SHA256:                  272da8c59c17394505d317592399d88cfb6b1c801a97bdd2d64c623802bb85e5
+```
+
+Thus the easiest finite-order counterexample collapses precisely at the
+coprimality boundary, and its minimal root-free reduced perturbation is
+GREEN.  This is evidence—not a theorem—that the universal high-band proof
+should exploit reducedness/coprimality rather than treat the quotient by
+`X^262144-1` as an arbitrary linear operator.
