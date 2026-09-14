@@ -25,6 +25,7 @@ import o2_m60_five_pivot_locator_rhs_falsifier_6900 as F  # noqa: E402
 
 
 P = 101
+ERROR_OFFSETS = (3, 5)
 
 
 def rank(columns):
@@ -40,7 +41,7 @@ def defects(columns, targets):
     return individual, rank(columns + targets) - base
 
 
-def analyze(m, slope, curvature, jet_offset):
+def analyze(m, slope, curvature, jet_offset, error_offsets=None):
     jet = m + jet_offset
     case = (7, 3, 5, m, 5 * m, slope, curvature, jet, jet + 1)
     literal = M.build_case(
@@ -48,6 +49,7 @@ def analyze(m, slope, curvature, jet_offset):
         actual_agreement_count=5,
         anchor_count=5,
         normal_coordinates=4,
+        error_direction_offsets=error_offsets,
     )
     prefix = tuple(
         index for index, monomial in enumerate(literal.monomials)
@@ -81,6 +83,7 @@ def analyze(m, slope, curvature, jet_offset):
         if not any(set(other) < set(subset) for other in closing))
     return {
         "parameters_n_w_g_m_D_q_t_J_L": case,
+        "error_direction_offsets": error_offsets,
         "prefix_columns_rank": (len(prefix), prefix_echelon.rank),
         "packet_individual_nonzero": tuple(bool(target) for target in targets),
         "packet_quotient_rank": rank(targets),
@@ -100,16 +103,22 @@ def main():
     parser.add_argument("--slope", type=int, default=1)
     parser.add_argument("--curvature", type=int, default=1)
     parser.add_argument("--jet-offset", type=int, default=2)
+    parser.add_argument(
+        "--offset-errors", action="store_true",
+        help="replace the two error-node Q values by Q+(3,5)")
     args = parser.parse_args()
     started = time.monotonic()
     M.PRIME = M.T.PRIME = M.F.PRIME = F.PRIME = P
-    row = analyze(args.m, args.slope, args.curvature, args.jet_offset)
+    error_offsets = ERROR_OFFSETS if args.offset_errors else None
+    row = analyze(
+        args.m, args.slope, args.curvature, args.jet_offset, error_offsets)
     stable = {
         "scope": (
             "smallest positive-weight matched F101 chamber, exact "
             "coefficientwise F0..F3 connector shape scan; finite control only"
         ),
         "field": P,
+        "error_direction_offsets": error_offsets,
         "row": row,
         "scope_guard": (
             "This scaling discriminator changes N,w,g and does not prove a "

@@ -257,6 +257,21 @@ the required slope order: the largest observed `r` remains one. It is not a
 recurrence proof, and changing the chamber can change the answer (as the
 primary m=4/m=5 comparison already demonstrates).
 
+The same small chamber with nonmatched error offsets `(3,5)` was then tested
+at m=7 and m=8. In both cases the unique minimal subset is exactly
+
+```text
+{(0,0),(1,0),(0,1)}.
+```
+
+At both multiplicities pure plus slope reduces the joint defect from four to
+two (and solves only `F1`), but curvature is required for the remaining three
+packets. The all-three group closes coefficientwise. Thus the arbitrary-error
+sequence through m=8 still has maximum derivative exponents `r=s=1`; there is
+no finite evidence that the required order grows like m or threatens the
+safe103 bounds. This is the strongest current scaling evidence for a fixed
+three-shape Schur block, but it remains finite evidence.
+
 ## Reproduction and receipts
 
 ```text
@@ -264,6 +279,8 @@ python3 .experiments/f101_matched_f3_terminal_shape_minimizer_6900.py
 python3 .experiments/f101_m456_pure_centered_connector_discriminator_6900.py --case m5
 python3 .experiments/f101_m456_pure_centered_connector_discriminator_6900.py --case m6
 python3 .experiments/f101_small_matched_connector_scaling_6900.py --m 7 --jet-offset 1
+python3 .experiments/f101_small_matched_connector_scaling_6900.py --m 8 --jet-offset 1 --offset-errors
+python3 .experiments/full187_centered_three_companion_legality_6900.py
 ```
 
 Observed exact receipts before this note was written:
@@ -276,6 +293,9 @@ m5 offset canonical       5ae6bc8b2c03a4e5d1fe0118bc8b8b06fcab6260a5d547c0370a41
 m6 offset canonical       37893a7a4fd298a13ecb88ac219c72afb36430b852bc1184014600ef9f2d45d3
 small m7 canonical        fffdf5ac5c2d144e3c748bac5e54b7ae6daeec4adbc086cc52a7b9383025b4c0
 small m8 canonical        d42900a36f42abf2c542d863ba4df030994086da17be77c7434bfe16ccd5e334
+small offset m7 canonical fdb61c88b4461527ff962550d31d26598a46607e4b03c54c990a94923d85b34a
+small offset m8 canonical 2936772077e2e1e0dd40d1502b6ad38827d5f6b0881676d1cde76326c905811e
+target width canonical    f918c4b693ffdc1169b91c0810cf51a92c5045ddddd1b84982dacb996080b75e
 ```
 
 Peak RSS was 87 MiB for the detailed m=4 connector, 185 MiB for m=5, 376 MiB
