@@ -20,11 +20,41 @@ namespace ProximityPrize.SubmissionLower.K0CriticalCurvatureBadnessEndpoint6900
 open ProximityPrize.Benchmark
 open BadRowSecondInterpolatorUniqueness6900
 open PeriodTwoSecondDerivativeZeroCount6900
+open Polynomial
 
 noncomputable section
 
 set_option autoImplicit false
 set_option Elab.async false
+
+/-- The unique degree-below-cardinality interpolant of the received
+direction on an exact agreement stratum. -/
+def directionInterpolant
+    {I K : Type*} [Fintype I] [DecidableEq I] [Field K]
+    (domain : I ↪ K) (U : Fin 2 → I → K) : Polynomial K :=
+  Lagrange.interpolate Finset.univ domain (U 1)
+
+theorem directionInterpolant_eval
+    {I K : Type*} [Fintype I] [DecidableEq I] [Field K]
+    (domain : I ↪ K) (U : Fin 2 → I → K) (i : I) :
+    (directionInterpolant domain U).eval (domain i) = U 1 i := by
+  simpa only [directionInterpolant] using
+    (Lagrange.eval_interpolate_at_node
+      (U 1) domain.injective.injOn (Finset.mem_univ i))
+
+theorem directionInterpolant_natDegree_lt_card
+    {I K : Type*} [Fintype I] [Nonempty I] [DecidableEq I] [Field K]
+    (domain : I ↪ K) (U : Fin 2 → I → K) :
+    (directionInterpolant domain U).natDegree < Fintype.card I := by
+  have hdegree : (directionInterpolant domain U).degree <
+      (Fintype.card I : WithBot Nat) := by
+    simpa only [directionInterpolant, Finset.card_univ] using
+      (Lagrange.degree_interpolate_lt
+        (s := (Finset.univ : Finset I))
+        (v := (domain : I → K)) (r := U 1) domain.injective.injOn)
+  by_cases hzero : directionInterpolant domain U = 0
+  · simp [hzero]
+  · exact (Polynomial.natDegree_lt_iff_degree_lt hzero).2 hdegree
 
 /-- Any polynomial which interpolates the received direction on a bad
 agreement set has nonzero second derivative, provided its degree is below
@@ -56,6 +86,35 @@ theorem bad_direction_interpolant_second_derivative_ne_zero
       simpa using hQ i hi
     · exact hbad
   simpa using hone
+
+/-- Exact-stratum specialization: the canonical agreement-direction
+interpolant automatically has degree below the characteristic, and badness
+forces its second derivative to be nonzero. -/
+theorem canonical_direction_second_derivative_ne_zero
+    {I K : Type} [Fintype I] [Nonempty I] [DecidableEq I]
+    [Field K] [Fintype K] [DecidableEq K] [CharP K 2130706433]
+    (domain : I ↪ K) (w : Nat) (U : Fin 2 → I → K)
+    (gamma : K) (P : Polynomial K)
+    (hw : 1 ≤ w)
+    (hcard : Fintype.card I < 2130706433)
+    (hPdegree : P.natDegree ≤ w)
+    (hP : ∀ i : I,
+      P.eval (domain i) = U 0 i + gamma * U 1 i)
+    (hbad : ∃ j : Fin 2,
+      LinearCode.projectedWord (U j) Finset.univ ∉
+        LinearCode.projectedCodeSubmod
+          (ReedSolomon.code domain (w + 1)) Finset.univ) :
+    (directionInterpolant domain U).derivative.derivative ≠ 0 := by
+  apply bad_direction_interpolant_second_derivative_ne_zero
+    domain w U Finset.univ gamma P (directionInterpolant domain U)
+  · exact hw
+  · exact hPdegree
+  · exact (directionInterpolant_natDegree_lt_card domain U).trans hcard
+  · intro i _hi
+    exact hP i
+  · intro i _hi
+    exact directionInterpolant_eval domain U i
+  · exact hbad
 
 /-- Over a field, a scalar multiple of a nonzero polynomial can vanish only
 when the scalar vanishes. -/
@@ -97,6 +156,8 @@ theorem curvature_scalar_eq_zero_of_bad_direction_relation
   · exact hcritical
 
 #print axioms bad_direction_interpolant_second_derivative_ne_zero
+#print axioms directionInterpolant_natDegree_lt_card
+#print axioms canonical_direction_second_derivative_ne_zero
 #print axioms scalar_eq_zero_of_smul_polynomial_eq_zero
 #print axioms curvature_scalar_eq_zero_of_bad_direction_relation
 
