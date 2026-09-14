@@ -33,6 +33,22 @@ def normalOnContactKernel
     LinearMap.ker contact →ₗ[K] Boundary :=
   boundary.domRestrict (LinearMap.ker contact)
 
+/-- Normal surjectivity is monotone under enlarging the source.  Consequently,
+a proved rank-four theorem on the literal raw `{1,R,S}` subspace remains true
+when the higher derivative layers needed for source capacity are restored. -/
+theorem normal_surjective_mono_submodule
+    (contact : Source →ₗ[K] Contact) (boundary : Source →ₗ[K] Boundary)
+    (small : Submodule K Source)
+    (hsmall : Function.Surjective
+      (normalOnContactKernel
+        (contact.domRestrict small) (boundary.domRestrict small))) :
+    Function.Surjective (normalOnContactKernel contact boundary) := by
+  intro boundaryValue
+  obtain ⟨smallKernel, hvalue⟩ := hsmall boundaryValue
+  refine ⟨⟨smallKernel.1.1, ?_⟩, ?_⟩
+  · exact smallKernel.2
+  · simpa [normalOnContactKernel] using hvalue
+
 /-- Dual-zero implies surjectivity of the normal map, without choosing a
 contact rank or pivot basis. -/
 theorem normal_surjective_of_compatible_dual_zero
@@ -237,6 +253,7 @@ theorem target_y48_two_band_error_only_capacity_red :
   norm_num
 
 #print axioms normal_surjective_of_compatible_dual_zero
+#print axioms normal_surjective_mono_submodule
 #print axioms compatible_dual_zero_of_packet_line_and_kernel_killer
 #print axioms compatible_dual_zero_of_packet_line_and_relative_killer
 #print axioms normal_surjective_of_packet_line_and_relative_killer
