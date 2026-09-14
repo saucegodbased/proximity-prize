@@ -184,22 +184,44 @@ complete-source legality does not depend on the safe103 theorem. Abstractly
 its derivative shape `(0,0)` is of course one of the conservative103 shapes.
 
 The m=6 finite connector additionally uses raw shape `(1,0)`, also in
-conservative103, but a naive centered companion
+conservative103. For a completely arbitrary `Q` of degree `g-1`, a naive
+centered companion
 
 ```text
 R (Y-QZ)^60 Z^22
 ```
 
-is not target source-legal. Its `f=0` term has cost
+need not be source-legal. Its `f=0` term can have cost
 
 ```text
 60(g-1) + (w-1) = D + 131010,
 ```
 
 which exceeds the largest admitted cost `D-1` by 131,011. The analogous `S`
-companion exceeds it by 131,010. A target connector must therefore use the
-literal shape-dependent X taper or a coupled Schur/Wronskian cancellation;
-the small-control centered `R/S` formulas cannot be copied verbatim.
+companion can exceed it by 131,010.
+
+That worst-case warning does **not** apply to the intended retained-bad
+direction `Q=Xi_E^2`. Here `e=N-g=81731`, hence
+
+```text
+deg Q = 2e = 163462,
+g-deg Q = 16951,
+deg Q-w = 32391.
+```
+
+For `R^r S^s (Y-QZ)^60 Z^(23-r-s)`, the exact width gap at centered layer
+`f` is at least
+
+```text
+60*(g-deg Q) + f*(deg Q-w) - (w-1)r - (w-2)s.
+```
+
+It is minimized at `f=0`. For `(r,s)=(1,0)` the gap is 885,990, giving
+strict integer slack 885,989; for `(0,1)` it is one larger. Thus the honest
+centered first-slope and first-curvature companions are target source-legal
+for `Xi_E^2`. More generally this crude degree bound admits `r+s<=7` (subject
+to the actual derivative caps). Only an arbitrary-degree-Q theorem needs a
+taper or a coupled cancellation.
 
 ## Scaling discriminator
 
@@ -246,7 +268,7 @@ Do not try to prove that one pure centered shell universally maps to the four
 normals. The exact next target is a shape-tapered connecting statement:
 
 > modulo the complete grade-82 prefix, the coefficientwise images of the
-> legal raw `(0,0)` and `(1,0)` first-shell groups contain the four exact
+> legal centered/raw `(0,0)` and `(1,0)` first-shell groups contain the four exact
 > `F0,F1,F2,F3` residues, with a determinant whose leading term survives the
 > Full187 strict X windows.
 
