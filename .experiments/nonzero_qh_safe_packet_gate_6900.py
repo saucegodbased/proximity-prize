@@ -101,8 +101,14 @@ def add_scaled(target, source, scalar, prime):
             target.pop(row, None)
 
 
-def run_control(perturb_error_values: bool = False):
-    case = CONTROL
+def run_control(perturb_error_values: bool = False,
+                augmentation: str = "restricted"):
+    case = dict(CONTROL)
+    if augmentation == "raw_YRS_shell":
+        # Keep J fixed and expose only the next combined-grade connector in
+        # the three predeclared raw derivative groups.  The remaining L+1
+        # shell shapes are deliberately absent.
+        case["L"] += 1
     prime = case["prime"]
     S.PRIME = prime
     n, w, g = case["n"], case["w"], case["g"]
@@ -111,27 +117,52 @@ def run_control(perturb_error_values: bool = False):
     required_margin = n - g
 
     ledger = A.dimension_ledger(case, required_margin)
-    safe, unsafe, _ = A.safe_polytope(case, required_margin)
-    assert ledger["terminal_shape_count_safe_unsafe"] == (9, 8, 1)
+    base_ledger = A.dimension_ledger(CONTROL, required_margin)
+    safe, unsafe, _ = A.safe_polytope(CONTROL, required_margin)
+    assert base_ledger["terminal_shape_count_safe_unsafe"] == (9, 8, 1)
     assert safe == (
         (0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
         (0, 1), (1, 1), (2, 1),
     )
     assert unsafe == ((3, 1),)
-    assert ledger["full_euler_surplus"] == 54
-    assert ledger["restricted_euler_surplus"] == 5
-    assert ledger["restricted_surplus_after_four_boundary_rows"] == 1
+    assert base_ledger["full_euler_surplus"] == 54
+    assert base_ledger["restricted_euler_surplus"] == 5
+    assert base_ledger["restricted_surplus_after_four_boundary_rows"] == 1
 
     all_monomials = S.support(w, D, q, t, J, L)
 
     def retained(monomial):
         _xp, y, r, s, z = monomial
-        terminal_last_shell = y + r + s == J and y + r + s + z == L
-        return not (terminal_last_shell and (r, s) in unsafe)
+        active_grade = y + r + s
+        total_grade = active_grade + z
+        terminal_last_shell = (
+            active_grade == CONTROL["J"]
+            and total_grade == CONTROL["L"])
+        deleted_unsafe = terminal_last_shell and (r, s) in unsafe
+        if augmentation == "restore_unsafe_terminal":
+            return True
+        if total_grade <= CONTROL["L"]:
+            return not deleted_unsafe
+        if augmentation == "raw_YRS_shell":
+            return (total_grade == CONTROL["L"] + 1
+                    and (r, s) in {(0, 0), (1, 0), (0, 1)})
+        return False
 
     monomials = tuple(x for x in all_monomials if retained(x))
-    assert len(all_monomials) - len(monomials) == ledger[
-        "safe_unsafe_terminal_width"][1]
+    if augmentation == "restricted":
+        assert len(monomials) == base_ledger[
+            "restricted_source_dimension"]
+    elif augmentation == "restore_unsafe_terminal":
+        assert len(monomials) == base_ledger[
+            "full_source_one_node_contact_all_node_contact"][0]
+    else:
+        connector_count = sum(
+            1 for xp, y, r, s, z in all_monomials
+            if y + r + s + z == CONTROL["L"] + 1
+            and (r, s) in {(0, 0), (1, 0), (0, 1)})
+        assert connector_count == 999
+        assert len(monomials) == base_ledger[
+            "restricted_source_dimension"] + connector_count
 
     # Nonzero nodes mirror the target NTT domain's exclusion of X=0.
     nodes = tuple(range(1, n + 1))
@@ -278,17 +309,20 @@ def run_control(perturb_error_values: bool = False):
 
     return {
         "predeclared_parameters": case,
+        "source_augmentation": augmentation,
         "nodes_are_nonzero": all(nodes),
         "nodes_agreements_errors_anchors": (
             nodes, agreement, errors, anchors),
         "safe_terminal_shapes": safe,
         "unsafe_terminal_shapes": unsafe,
         "unsafe_terminal_width": ledger["safe_unsafe_terminal_width"][1],
-        "full_restricted_after_four_surpluses": (
-            ledger["full_euler_surplus"],
-            ledger["restricted_euler_surplus"],
-            ledger["restricted_surplus_after_four_boundary_rows"],
+        "base_full_restricted_after_four_surpluses": (
+            base_ledger["full_euler_surplus"],
+            base_ledger["restricted_euler_surplus"],
+            base_ledger["restricted_surplus_after_four_boundary_rows"],
         ),
+        "selected_source_minus_contact_and_after_four": (
+            len(monomials) - len(rows), len(monomials) - len(rows) - 4),
         "q_H_coefficients": Q_H,
         "q_H_is_nonzero_and_nonconstant": Q_H != () and len(Q_H) > 1,
         "Q_G_coefficients": direction_polynomial,
@@ -324,7 +358,12 @@ def run_control(perturb_error_values: bool = False):
 
 def main():
     perturb = "--offset-errors" in sys.argv
-    result = run_control(perturb_error_values=perturb)
+    augmentation = ("restore_unsafe_terminal"
+                    if "--restore-unsafe" in sys.argv else "restricted")
+    if "--raw-yrs-shell" in sys.argv:
+        augmentation = "raw_YRS_shell"
+    result = run_control(
+        perturb_error_values=perturb, augmentation=augmentation)
     result["decision"] = (
         "GREEN" if result["fraction_field_CS4_green"]
         and result["direct_coefficientwise_four_packet_green"] else "RED")

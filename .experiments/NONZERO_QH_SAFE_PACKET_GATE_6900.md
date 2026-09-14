@@ -182,6 +182,27 @@ question is which omitted terminal/lower-grade connector restores the four
 packets; one should not begin formalizing packet-preserving confluence until
 that missing direction is identified.
 
+### Bounded augmentation screen
+
+Two predeclared augmentations were tested against the same offset-error
+matrix.  Here `weak rank` is the boundary rank on the complete-contact kernel
+over `F_1009(X)`.
+
+| source | columns / contact rows | contact rank / nullity | weak rank | coefficient image rank | packet defects / joint |
+|---|---:|---:|---:|---:|---:|
+| safe restricted | 5711 / 5706 | 5602 / 109 | 3 | 5 | `(1,1,1,1)` / 4 |
+| restore all 49 unsafe `(3,1)` columns | 5760 / 5706 | 5651 / 109 | 3 | 5 | `(1,1,1,1)` / 4 |
+| add next raw `{00,10,01}` shell groups | 6710 / 7524 | 6548 / 162 | 3 | 15 | `(0,1,1,1)` / 3 |
+
+The unsafe face is contact-injective modulo the restricted source and adds no
+kernel connector.  The raw triple supplies exactly the `F0` class but not
+`F1,F2,F3`.  This chamber is under-scaled: `J=5<m=6`, so it omits part of the
+full centered multiplicity-six head.  Accordingly this last red row is a
+diagnosis of the small chamber, not a target-scaled falsification.  The
+separate `J=8` maximal-degree control in
+`F101_M6_HIGHDEGREE_Q_RAW_SHELL_GATE_6900.md` is the relevant connector test
+and is green exactly when all three raw groups are combined.
+
 ## 6. Reproduction
 
 ```text
@@ -192,6 +213,16 @@ prlimit --as=4294967296 --cpu=900 -- \
 prlimit --as=4294967296 --cpu=900 -- \
   python3 -B \
   .experiments/nonzero_qh_safe_packet_gate_6900.py --offset-errors
+
+prlimit --as=4294967296 --cpu=900 -- \
+  python3 -B \
+  .experiments/nonzero_qh_safe_packet_gate_6900.py \
+  --offset-errors --restore-unsafe
+
+prlimit --as=4294967296 --cpu=900 -- \
+  python3 -B \
+  .experiments/nonzero_qh_safe_packet_gate_6900.py \
+  --offset-errors --raw-yrs-shell
 ```
 
 The run uses no `decide`, `native_decide`, production module, or submission
