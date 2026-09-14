@@ -224,7 +224,28 @@ strongest finite evidence here that the safe-103 restriction is compatible
 with the target-specific four-packet theorem and that a blanket theorem is
 both unnecessary and structurally wrong.
 
-## 4. Scope and next decisive gate
+## 4. Canonical witness extraction: STOP for formula mining
+
+The exact tight solve can set all free boundary-preimage variables to zero
+and lift the resulting coefficients through the complete-contact kernel.  It
+checks both equations again after constructing these representatives.  This
+produces valid witnesses, but **not sparse carrier formulas**:
+
+```text
+packet                     F0    F1    F2    F3
+distinct (Y,R,S,Z) shapes  44    51    79    43
+nonzero coefficients     2853  3239  4865  2781
+```
+
+Every representative spans total grades 1 through 5.  In this RREF
+orientation, `F0,F1,F3` use only `S=0` shapes while `F2` also uses the
+`S=1` strip, but all four are otherwise broad.  Since this support depends on
+pivot orientation, it is evidence against reading a formula from a canonical
+dense solve, not a theorem that no sparse formula exists.  A structural
+follow-up must ablate grades or compute terminal connecting classes modulo the
+lower-grade kernel; the raw witnesses should remain rank evidence only.
+
+## 5. Scope and next decisive gate
 
 The three retained-bad controls show that the strong safe-terminal
 restriction and the exact fourth packet are mutually compatible.  They do
@@ -242,7 +263,7 @@ where `|H|=w+1` and `q_H` interpolates `u1` on `H`.  Zero-containing toy
 domains are not admissible negative evidence for the target's residual-`Z`
 mechanism.
 
-## 5. Reproduction
+## 6. Reproduction
 
 ```text
 prlimit --as=4294967296 --cpu=900 -- \
@@ -252,3 +273,13 @@ prlimit --as=4294967296 --cpu=900 -- \
 
 Peak RSS stays below the 4 GiB process cap.  The computation uses no
 `decide`, `native_decide`, production module, or submission artifact.
+
+To reproduce the dense canonical witness support for the predeclared tight
+case alone:
+
+```text
+prlimit --as=4294967296 --cpu=900 -- \
+  python3 -B \
+  .experiments/safe_terminal_subsource_surjectivity_audit_6900.py \
+  --tight-witness
+```

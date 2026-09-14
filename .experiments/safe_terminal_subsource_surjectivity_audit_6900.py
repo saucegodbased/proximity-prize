@@ -301,6 +301,56 @@ def horizontal_concat(left: nmod_mat, right: nmod_mat,
     ], prime)
 
 
+def canonical_column_preimages(image: nmod_mat, targets: nmod_mat,
+                               prime: int) -> nmod_mat:
+    """Set free variables to zero in an exact RREF solve image*x=targets."""
+    augmented = horizontal_concat(image, targets, prime)
+    reduced, augmented_rank = augmented.rref()
+    image_rank = image.rank()
+    assert augmented_rank == image_rank
+    solution = nmod_mat(image.ncols(), targets.ncols(), prime)
+    for row in range(augmented_rank):
+        pivot = next((column for column in range(image.ncols())
+                      if int(reduced[row, column])), None)
+        assert pivot is not None
+        assert int(reduced[row, pivot]) == 1
+        for rhs in range(targets.ncols()):
+            solution[pivot, rhs] = int(
+                reduced[row, image.ncols() + rhs]) % prime
+    assert image * solution == targets
+    return solution
+
+
+def representative_shape_summary(monomials, representatives: nmod_mat):
+    answer = []
+    for packet in range(representatives.ncols()):
+        groups = {}
+        for row, monomial in enumerate(monomials):
+            coefficient = int(representatives[row, packet])
+            if not coefficient:
+                continue
+            xp, y, r, s, z = monomial
+            groups.setdefault((y, r, s, z), []).append((xp, coefficient))
+        ordered = tuple(sorted(
+            ((shape, len(entries), min(x for x, _ in entries),
+              max(x for x, _ in entries))
+             for shape, entries in groups.items()),
+            key=lambda item: (sum(item[0]), item[0])))
+        grade_counts = {}
+        for shape, count, _lo, _hi in ordered:
+            y, r, s, z = shape
+            grade_counts[(y + r + s, y + r + s + z)] = (
+                grade_counts.get((y + r + s, y + r + s + z), 0) + count)
+        answer.append({
+            "coefficient_support_size": sum(len(v) for v in groups.values()),
+            "carrier_shape_count": len(groups),
+            "coefficient_count_by_active_total_grade": tuple(sorted(
+                (grade, count) for grade, count in grade_counts.items())),
+            "carrier_shapes_with_x_support_ranges": ordered,
+        })
+    return tuple(answer)
+
+
 def pivot_columns_of_rref(matrix: nmod_mat):
     reduced, rank = matrix.rref()
     pivots = []
@@ -375,7 +425,8 @@ def exact_four_normals(case, agreement, anchors, direction):
     }
 
 
-def literal_control(direction: str, case=None):
+def literal_control(direction: str, case=None,
+                    include_witness_structure: bool = False):
     case = CONTROL if case is None else case
     prime = case["prime"]
     S.PRIME = prime
@@ -552,6 +603,15 @@ def literal_control(direction: str, case=None):
             "joint_coefficientwise_defect": joint_defect,
             "all_four_coefficientwise_contained": joint_defect == 0,
         }
+        if include_witness_structure:
+            preimages = canonical_column_preimages(
+                coefficient_image, target_matrix, prime)
+            representatives = kernel * preimages
+            assert boundary * representatives == target_matrix
+            assert contact * representatives == nmod_mat(
+                contact.nrows(), 4, prime)
+            coefficientwise_packet_gate["canonical_witness_structure"] = (
+                representative_shape_summary(monomials, representatives))
 
     return {
         "direction": direction,
@@ -608,6 +668,17 @@ def target_ledger():
 
 
 def main() -> None:
+    if "--tight-witness" in sys.argv:
+        tight = literal_control(
+            "retained_bad", TIGHT_CONTROL, include_witness_structure=True)
+        print(json.dumps({
+            "tight_control_parameters": TIGHT_CONTROL,
+            "canonical_witness_structure": tight[
+                "exact_four_packet_coefficientwise_gate"][
+                    "canonical_witness_structure"],
+        }, indent=2, sort_keys=True))
+        return
+
     target = target_ledger()
     control_ledger = dimension_ledger(
         CONTROL, required_margin=CONTROL["n"] - CONTROL["g"])
