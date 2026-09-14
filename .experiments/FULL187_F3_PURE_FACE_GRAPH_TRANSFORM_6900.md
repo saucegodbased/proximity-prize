@@ -37,6 +37,21 @@ is 122,266,337 against 149,567,730 error conditions.  With `A_1=B` fixed,
 the correction space has dimension 122,216,995, so the exact codomain deficit
 is 27,350,735.
 
+There is also a canonical legal agreement-only section with the prescribed
+boundary, which removes any ambiguity about the affine target:
+
+```text
+K0 = -Rloc^60 Y (Y-H)^59,
+F0 = G^-60 K0(GV) = -Rloc V (Rloc V-1)^59.
+```
+
+Its `Y^1` coefficient is exactly `H^59 Rloc^60=B`.  At `H`-nodes it
+specializes to `-Rloc^60 Y^60`, while at the other agreement nodes the factor
+`Rloc^60` supplies order 60.  In lane `n`, both the original and transformed
+coefficient have exactly `n` units of strict degree slack.  Thus the remaining
+question is precisely whether a legal, zero-linear-boundary agreement-kernel
+correction can move this explicit `F0` into `(E,V-A)^60`.
+
 The first attractive scalar-dual shortcut is now rigorously **STOPPED**.  If
 `P(t)` has degree `d`, Euler/Hasse combination of the graph conditions gives
 
@@ -77,6 +92,47 @@ orders not settled by dimension/root counting are exactly surjective on the
 literal target.  This is strong evidence that the scalar-Euler route is the
 wrong dual compression; the next computation must keep multiple Hasse rows
 coupled.
+
+The first such coupled gate is now frozen exactly.  Take
+
+```text
+P18(t) = product_(n=30)^71 (t-n),
+P17(t) = (t-29) P18(t),
+```
+
+and retain the three legal correction lanes
+
+```text
+A2  = G^58 q,   deg q <   98,684,
+A72 = a,        deg a < 1,387,668,
+A29 = G^31 r,   deg r < 1,430,918.
+```
+
+After nonzero row normalization, the `E^17,E^18` congruences have coefficient
+rows `(-27,43,0)` and `(1,1,1)` on `(q,a,r)`.  Their `q,a` determinant is
+`-70`, nonzero in the target field.  The primal restricted map has 2,917,270
+variables and 2,860,585 rows, hence surplus 56,685.
+
+Residue pairing reduces its left kernel without a dense matrix.  Put
+`M=E^18`.  Every candidate dual is uniquely parameterized by
+
+```text
+r0 in W_40240,  z in W_1759,
+y  = G^-31 r0 mod M,
+gA = (y mod E) + E z,
+gQ = (70 y - 27 gA)/43.
+```
+
+The only remaining condition is
+
+```text
+deg (G^58 gQ mod E^18) < 1,372,474,
+```
+
+i.e. 98,684 terminal coefficients vanish.  This is an exact structured map
+from 41,999 variables to 98,684 equations; its equation surplus is again
+56,685.  Injectivity of this small two-series/PM-basis gate is the next
+decisive computation.  No claim of injectivity is made yet.
 
 In particular, the apparent 24-component shortcut
 

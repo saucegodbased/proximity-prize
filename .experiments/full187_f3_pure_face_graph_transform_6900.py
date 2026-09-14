@@ -16,7 +16,7 @@ formula G^{-1}=N^{-1}*X*E' modulo E.
 from __future__ import annotations
 
 from collections import Counter
-from math import prod
+from math import comb, prod
 import hashlib
 import json
 from pathlib import Path
@@ -93,6 +93,49 @@ def exact_dimension_receipt():
             "error_minus_correction_deficit": (
                 error_conditions - residual_corrections),
         },
+    }
+
+
+def canonical_agreement_section_receipt():
+    """Check the explicit legal section with the prescribed Y-linear term.
+
+    K0=-R^60*Y*(Y-H)^59 already has agreement contact order 60.
+    After Y=G*V and division by G^60 it is
+    F0=-R*V*(R*V-1)^59.  Its coefficient in every occupied lane n has
+    exactly n units of strict degree slack in either coordinate system.
+    """
+    rows = []
+    for n in range(1, M + 1):
+        original_degree = (M - n) * H_DEG + M * R_DEG
+        graph_degree = n * R_DEG
+        original_slack = raw_width(n) - original_degree
+        graph_slack = n * A_WEIGHT - graph_degree
+        binomial = comb(M - 1, n - 1) % P
+        assert binomial != 0
+        assert original_slack == graph_slack == n
+        rows.append((
+            n, original_degree, raw_width(n), original_slack,
+            graph_degree, n * A_WEIGHT, graph_slack, binomial,
+        ))
+
+    assert rows[0][:7] == (
+        1, 10_693_708, 10_693_709, 1, 49_341, 49_342, 1)
+    assert rows[-1][:7] == (
+        60, 2_960_460, 2_960_520, 60,
+        2_960_460, 2_960_520, 60)
+    return {
+        "original_section": "K0=-Rloc^60*Y*(Y-H)^59",
+        "graph_section": "F0=-Rloc*V*(Rloc*V-1)^59",
+        "Y_linear_coefficient": "H^59*Rloc^60=G^59*Rloc=B",
+        "agreement_contact": (
+            "at H, K0=-Rloc^60*Y^60; at Rloc, the factor Rloc^60 "
+            "has order 60"),
+        "lane_degree_width_slack_and_binomial_mod_p": tuple(rows),
+        "uniform_exact_slack": "lane n has strict slack n",
+        "role": (
+            "fixed legal agreement-only section; membership asks whether "
+            "a zero-linear-boundary agreement-kernel correction moves F0 "
+            "into (E,V-A)^60"),
     }
 
 
@@ -298,11 +341,91 @@ def scalar_euler_projection_gate():
     }
 
 
+def coupled_k17_k18_dual_spec():
+    """Freeze the smallest genuinely coupled vector-dual kernel exactly.
+
+    Use P18=prod_(30..71)(t-n) and P17=(t-29)P18.  Restrict the primal
+    to the three legal lanes A2=G^58*q, A72=a, A29=G^31*r.  The two
+    normalized congruence rows have coefficient matrix
+
+      k17: (-27, 43, 0),   k18: (1, 1, 1).
+
+    Residue pairing, and embedding a dual modulo E^17 into E^18 by
+    multiplication by E, reduce the full left-dual question to a structured
+    linear map on only 41,999 coefficients.  This function records the exact
+    map and dimensions; injectivity remains the next PM-basis computation.
+    """
+    m17 = 17 * E_DEG
+    m18 = 18 * E_DEG
+    q_width = transformed_free_width(2)
+    a_width = transformed_free_width(72)
+    r_width = transformed_free_width(29)
+    assert (m17, m18) == (1_389_427, 1_471_158)
+    assert (q_width, a_width, r_width) == (
+        98_684, 1_387_668, 1_430_918)
+
+    # Annihilator windows under <f,g>=[X^(m-1)](fg mod modulus).
+    a_dual_window = m18 - a_width
+    q_remainder_window = m18 - q_width
+    r_remainder_window = m18 - r_width
+    lift_kernel_window = a_dual_window - E_DEG
+    assert (a_dual_window, q_remainder_window,
+            r_remainder_window, lift_kernel_window) == (
+                83_490, 1_372_474, 40_240, 1_759)
+
+    # Let x=E*g17 and y=g18.  The paired lane equations are
+    # gA=43*x+y and gQ=-27*x+y, hence gA-gQ=70*x is divisible by E.
+    # Conversely, choose y=G^-31*r0 mod E^18 with deg r0<40240 and
+    # gA=(y mod E)+E*z with deg z<1759.  Then
+    # gQ=(70*y-27*gA)/43.  Only the high 98684 coefficients of
+    # G^58*gQ mod E^18 remain to be forced to zero.
+    reduced_variables = r_remainder_window + lift_kernel_window
+    reduced_equations = q_width
+    primal_variables = q_width + a_width + r_width
+    primal_rows = m17 + m18
+    assert reduced_variables == 41_999
+    assert reduced_equations == 98_684
+    assert primal_variables == 2_917_270
+    assert primal_rows == 2_860_585
+    assert reduced_equations - reduced_variables == (
+        primal_variables - primal_rows) == 56_685
+    assert (-27 * 1 - 43 * 1) % P == (-70) % P != 0
+
+    return {
+        "Euler_polynomials": {
+            "P18": "product_(n=30)^71 (t-n), degree 42, modulus E^18",
+            "P17": "(t-29)*P18, degree 43, modulus E^17",
+        },
+        "three_primal_lanes": (
+            "A2=G^58*q, deg q<98684",
+            "A72=a, deg a<1387668",
+            "A29=G^31*r, deg r<1430918",
+        ),
+        "normalized_rows_q_a_r": ((-27, 43, 0), (1, 1, 1)),
+        "q_a_minor_determinant": -70,
+        "primal_variables_rows_surplus": (
+            primal_variables, primal_rows, primal_variables - primal_rows),
+        "dual_parameterization": (
+            "M=E^18; choose r0 in W_40240 and z in W_1759; "
+            "y=G^-31*r0 mod M; gA=(y mod E)+E*z; "
+            "gQ=(70*y-27*gA)/43"),
+        "remaining_equations": (
+            "deg(G^58*gQ mod E^18)<1372474, i.e. its final 98684 "
+            "coefficients vanish"),
+        "reduced_variables_equations_defect": (
+            reduced_variables, reduced_equations,
+            reduced_equations - reduced_variables),
+        "status": "OPEN_EXACT_41999_BY_98684_STRUCTURED_INJECTIVITY_GATE",
+    }
+
+
 def main():
     dimensions = exact_dimension_receipt()
+    agreement_section = canonical_agreement_section_receipt()
     instance = T.build_target_instance()
     locators, g, e = locator_and_inverse_receipt(instance)
     scalar_gate = scalar_euler_projection_gate()
+    coupled_spec = coupled_k17_k18_dual_spec()
     first_unsettled = tuple(
         first_unsettled_scalar_hankel_gate(g, e, k) for k in (17, 18))
     stable = {
@@ -333,9 +456,11 @@ def main():
                 "already (E,GV-1)=(E,V-(N^-1 X E' mod E))"),
         },
         "dimensions": dimensions,
+        "canonical_agreement_only_section": agreement_section,
         "exact_locator_checks": locators,
         "scalar_euler_projection_gate": scalar_gate,
         "first_unsettled_scalar_exact_hankel_gates": first_unsettled,
+        "first_genuine_coupled_vector_gate": coupled_spec,
         "decision": (
             "GREEN_EXACT_PURE_FACE_GRAPH_COMPRESSION__"
             "GREEN_SCALAR_EULER_PROJECTIONS_THROUGH_K18__"
