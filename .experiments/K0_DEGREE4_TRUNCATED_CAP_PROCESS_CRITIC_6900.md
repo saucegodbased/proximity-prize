@@ -114,6 +114,12 @@ four: gains 1--3 first arise in the `R^2` stage and gain 4 in `R^3`; the final
 3--4 in raw `S`, before `R^2`. Thus one additional passive layer repairs the
 L10 obstruction, while the terminal top shell is not the causal minimum.
 
+A disjoint ablation resolves the cause more sharply. Adding only the 101 new
+active-11, seed-zero columns to L10 leaves gain three, while adding only the
+other 1,860 passive-reach columns gives rank 12,321 and gain four, exactly the
+full L11 contact rank and normal gain. The new active face is neither
+sufficient nor necessary; passive reach is sufficient.
+
 The degree-five replay at L10 also reaches gain four. Together the results
 show that both tangent degree and passive support matter, but falsify a naive
 need for passive seed depth `deg Q`: degree-four badness closes already at

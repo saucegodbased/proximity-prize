@@ -164,6 +164,49 @@ tangent badness is detected with passive seeds at most two once the one-layer
 scaffold is present. What must be globalized is a rank-adaptive passive-layer
 connection, not a seed tower reaching the tangent polynomial's degree.
 
+### Exact active-face versus passive-reach ablation
+
+The 1,961 columns added from L10 to L11 split disjointly into:
+
+```text
+101  new active-total=11, z=0 face columns;
+1860 extensions of the passive seed reach on existing active shapes.
+```
+
+Adjoining each part separately to the complete L10 source gives:
+
+```text
+addition                 columns   contact rank   nullity   gain
+active11,z0 only          11,279        10,962       317      3
+other passive reach only  13,038        12,321       717      4
+complete L11              13,139        12,321       818      4
+```
+
+Every active-face column is independent modulo L10, so the active-only kernel
+and normal image are unchanged. Conversely, passive reach alone attains the
+same contact rank and gain as complete L11; after that scaffold is present,
+all 101 active-face columns add only kernel dimension. Therefore the causal
+verdict is exact: **passive reach is sufficient; the new active face is
+neither sufficient nor necessary.**
+
+In the passive-only order, the first relation whose last column is newly
+added is column 9,420, `X^25 Y^5 R^2 Z^4`, and it raises gain from zero to
+one. The fourth gain appears at column 10,394, `X^31 Y^2 R^3 Z`, with normal
+`(22,45,87,4)`. The last monomial was already L10-legal; its relation depends
+on the earlier passive scaffold. This is relation provenance, not a claim
+that either monomial works alone.
+
+```text
+active-only canonical
+  8ca8f013cc7429531e205fc41f14af64439365f9d066f826d52e5a328c52af47
+  runtime 342.348 s; peak RSS 2,453,936 KiB
+passive-only canonical
+  1a0961460552946d161c16c078bb33f5ac1006134f2db6467db66877adef1b1c
+  runtime 410.392 s; peak RSS 3,108,140 KiB
+ablation script SHA-256
+  f116bae257de2b63b72a246c2ef32b001b5d3787e1c464e125c89f53cf1ddc46
+```
+
 ## Controlled L12 full-face confirmation
 
 Holding the receipt fixed and restoring `L=U=12` gives:
@@ -229,6 +272,10 @@ python3 .experiments/k0_degree4_degree5_full_sr_attribution_6900.py \
 python3 .experiments/k0_degree4_degree5_full_sr_attribution_6900.py \
   --tangent-degree 5 --passive-cap 10 --receipt-passive-cap 10
 python3 .experiments/k0_degree4_function_field_audit_6900.py
+python3 .experiments/k0_l11_active_face_vs_passive_reach_6900.py \
+  --support-mode active11_z0
+python3 .experiments/k0_l11_active_face_vs_passive_reach_6900.py \
+  --support-mode other_l11
 ```
 
 The generalized cap-ladder script currently has SHA-256
