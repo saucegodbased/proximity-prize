@@ -26,11 +26,14 @@ alone are both injective. This is a two-dimensional staircase corner, not an
 isolated monomial or an arbitrary top layer.
 
 However, a second exact chamber shows that this statement needs an explicit
-capacity hypothesis. In a three-error m8/B3 control, even the complete
-two-seed critical cell plus the first newly legal mixed connector
-`S Y^(m-1) R` is contact-injective—but that profile's *complete* source is
-smaller than the published contact bound. Thus this is a capacity RED, not a
-target-relevant profile-universality falsifier.
+capacity scaffold. In a three-error m8/B3 control, even the complete two-seed
+critical cell plus the first newly legal mixed connector `S Y^(m-1) R` is
+contact-injective. After increasing the passive cap so that the complete
+source has positive surplus, the same low family is still injective, but the
+**complete legal source has a 268-dimensional contact kernel and boundary gain
+four**. Thus the higher layers genuinely rescue the normal map in this finite
+control; they cannot be discarded merely because the semantic endpoint is a
+raw-S curvature equation.
 
 The seed shift does **not** track the Newton quotient degree. A generic
 receipt with constant anchor quotient still needs the `z=1` companion, while
@@ -205,12 +208,22 @@ raw {1,R} + subcritical S + one adjacent critical pair
 forces lambdaS • Q'' = 0
 ```
 
-is finite-falsified without source capacity. The strongest honest target
-hypothesis left is a **capacity-aware** version: in the positive-surplus target
-profile, the complete legal R/S/mixed-derivative staircase (or a proved
-capacity-sufficient subfamily) must make the global transposed connection
-output `lambdaS • Q'' = 0`. No smaller capacity-aware universal raw family has
-yet been identified.
+is finite-falsified, including as a standalone family inside a
+capacity-positive ambient profile. The complete source passes the finite
+capacity-positive discriminator below. The strongest honest target hypothesis
+left is therefore the **universal full-source bridge**: for every target
+receipt satisfying retained badness, the complete legal
+R/S/mixed-derivative staircase must make the global transposed connection
+output `lambdaS • Q'' = 0` (equivalently, must separate every packet-compatible
+boundary covector). No smaller universal raw family has yet been identified.
+
+The rank-adaptive reduction itself is already formal and axiom-clean in
+`K0LineThenKill6900.lean`: theorem
+`normal_surjective_of_packet_separating_relative_family` permits an arbitrary
+packet-compatible dual dimension and reduces the result to any family of
+relative repairs that separates it. The missing theorem is the construction
+of those repairs from the *literal target-tapered full source*, not another
+fixed-corank linear-algebra lemma.
 
 The local nilpotent identity and two-seed legality remain valid ingredients,
 and the semantic `Q''` endpoint remains complete, but the missing bridge must
@@ -250,8 +263,8 @@ This time the ambient profile is capacity-positive, so the conclusion is
 target-relevant and precise: the low semantic family does not produce its own
 kernel even when the *full* source has surplus. Any proof must use the omitted
 higher layers as a **relative capacity scaffold**, then show the low critical
-cells act modulo that scaffold. This does not say the complete source fails;
-its normal rank is the next discriminator.
+cells act modulo that scaffold. The complete-source discriminator below is
+green.
 
 The low-memory exact matrix had 20,893 rows, ran in 270.8 seconds, and peaked
 at 4.09 GiB under a hard 7.5 GB cap. Canonical SHA-256:
@@ -260,9 +273,54 @@ at 4.09 GiB under a hard 7.5 GB cap. Canonical SHA-256:
 The complete-layer counts explain why isolated ablations are low-information:
 the omitted layers are 258 remaining S, 2,622 remaining SR, 2,640 R^2, and
 2,195 R^3 columns. Omitting even the smallest complete layer leaves only
-17,421 columns, eleven below the summed local bound 17,432. Nearly the entire
-source is intrinsically needed to obtain a dimension-forced kernel in this
-control.
+17,421 columns, eleven below the summed local bound 17,432. Thus a plain
+dimension argument cannot certify a kernel after dropping any complete shape
+group; this count alone does not prove that every group is algebraically
+essential.
+
+### Complete-source decisive finite GO
+
+On exactly the same capacity-positive trial-811 receipt, the complete legal
+source gives:
+
+```text
+matrix                         columns   exact rank   nullity
+contact                         17,679       17,411       268
+contact + four boundary rows    17,679       17,415       264
+
+boundary gain = 17,415 - 17,411 = 4.
+```
+
+The contact matrix has 23,720 rows; the augmented matrix has 23,724. The 268
+contact-kernel dimensions include 21 more than the 247 forced by the published
+local-bound surplus. Since appending boundary rows raises exact rank by four,
+the boundary map restricted to the contact kernel is surjective. This is an
+exact finite **GO** for the full-source relative-scaffold architecture: the
+low family has kernel dimension zero, while the omitted high layers restore a
+large kernel and all four normal directions.
+
+This is deliberately not a target theorem or a 6900 candidate. It is one
+deterministic receipt over `F_101`, not a proof for arbitrary fields, receipts,
+or the m47 target taper. It establishes that the full-source route survives
+the closest capacity-positive exact-chamber falsifier; the universal
+full-source bridge stated above remains the exact proof obligation.
+
+Both matrices were regenerated independently by the same deterministic
+two-pass script and reduced exactly with destructive Flint RREF under a hard
+7.5 GB address-space cap:
+
+```text
+contact:
+  canonical 3ebfbdb8b5583f4384e4bb1d862b96a440de9322b0329f71b736378d2c4cf8af
+  runtime 792.719 s; peak RSS 5,740,796 KiB
+
+augmented:
+  canonical 4cc1465cab2e6c01795573d9969acba36ef585ecc1998835f2cd8188cb8e200f
+  runtime 800.112 s; peak RSS 5,741,820 KiB
+
+script SHA-256:
+  34f9c98e89abcedd2cd8d545a87e5ad1fd74a92590419786795ec028ecfb3ee9
+```
 
 ## Reproduction
 
@@ -282,9 +340,13 @@ k0_second_exact_chamber_corrected_connector_gate_6900.py
 k0_second_exact_chamber_capacity_positive_gate_6900.py
   canonical 6db8246bfae90671f49969ad794aea8e245b2353c0acd5b69d81c87ad1cc8377
   runtime 270.8 s; peak RSS 4.09 GiB
+
+k0_second_exact_chamber_full_source_rank_gate_6900.py
+  --mode contact:   rank 17411; canonical 3ebfbdb8b5583f4384e4bb1d862b96a440de9322b0329f71b736378d2c4cf8af
+  --mode augmented: rank 17415; canonical 4cc1465cab2e6c01795573d9969acba36ef585ecc1998835f2cd8188cb8e200f
 ```
 
-Every run was deterministic. At most three finite matrices were live in the
-parallel robustness gate; aggregate RSS stayed below 4 GiB. No `decide`,
-`native_decide`, random parameter search, production file, or candidate was
-used.
+Every run was deterministic. The full-source modes were run sequentially and
+stayed below 5.5 GiB peak RSS; no other large matrix was live concurrently.
+No `decide`, `native_decide`, random parameter search, production file, or
+candidate was used.
