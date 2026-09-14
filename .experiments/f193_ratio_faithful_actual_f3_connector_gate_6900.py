@@ -182,7 +182,15 @@ def build_packet(case):
     }
 
 
-def analyze(progress_every, decisive_only, full_shell_only):
+def frozen_vector(vector):
+    return tuple(sorted(vector.items(), key=lambda item: repr(item[0])))
+
+
+def vector_hash(vector):
+    return hashlib.sha256(repr(frozen_vector(vector)).encode()).hexdigest()
+
+
+def analyze(progress_every, decisive_only, full_shell_only, scan_next_shell):
     n, w, g, m, degree, slope, curvature, jet, seed = CASE
     packet = build_packet(CASE)
     all_monomials = T.support(w, degree, slope, curvature, jet, seed)
@@ -215,9 +223,10 @@ def analyze(progress_every, decisive_only, full_shell_only):
         prefix_echelon.reduce(target) for target in packet["targets"])
     packet_rank = quotient_rank(target_residues)
 
-    if decisive_only or full_shell_only:
+    if decisive_only or full_shell_only or scan_next_shell:
         selected_shapes = (
-            shell_shapes if full_shell_only else ((0, 0), (1, 0)))
+            shell_shapes if (full_shell_only or scan_next_shell)
+            else ((0, 0), (1, 0)))
         selected_shell = tuple(
             monomial for monomial in shell
             if (monomial[2], monomial[3]) in selected_shapes
@@ -243,9 +252,115 @@ def analyze(progress_every, decisive_only, full_shell_only):
             tuple(int(bool(row)) for row in packet_after_shell),
             quotient_rank(packet_after_shell),
         )
+        survivor_receipt = None
+        next_shell_receipt = None
+        if scan_next_shell:
+            assert defects == ((1, 1, 1, 1), 4)
+            packet_echelon = BM.ColumnEchelon()
+            for index, survivor in enumerate(packet_after_shell):
+                packet_echelon.add(survivor, index)
+            assert packet_echelon.rank == 4
+            dual_coordinate_rows = tuple(packet_echelon.pivots)
+            assert len(dual_coordinate_rows) == 4
+            packet_coordinate_columns = tuple({
+                coordinate: survivor.get(row, 0)
+                for coordinate, row in enumerate(dual_coordinate_rows)
+                if survivor.get(row, 0)
+            } for survivor in packet_after_shell)
+            assert quotient_rank(packet_coordinate_columns) == 4
+            survivor_receipt = {
+                "support_sizes": tuple(map(len, packet_after_shell)),
+                "sha256_F0_F1_F2_F3": tuple(
+                    vector_hash(row) for row in packet_after_shell),
+                "exact_vectors_F0_F1_F2_F3": tuple(
+                    frozen_vector(row) for row in packet_after_shell),
+                "four_independent_quotient_coordinate_rows":
+                    dual_coordinate_rows,
+                "packet_coordinate_matrix_columns":
+                    tuple(frozen_vector(row)
+                          for row in packet_coordinate_columns),
+                "packet_coordinate_rank": 4,
+            }
+
+            next_grade = jet + 2
+            next_shell = tuple(
+                monomial for monomial in all_monomials
+                if sum(monomial[1:]) == next_grade)
+            next_shapes = tuple(sorted({
+                (monomial[2], monomial[3]) for monomial in next_shell
+            }))
+            assert next_shapes == shell_shapes
+            dual_columns = {shape: [] for shape in next_shapes}
+            started_next = time.monotonic()
+            for position, monomial in enumerate(next_shell, 1):
+                raw = coupled_column(
+                    monomial, packet["u0"], packet["u1"], m)
+                prefix_residue = prefix_echelon.reduce(raw)
+                residue = shell_echelon.reduce(prefix_residue)
+                channel = {
+                    coordinate: residue.get(row, 0)
+                    for coordinate, row in enumerate(dual_coordinate_rows)
+                    if residue.get(row, 0)
+                }
+                dual_columns[(monomial[2], monomial[3])].append(channel)
+                if progress_every and position % progress_every == 0:
+                    print(
+                        f"dual next shell {position}/{len(next_shell)} "
+                        f"elapsed={time.monotonic()-started_next:.1f}s",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+            dual_columns = {
+                shape: tuple(columns)
+                for shape, columns in dual_columns.items()
+            }
+            shape_rows = tuple({
+                "shape_r_s": shape,
+                "columns": len(dual_columns[shape]),
+                "nonzero_dual_columns": sum(
+                    bool(column) for column in dual_columns[shape]),
+                "four_dual_channel_rank": quotient_rank(
+                    dual_columns[shape]),
+                "dual_columns_sha256": hashlib.sha256(
+                    repr(tuple(frozen_vector(column)
+                               for column in dual_columns[shape])).encode()
+                ).hexdigest(),
+            } for shape in next_shapes)
+            subset_rows = []
+            for size in range(1, len(next_shapes) + 1):
+                for subset in combinations(next_shapes, size):
+                    columns = tuple(
+                        column for shape in subset
+                        for column in dual_columns[shape])
+                    subset_rows.append({
+                        "shapes": subset,
+                        "four_dual_channel_rank": quotient_rank(columns),
+                    })
+            full_rank_subsets = tuple(
+                row["shapes"] for row in subset_rows
+                if row["four_dual_channel_rank"] == 4)
+            minimal_full_rank = tuple(
+                subset for subset in full_rank_subsets
+                if not any(set(other) < set(subset)
+                           for other in full_rank_subsets)
+            )
+            next_shell_receipt = {
+                "grade": next_grade,
+                "columns": len(next_shell),
+                "monomial_list_sha256": hashlib.sha256(
+                    repr(next_shell).encode()).hexdigest(),
+                "shape_dual_channel_receipts": shape_rows,
+                "shape_subset_dual_channel_ranks": tuple(subset_rows),
+                "inclusion_minimal_shapes_spanning_four_survivor_duals":
+                    minimal_full_rank,
+                "scope_guard": (
+                    "Rank on four selected quotient-coordinate duals is a "
+                    "necessary projection gate, not exact packet containment."
+                ),
+            }
         return {
             "scope": (
-                "exact sparse F193 target-ratio-faithful binary connector "
+                "exact sparse F193 target-ratio-faithful single-pass connector "
                 "gate for actual F0..F3; not a Full187 theorem"
             ),
             "field": P,
@@ -272,18 +387,21 @@ def analyze(progress_every, decisive_only, full_shell_only):
                 defects,
             "decision": (
                 ("RATIO_FAITHFUL_FULL_FIRST_SHELL_CONNECTOR_GREEN"
-                 if full_shell_only else
+                 if (full_shell_only or scan_next_shell) else
                  "RATIO_FAITHFUL_PURE_PLUS_R_CONNECTOR_GREEN")
                 if defects[1] == 0 else
                 ("RATIO_FAITHFUL_FULL_FIRST_SHELL_CONNECTOR_RED"
-                 if full_shell_only else
+                 if (full_shell_only or scan_next_shell) else
                  "RATIO_FAITHFUL_PURE_PLUS_R_CONNECTOR_RED")
             ),
             "minimality_not_claimed": True,
             "verified_prior_pure_plus_R_quotient_rank": (
-                1011 if full_shell_only else None),
+                1011 if (full_shell_only or scan_next_shell) else None),
             "marginal_quotient_rank_contributed_by_S_over_pure_plus_R": (
-                shell_echelon.rank - 1011 if full_shell_only else None),
+                shell_echelon.rank - 1011
+                if (full_shell_only or scan_next_shell) else None),
+            "frozen_surviving_packet_quotient_witnesses": survivor_receipt,
+            "grade_J_plus_2_four_survivor_dual_scan": next_shell_receipt,
             "streamed_monomials_sha256": hashlib.sha256(
                 repr(prefix + selected_shell).encode()).hexdigest(),
         }
@@ -397,15 +515,20 @@ def main():
     parser.add_argument(
         "--full-shell-only", action="store_true",
         help="test pure+R+S once and skip all redundant shape ablations")
+    parser.add_argument(
+        "--survivors-and-next-shell", action="store_true",
+        help="freeze full-shell survivors and scan grade J+2 on four duals")
     args = parser.parse_args()
-    if args.decisive_only and args.full_shell_only:
+    if sum((args.decisive_only, args.full_shell_only,
+            args.survivors_and_next_shell)) > 1:
         parser.error("choose at most one single-pass shell gate")
     resource.setrlimit(resource.RLIMIT_AS, (MEMORY_CAP_BYTES, MEMORY_CAP_BYTES))
     BM.PRIME = BM.T.PRIME = BM.F.PRIME = F.PRIME = T.PRIME = P
     F.GAMMA = 0
     started = time.monotonic()
     stable = analyze(
-        args.progress_every, args.decisive_only, args.full_shell_only)
+        args.progress_every, args.decisive_only, args.full_shell_only,
+        args.survivors_and_next_shell)
     canonical = json.dumps(stable, sort_keys=True, separators=(",", ":"))
     print(json.dumps({
         **stable,

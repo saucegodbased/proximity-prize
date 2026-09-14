@@ -172,3 +172,87 @@ outer timeout after finishing source reduction. The committed code reuses
 each base elimination, and `--decisive-only` performs just the required
 binary test. This is a process correction only; it does not change the
 literal columns or result.
+
+## Frozen survivors and the bounded grade-eight diagnostic
+
+A final single-pass replay used `--survivors-and-next-shell`. It rebuilt the
+same exact prefix and full first-shell echelon once, emitted the complete
+deterministic survivor vectors, and then reused that live state for one
+grade-`J+2=8` diagnostic. It did not widen the source shapes or perform a
+second parameter search.
+
+The four full-first-shell survivor vectors have exact support sizes
+
+```text
+(F0,F1,F2,F3) = (296,425,554,314)
+```
+
+and hashes
+
+```text
+F0  4e70d88683320b60e8ce98f590d30fc9e00e6904ebf4d518217878c00d4cd87d
+F1  fb0fcddba6a75ae7af6a1c60ab1d5932671782a968d80ea48105ea911e7b4278
+F2  24878991ab92edaef5917f96287b588e2ea7fd23a720bd54a8daa78db8e7f278
+F3  2d2f78e61aae834e9369462753fcb30d041e2475359ec8b122d89f8110093780
+```
+
+The executable JSON includes every row and coefficient, not merely these
+hashes. A deterministic four-coordinate quotient chart is supported on the
+boundary rows
+
+```text
+(J,0,3), (J,0,2), (J,0,1), (J,0,4).
+```
+
+The packet columns in that chart are
+
+```text
+F0 = (69,  0,   0,173)
+F1 = (91,124,   0, 27)
+F2 = (164,11, 138, 12)
+F3 = (72,  0,   0,191),
+```
+
+of exact rank four.
+
+Streaming every legal grade-eight column through the already-built prefix
+and first-shell echelons gives the following ranks on those four quotient
+coordinates:
+
+| grade-eight shape | columns | nonzero projected columns | four-channel rank |
+|---|---:|---:|---:|
+| pure `(0,0)` | 591 | 415 | 3 |
+| curvature `(0,1)` | 425 | 278 | **4** |
+| slope `(1,0)` | 420 | 274 | 3 |
+
+The unique inclusion-minimal shape family with rank four is curvature alone.
+Exact projected-column hashes are respectively
+
+```text
+pure  3c15240a7414b7c7246a5d556403b0eb8dd4cb3904eb50053beef3e2ced897e8
+S     2c7d05de5a2f1313fe613337e34924b53cf9f76c1834943a7fe9096d472d3a40
+R     0a2c94ed11245622b70b306da5725787bab27804439a7abb9e47239db8692ccf
+```
+
+The grade-eight monomial-list hash is
+`a488a7edde7086950c9073dfb3b871dfa695f4971a8b96ef3145ab881b311d9d`.
+The combined run used 692,752 KiB peak RSS in 2,150.56 seconds under the
+hard 3 GiB cap. Its canonical result hash is
+`824499b0ec91399c4d5a54aa9d59548d16fccbe6b89130fa2ba8c5cd103c9816`.
+
+This is deliberately **not** reported as a grade-eight lift. The four row
+coordinates are quotient-linear functionals and full projected rank is a
+necessary directional signal; grade-eight columns can retain other quotient
+components, so the test does not prove the packet lies in their span. Nor is
+the action symbolic or coefficient-independent: it is one exact F193
+instance. Commits `f8560b5` and `49afff4` independently show that the target
+instance's `u1` rank cannot be promoted as a universal law. The compiled
+universal high branch begins only at `deg U1 >= 133120` via
+`WeightedScalarList133119` (not 132103).
+
+Consequently the curvature rank-four hit is preserved only as finite-control
+evidence. The smallest local falsifier would be exact grade-eight-curvature
+containment after the frozen first shell, but it is not a justified Full187
+scaling route without a new symbolic, coefficient-independent mechanism.
+This task stops here rather than turning that numerical projection into a
+new rabbit hole.
