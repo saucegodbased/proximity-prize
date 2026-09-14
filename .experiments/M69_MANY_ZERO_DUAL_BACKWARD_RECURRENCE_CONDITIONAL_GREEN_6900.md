@@ -22,10 +22,10 @@ then the paired dual recurrence kills every paired kernel.  Consequently:
   numerator-zero set.
 
 The second conclusion is exactly what an actual target divisible by `W=N/E`
-needs: every zero-supported dual kills such a target.  This note does **not**
-claim that all `140153` actual residuals are proved divisible by `W`, nor that
-the common source allocation is confluent.  Those are separate Full187
-adapters.
+needs: every zero-supported dual kills such a target.  Commit `56267de`
+subsequently proves that divisibility for all `140153` deficient residuals.
+The concrete prefix-dual adapter and common source allocation/confluence are
+still separate Full187 obligations.
 
 ## Important correction: there is no X² factor
 
@@ -71,10 +71,9 @@ N_i^2 K_j(x_i) = E_i^2 K_(j+1)(x_i).                 (1)
 `M69ManyZeroDualBackwardRecurrence6900.lean` formally proves both the
 adjacent calculation and this substitution.  Thus the orientation is
 validated and the spurious `X^2` has been removed.  The earlier theorem
-`M69RationalTwoPowerGate6900.short_square_nodal_relation_forces_zero` remains
-a valid implication **from its stated X² hypothesis**, but no current source
-adapter proves that hypothesis; it must not be cited as the exact physical
-dual relation.
+`M69RationalTwoPowerGate6900.short_square_nodal_relation_forces_zero` has also
+been corrected to state the physical no-`X²` relation.  Historical receipts
+that quote its former `X²` premise must not be cited as source adapters.
 
 The many-zero argument itself survives this correction.  It only needs a
 nonzero coefficient multiplying `E^2 K_(j+1)` at numerator roots; equation
@@ -229,9 +228,8 @@ The remaining source obligations are not hidden:
 
 1. formalize existence of the standard `H_t` prefix-dual encodings for the
    concrete NTT pairing used by Full187;
-2. prove that every actual incoming residual for every low-initial deficient
-   coefficient is divisible by at least one positive power of `W`, jointly
-   with the already prescribed lower jets;
+2. compose commit `56267de`'s all-residual `W` divisibility with the dual
+   conclusion, jointly with the already prescribed lower jets;
 3. prove simultaneous allocation/confluence across shared physical source
    variables.
 

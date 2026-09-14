@@ -42,16 +42,15 @@ theorem short_square_relation_forces_zero
     {K : Type*} [Field K] (E N H H2 : K[X])
     (hcop : IsCoprime E N) (he : 2049 ≤ E.natDegree)
     (hH : H.natDegree < 3246)
-    (hrelation : N ^ 2 * H = X ^ 2 * E ^ 2 * H2) :
+    (hrelation : N ^ 2 * H = E ^ 2 * H2) :
     H = 0 := by
   have hE : E ≠ 0 := by
     intro hzero
     simp only [hzero, natDegree_zero] at he
     omega
   have hdiv : E ^ 2 ∣ N ^ 2 * H := by
-    refine ⟨X ^ 2 * H2, ?_⟩
+    refine ⟨H2, ?_⟩
     rw [hrelation]
-    ring
   have hEH : E ^ 2 ∣ H :=
     (show IsCoprime (E ^ 2) (N ^ 2) from hcop.pow).dvd_of_dvd_mul_left hdiv
   obtain ⟨T, rfl⟩ := hEH
@@ -78,9 +77,9 @@ theorem short_square_nodal_relation_forces_zero
     (hH2 : H2.natDegree < 3244)
     (heval : ∀ i,
       (N ^ 2 * H).eval (nodes i) =
-        (X ^ 2 * E ^ 2 * H2).eval (nodes i)) :
+        (E ^ 2 * H2).eval (nodes i)) :
     H = 0 := by
-  let F : K[X] := N ^ 2 * H - X ^ 2 * E ^ 2 * H2
+  let F : K[X] := N ^ 2 * H - E ^ 2 * H2
   have hleft : (N ^ 2 * H).natDegree < 262144 := by
     calc
       (N ^ 2 * H).natDegree
@@ -88,14 +87,12 @@ theorem short_square_nodal_relation_forces_zero
       _ ≤ 2 * N.natDegree + H.natDegree :=
         Nat.add_le_add_right natDegree_pow_le _
       _ < 262144 := by omega
-  have hright : (X ^ 2 * E ^ 2 * H2).natDegree < 262144 := by
+  have hright : (E ^ 2 * H2).natDegree < 262144 := by
     calc
-      (X ^ 2 * E ^ 2 * H2).natDegree
-          ≤ (X ^ 2 * E ^ 2).natDegree + H2.natDegree := natDegree_mul_le
-      _ ≤ ((X ^ 2).natDegree + (E ^ 2).natDegree) + H2.natDegree :=
-        Nat.add_le_add_right natDegree_mul_le _
-      _ ≤ (2 + 2 * E.natDegree) + H2.natDegree := by
-        norm_num [natDegree_pow]
+      (E ^ 2 * H2).natDegree
+          ≤ (E ^ 2).natDegree + H2.natDegree := natDegree_mul_le
+      _ ≤ 2 * E.natDegree + H2.natDegree :=
+        Nat.add_le_add_right natDegree_pow_le _
       _ < 262144 := by omega
   have hFdegree : F.natDegree < 262144 := by
     exact (natDegree_sub_le _ _).trans_lt (max_lt hleft hright)
@@ -106,7 +103,7 @@ theorem short_square_nodal_relation_forces_zero
     apply Polynomial.eq_zero_of_natDegree_lt_card_of_eval_eq_zero
       F nodes.injective hFeval
     simpa only [hcard] using hFdegree
-  have hrelation : N ^ 2 * H = X ^ 2 * E ^ 2 * H2 :=
+  have hrelation : N ^ 2 * H = E ^ 2 * H2 :=
     sub_eq_zero.mp (by simpa only [F] using hFzero)
   exact short_square_relation_forces_zero E N H H2 hcop heLower hH hrelation
 

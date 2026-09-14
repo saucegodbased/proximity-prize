@@ -105,9 +105,15 @@ short_square_nodal_relation_forces_zero
     (H.natDegree < 3246)
     (H2.natDegree < 3244)
     (forall i,
-      (N^2*H).eval (nodes i) = (X^2*E^2*H2).eval (nodes i)) :
+      (N^2*H).eval (nodes i) = (E^2*H2).eval (nodes i)) :
     H = 0
 ```
+
+This is the corrected physical normalization.  The multiplier is exactly
+`W=N0/E0`, so clearing the square channel introduces no extra `X^2`.  The
+earlier `X^2*E^2*H2` premise was an underived experimental normalization and
+must not be used as a source adapter.  Removing it does not change the
+no-wrap degree cutoff because the `N^2*H` side remains binding.
 
 The proof upgrades the nodal congruence to a polynomial equality and uses
 `IsCoprime E N` to force `E^2 | H`.  Its arithmetic boundary is exact for

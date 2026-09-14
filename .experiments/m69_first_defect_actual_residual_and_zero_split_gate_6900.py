@@ -52,7 +52,7 @@ AUTHORITIES = {
     "full187_actual_pascal_residual_and_first_fringe_gate_6900.py":
         "4f71084905369899563eb496f2b9b044245107bd7a3357aac35336709b02da15",
     "M69RationalTwoPowerGate6900.lean":
-        "b79feac9ec80e7e80387535940c51c39b6c37b1cb41d7c1d57cebada3777c4f3",
+        "ab1bba986d0afcea4c2df9ccf9a97e9712c6b9a8f789b54cfbaa286f14b0390c",
 }
 
 
