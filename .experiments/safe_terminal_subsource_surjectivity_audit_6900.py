@@ -75,6 +75,19 @@ CONTROL = {
     "L": 5,
 }
 
+SECONDARY_CONTROL = {
+    "prime": 211,
+    "n": 10,
+    "w": 4,
+    "g": 7,
+    "m": 5,
+    "D": 35,
+    "q": 4,
+    "t": 1,
+    "J": 7,
+    "L": 7,
+}
+
 
 def derivative_shapes(q: int, t: int) -> tuple[tuple[int, int], ...]:
     return tuple((r, s) for s in range(t + 1)
@@ -85,7 +98,7 @@ def coefficient_width(D: int, w: int, y: int, r: int, s: int) -> int:
     return D - w * y - (w - 1) * r - (w - 2) * s
 
 
-def safe_polytope(case: dict[str, int]):
+def safe_polytope(case: dict[str, int], required_margin: int = 0):
     """Classify terminal shapes by the exact q=0 low-T corner condition."""
     D, w, g = case["D"], case["w"], case["g"]
     m, q, t, J = case["m"], case["q"], case["t"], case["J"]
@@ -104,7 +117,7 @@ def safe_polytope(case: dict[str, int]):
                     if contact_weight >= m:
                         continue
                     depth = m - contact_weight
-                    if lower_width >= g * depth:
+                    if lower_width - g * depth >= required_margin:
                         continue
                     T = f - a_e + c_s
                     E = a_e
@@ -142,8 +155,8 @@ def local_layer(case: dict[str, int], d: int) -> int:
     return H.local_rank_layer(case["m"], d, case["q"], case["t"])
 
 
-def dimension_ledger(case: dict[str, int]):
-    safe, unsafe, origins = safe_polytope(case)
+def dimension_ledger(case: dict[str, int], required_margin: int = 0):
+    safe, unsafe, origins = safe_polytope(case, required_margin)
     J, L = case["J"], case["L"]
     source = sum((L - d + 1) * source_layer(case, d)
                  for d in range(J + 1))
@@ -157,6 +170,7 @@ def dimension_ledger(case: dict[str, int]):
         case["D"], case["w"], J - r - s, r, s)
         for r, s in safe)
     return {
+        "required_capacity_margin": required_margin,
         "terminal_shape_count_safe_unsafe": (
             len(safe) + len(unsafe), len(safe), len(unsafe)),
         "safe_terminal_shapes": safe,
@@ -345,16 +359,17 @@ def exact_four_normals(case, agreement, anchors, direction):
     }
 
 
-def literal_control(direction: str):
-    case = CONTROL
+def literal_control(direction: str, case=None):
+    case = CONTROL if case is None else case
     prime = case["prime"]
     S.PRIME = prime
     n, w, g = case["n"], case["w"], case["g"]
     m, D = case["m"], case["D"]
     q, t, J, L = case["q"], case["t"], case["J"], case["L"]
-    safe, unsafe, _origins = safe_polytope(case)
+    required_margin = n - g
+    safe, unsafe, _origins = safe_polytope(case, required_margin)
     all_monomials = S.support(w, D, q, t, J, L)
-    assert len(all_monomials) == dimension_ledger(case)[
+    assert len(all_monomials) == dimension_ledger(case, required_margin)[
         "full_source_one_node_contact_all_node_contact"][0]
 
     def retained(monomial):
@@ -364,7 +379,8 @@ def literal_control(direction: str):
 
     monomials = tuple(monomial for monomial in all_monomials
                       if retained(monomial))
-    assert len(all_monomials) - len(monomials) == dimension_ledger(case)[
+    assert len(all_monomials) - len(monomials) == dimension_ledger(
+        case, required_margin)[
         "safe_unsafe_terminal_width"][1]
 
     # Mirror the target NTT domain's crucial exclusion of X=0.
@@ -414,7 +430,7 @@ def literal_control(direction: str):
     ], prime)
     pivot_indices, local_rank = pivot_columns_of_rref(
         local_at_zero.transpose())
-    expected_local_rank = dimension_ledger(case)[
+    expected_local_rank = dimension_ledger(case, required_margin)[
         "full_source_one_node_contact_all_node_contact"][1]
     assert local_rank == expected_local_rank
     pivot_locals = tuple(local_rows[index] for index in pivot_indices)
@@ -426,7 +442,7 @@ def literal_control(direction: str):
         assert local_projection.rank() == expected_local_rank
 
     rows = tuple((node, local) for node in nodes for local in pivot_locals)
-    assert len(rows) == dimension_ledger(case)[
+    assert len(rows) == dimension_ledger(case, required_margin)[
         "full_source_one_node_contact_all_node_contact"][2]
     columns = tuple(all_columns_by_monomial[monomial]
                     for monomial in monomials)
@@ -546,24 +562,39 @@ def literal_control(direction: str):
 
 
 def target_ledger():
-    ledger = dimension_ledger(TARGET)
-    safe = ledger["safe_terminal_shapes"]
-    unsafe = ledger["unsafe_terminal_shapes"]
+    agreement = dimension_ledger(TARGET, required_margin=0)
+    safe = agreement["safe_terminal_shapes"]
+    unsafe = agreement["unsafe_terminal_shapes"]
     assert len(safe) == 105
     assert len(unsafe) == 82
     assert all(r + s <= 16 and r + 4 * s <= 33 for r, s in safe)
     assert all(not (r + s <= 16 and r + 4 * s <= 33)
                for r, s in unsafe)
-    assert ledger["full_euler_surplus"] == TARGET_FULL_SURPLUS
-    assert ledger["safe_unsafe_terminal_width"] == (8_081_883, 6_312_464)
-    assert ledger["restricted_euler_surplus"] == 3_445_229
-    assert ledger["restricted_surplus_after_four_boundary_rows"] == 3_445_225
-    return ledger
+    assert agreement["full_euler_surplus"] == TARGET_FULL_SURPLUS
+    assert agreement["safe_unsafe_terminal_width"] == (8_081_883, 6_312_464)
+    assert agreement["restricted_euler_surplus"] == 3_445_229
+    assert agreement["restricted_surplus_after_four_boundary_rows"] == 3_445_225
+
+    affine = dimension_ledger(
+        TARGET, required_margin=TARGET["n"] - TARGET["g"])
+    assert affine["required_capacity_margin"] == 81_731
+    assert affine["terminal_shape_count_safe_unsafe"] == (187, 103, 84)
+    assert set(safe) - set(affine["safe_terminal_shapes"]) == {
+        (5, 7), (1, 8)}
+    assert affine["safe_unsafe_terminal_width"] == (7_927_931, 6_466_416)
+    assert affine["restricted_euler_surplus"] == 3_291_277
+    assert affine["restricted_surplus_after_four_boundary_rows"] == 3_291_273
+    return {
+        "agreement_Hermite_105_shape_ledger": agreement,
+        "affine_error_CRT_103_shape_ledger": affine,
+        "lost_when_retaining_arbitrary_error_values": ((1, 8), (5, 7)),
+    }
 
 
 def main() -> None:
     target = target_ledger()
-    control_ledger = dimension_ledger(CONTROL)
+    control_ledger = dimension_ledger(
+        CONTROL, required_margin=CONTROL["n"] - CONTROL["g"])
     assert control_ledger["terminal_shape_count_safe_unsafe"] == (7, 6, 1)
     assert control_ledger["safe_terminal_shapes"] == (
         (0, 0), (1, 0), (2, 0), (3, 0), (0, 1), (1, 1))
@@ -572,8 +603,16 @@ def main() -> None:
     assert control_ledger["restricted_euler_surplus"] == 61
     assert control_ledger["restricted_surplus_after_four_boundary_rows"] == 57
 
+    secondary_ledger = dimension_ledger(
+        SECONDARY_CONTROL,
+        required_margin=SECONDARY_CONTROL["n"] - SECONDARY_CONTROL["g"])
+    assert secondary_ledger["terminal_shape_count_safe_unsafe"] == (9, 8, 1)
+    assert secondary_ledger["unsafe_terminal_shapes"] == ((3, 1),)
+    assert secondary_ledger["restricted_surplus_after_four_boundary_rows"] == 174
+
     controls = (
         literal_control("retained_bad"),
+        literal_control("retained_bad", SECONDARY_CONTROL),
         literal_control("matched"),
     )
     result = {
@@ -584,6 +623,8 @@ def main() -> None:
         "target_ledger": target,
         "control_parameters": CONTROL,
         "control_ledger": control_ledger,
+        "secondary_control_parameters": SECONDARY_CONTROL,
+        "secondary_control_ledger": secondary_ledger,
         "literal_controls": controls,
         "decision": (
             "STOP blanket contact-on-zero-boundary surjectivity: the exact "
@@ -600,17 +641,25 @@ def main() -> None:
     result["script_sha256"] = hashlib.sha256(
         Path(__file__).read_bytes()).hexdigest()
     if "--compact" in sys.argv:
-        compact_target = {
-            key: value for key, value in target.items()
-            if key not in {
-                "safe_terminal_shapes", "unsafe_terminal_shapes",
-                "corner_occurrence_count_by_shape"}}
+        compact_target = {}
+        for label, ledger in target.items():
+            if not isinstance(ledger, dict):
+                compact_target[label] = ledger
+                continue
+            compact_target[label] = {
+                key: value for key, value in ledger.items()
+                if key not in {
+                    "safe_terminal_shapes", "unsafe_terminal_shapes",
+                    "corner_occurrence_count_by_shape"}}
         compact_control = {
             key: value for key, value in control_ledger.items()
             if key != "corner_occurrence_count_by_shape"}
         printable = dict(result)
         printable["target_ledger"] = compact_target
         printable["control_ledger"] = compact_control
+        printable["secondary_control_ledger"] = {
+            key: value for key, value in secondary_ledger.items()
+            if key != "corner_occurrence_count_by_shape"}
     else:
         printable = result
     print(json.dumps(printable, indent=2, sort_keys=True))
