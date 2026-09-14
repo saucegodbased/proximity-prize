@@ -83,8 +83,31 @@ theorem all_windows_fit_target_mca :
     103 * allChartCost 64 3757 < 254_684_620_614_660_120 := by
   norm_num [allChartCost, inactiveChartCost, activeChartCost]
 
+/-! The source/consumer ledger is cheap enough that no width-801 grouping is
+needed for the theorem search: one may stratify by the *exact* maximal actual
+agreement cardinality.  This keeps `D = 47 * g` and makes every point outside
+`G` a genuine nonzero-residual error.  The displayed allowance is the same
+post-scalar MCA allowance used above; no extra budget is introduced. -/
+theorem exact_agreement_strata_count :
+    262144 - 180413 + 1 = 81_732 := by
+  norm_num
+
+theorem all_exact_strata_chart_cost :
+    81_732 * allChartCost 64 3757 = 126_379_740_905_865_216 := by
+  norm_num [allChartCost, inactiveChartCost, activeChartCost]
+
+theorem all_exact_strata_fit_target_mca :
+    81_732 * allChartCost 64 3757 < 254_684_620_614_660_120 := by
+  norm_num [allChartCost, inactiveChartCost, activeChartCost]
+
+theorem all_exact_strata_target_mca_residual :
+    254_684_620_614_660_120 -
+        81_732 * allChartCost 64 3757 = 128_304_879_708_794_904 := by
+  norm_num [allChartCost, inactiveChartCost, activeChartCost]
+
 end ProximityPrize.SubmissionLower.SecondJetK0RetunedWindowArithmetic6900
 
 #print axioms ProximityPrize.SubmissionLower.SecondJetK0RetunedWindowArithmetic6900.source_strict_47
 #print axioms ProximityPrize.SubmissionLower.SecondJetK0RetunedWindowArithmetic6900.full_minor_window
 #print axioms ProximityPrize.SubmissionLower.SecondJetK0RetunedWindowArithmetic6900.all_windows_fit_target_mca
+#print axioms ProximityPrize.SubmissionLower.SecondJetK0RetunedWindowArithmetic6900.all_exact_strata_fit_target_mca

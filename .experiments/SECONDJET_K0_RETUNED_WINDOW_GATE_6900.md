@@ -70,6 +70,31 @@ characteristic (the larger displayed check is `141,643,776 < 2,130,706,433`).
 The repeated-window cost is only about 0.063% of the allowance. Arithmetic,
 characteristic, and aggregate chart count are not the blocker.
 
+### Exact-cardinality simplification
+
+The same ledger is cheap enough to discard the width-801 grouping entirely.
+There are exactly 81,732 possible maximal actual agreement cardinalities, and
+
+```text
+81,732 * 1,546,270,015,488
+  = 126,379,740,905,865,216
+  < 254,684,620,614,660,120,
+remaining allowance = 128,304,879,708,794,904.
+```
+
+Thus the producer may be rebuilt at the exact maximal agreement size `g`,
+with cutoff `D=47*g`, for every stratum.  This is a substantial semantic
+simplification: every node outside `G` then has a genuinely nonzero residual,
+the full-`G` locator rows fit the source exactly, and no nominal error block
+contains extra zero-residual agreements.  Source positivity is worst at the
+smallest `g`; increasing `g` only increases every X strip width.  This does
+not prove rank-defect recovery, but it removes the extra-agreement/window
+case from that theorem without exceeding the existing post-scalar MCA
+allowance.
+
+The kernel-checked arithmetic is in
+`SecondJetK0RetunedWindowArithmetic6900.lean`.
+
 The raw last terminal strip also has
 
 ```text
@@ -103,10 +128,11 @@ on `w+1` anchors is source-safe, but proving that rank defect kills every
 remaining Newton discrepancy is exactly the missing rank-defect-recovery
 theorem, not a shortcut around it.
 
-Decision: keep the low-m retuned arithmetic as a materially better wrapper,
-but do not spend time assembling 103 source instances until a fixed symbolic
-bordered-minor/dual recurrence proves the first extra Newton identity. The
-next progress must change that theorem status, not optimize another profile.
+Decision: use exact-cardinality strata, not 801-wide windows, in further
+theorem work.  Do not spend time assembling the 81,732 wrappers until a fixed
+symbolic bordered-minor/dual recurrence proves the first extra Newton
+identity. The next progress must change that theorem status, not optimize
+another profile.
 
 ## Lean replay
 
