@@ -12,13 +12,14 @@ boundary**.  That replacement theorem is already false in a literal
 nonzero-node, retained-bad control with the analogous strong safe polytope
 and positive dimension surplus.
 
-The same control is nevertheless **GREEN for both relevant four-packet
-gates**.  After deleting its unsafe terminal shape, the complete contact
+The controls are nevertheless **GREEN for both relevant four-packet
+gates**.  After deleting each unsafe terminal shape, the complete contact
 kernel has boundary rank four over `F_1009(X)`.  More strongly, its exact
 coefficientwise boundary image jointly contains the four named agreement
-packets `F0,F1,F2,F3`.  Thus the new restriction survives its first strongest
-faithful finite discriminator.  This remains a finite control, not the target
-recurrence theorem.
+packets `F0,F1,F2,F3`.  Most sharply, this stays green in a chamber having
+only **one** Euler dimension left after reserving the four rows.  Thus the new
+restriction survives a nearly dimension-tight faithful finite discriminator.
+This remains finite evidence, not the target recurrence theorem.
 
 ## 1. Independently recomputed target ledger
 
@@ -188,10 +189,46 @@ coefficientwise joint defect                            0
 Thus two different mixed safe/unsafe chambers refute the blanket theorem but
 support the exact atomic four-packet statement.
 
+### Predeclared near-tight control
+
+A ledger-only scan, performed before its contact matrix was constructed,
+selected the sharper chamber
+
+```text
+F_1009, (n,w,g,m,D,q,t,J,L)=(18,8,14,6,84,4,1,5,5)
+domain={1,...,18}, H={1,...,9}, u1=Lambda_H
+strong safe/unsafe shapes                             8 / 1
+unsafe shape                                           (3,1)
+full Euler surplus                                        54
+unsafe terminal width                                      49
+restricted surplus                                          5
+restricted surplus after four boundary rows                  1
+```
+
+This is a genuine retained-bad instance: `deg u1=9>w=8`, and `u1` is
+nonzero on the five agreement nodes outside `H`.  Its exact ranks are
+
+```text
+source / canonical contact dimensions             5711 / 5706
+restricted contact rank / nullity / defect     5512 / 199 / 194
+fraction-field boundary rank                              4
+boundary coefficient positions / image rank         315 / 21
+individual packet defects                         (0,0,0,0)
+joint four-packet defect                                   0
+error contact support sizes                  (91,96,106,96)
+```
+
+The blanket surjectivity claim again fails badly, while the exact packet gate
+passes despite essentially no nominal dimensional slack.  This is the
+strongest finite evidence here that the safe-103 restriction is compatible
+with the target-specific four-packet theorem and that a blanket theorem is
+both unnecessary and structurally wrong.
+
 ## 4. Scope and next decisive gate
 
-The controls show that the strong safe-terminal restriction and the exact
-fourth packet are mutually compatible.  They do not prove uniform target
+The three retained-bad controls show that the strong safe-terminal
+restriction and the exact fourth packet are mutually compatible.  They do
+not prove uniform target
 coefficient propagation through 2,703 passive grades.  The remaining theorem
 must orient the target transition recurrence while preserving the four atomic
 packet columns.  In particular, one must keep the exact fourth row

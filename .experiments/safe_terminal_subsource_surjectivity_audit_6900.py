@@ -88,6 +88,22 @@ SECONDARY_CONTROL = {
     "L": 7,
 }
 
+# Chosen by ledger alone, before constructing its contact matrix.  It leaves
+# only five source coordinates beyond the canonical contact target and hence
+# only one after reserving all four named packet rows.
+TIGHT_CONTROL = {
+    "prime": 1009,
+    "n": 18,
+    "w": 8,
+    "g": 14,
+    "m": 6,
+    "D": 84,
+    "q": 4,
+    "t": 1,
+    "J": 5,
+    "L": 5,
+}
+
 
 def derivative_shapes(q: int, t: int) -> tuple[tuple[int, int], ...]:
     return tuple((r, s) for s in range(t + 1)
@@ -610,9 +626,19 @@ def main() -> None:
     assert secondary_ledger["unsafe_terminal_shapes"] == ((3, 1),)
     assert secondary_ledger["restricted_surplus_after_four_boundary_rows"] == 174
 
+    tight_ledger = dimension_ledger(
+        TIGHT_CONTROL,
+        required_margin=TIGHT_CONTROL["n"] - TIGHT_CONTROL["g"])
+    assert tight_ledger["terminal_shape_count_safe_unsafe"] == (9, 8, 1)
+    assert tight_ledger["unsafe_terminal_shapes"] == ((3, 1),)
+    assert tight_ledger["full_euler_surplus"] == 54
+    assert tight_ledger["restricted_euler_surplus"] == 5
+    assert tight_ledger["restricted_surplus_after_four_boundary_rows"] == 1
+
     controls = (
         literal_control("retained_bad"),
         literal_control("retained_bad", SECONDARY_CONTROL),
+        literal_control("retained_bad", TIGHT_CONTROL),
         literal_control("matched"),
     )
     result = {
@@ -625,14 +651,19 @@ def main() -> None:
         "control_ledger": control_ledger,
         "secondary_control_parameters": SECONDARY_CONTROL,
         "secondary_control_ledger": secondary_ledger,
+        "tight_control_parameters": TIGHT_CONTROL,
+        "tight_control_ledger": tight_ledger,
         "literal_controls": controls,
         "decision": (
             "STOP blanket contact-on-zero-boundary surjectivity: the exact "
-            "retained-bad control has defect 156 despite positive Euler "
-            "room. GREEN for both weaker relevant gates: the restricted "
+            "retained-bad controls have defects 156, 73, and 194 despite "
+            "positive Euler room. In particular, blanket defect 194 persists "
+            "in the tight chamber with only one dimension left after its "
+            "four-row reservation, so packet specificity is essential. "
+            "GREEN for both weaker relevant gates: the restricted "
             "complete-contact kernel has boundary rank 4 over F_1009(X), "
             "and its coefficientwise boundary image jointly contains the "
-            "four exact F0,F1,F2,F3 packet columns in this control. This is "
+            "four exact F0,F1,F2,F3 packet columns in every control. This is "
             "finite evidence, not the target recurrence theorem."),
         "peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
     }
@@ -659,6 +690,9 @@ def main() -> None:
         printable["control_ledger"] = compact_control
         printable["secondary_control_ledger"] = {
             key: value for key, value in secondary_ledger.items()
+            if key != "corner_occurrence_count_by_shape"}
+        printable["tight_control_ledger"] = {
+            key: value for key, value in tight_ledger.items()
             if key != "corner_occurrence_count_by_shape"}
     else:
         printable = result
