@@ -25,11 +25,12 @@ The predecessor `Y^m S` is essential: `Y^m S Z` alone and `Y^(m+1) S`
 alone are both injective. This is a two-dimensional staircase corner, not an
 isolated monomial or an arbitrary top layer.
 
-However, a second exact chamber decisively falsifies this as a universal
-family. In the nontrivial three-error m8/B3 control, even the complete
+However, a second exact chamber shows that this statement needs an explicit
+capacity hypothesis. In a three-error m8/B3 control, even the complete
 two-seed critical cell plus the first newly legal mixed connector
-`S Y^(m-1) R` is contact-injective. Thus the m5 adjacent-cell mechanism is a
-real exact certificate but not a target theorem template by itself.
+`S Y^(m-1) R` is contact-injective—but that profile's *complete* source is
+smaller than the published contact bound. Thus this is a capacity RED, not a
+target-relevant profile-universality falsifier.
 
 The seed shift does **not** track the Newton quotient degree. A generic
 receipt with constant anchor quotient still needs the `z=1` companion, while
@@ -78,7 +79,7 @@ family, ending at `3924/3924/0/0`. Hence none of the finite first-grade claims
 may be stated for arbitrary `m`; the target-relevant arithmetic is the exact
 chamber `m=3B-1`.
 
-## Second exact-chamber discriminator: RED
+## Second exact-chamber discriminator: capacity RED, target-inconclusive
 
 The first m8 control with `(n,w,g)=(7,3,5)` was too easy: raw `{1,R}` plus
 the subcritical S staircase already had gain four,
@@ -102,16 +103,25 @@ Y^8 S at seed degrees 0 and 1             30 columns
 total/contact/kernel/boundary gain     6812/6812/0/0
 ```
 
-This is an exact **RED**: there is no relation at all for this family, so no
-boundary argument can repair it. It ran in 215.9 seconds at 3.85 GiB peak RSS
+This is an exact **family RED**: there is no relation at all for this family,
+so no boundary argument can repair it inside this profile. But the published
+local rank is 1531, while the complete source has only 11,711 columns:
+
+```text
+full-source margin = 11711 - 8*1531 = -537.
+```
+
+Consequently the result cannot falsify a theorem whose hypotheses include the
+positive source surplus enjoyed by the target. It ran in 215.9 seconds at
+3.85 GiB peak RSS
 under a hard 7.5 GB address-space cap. Canonical SHA-256:
 `48cf97402b1126bcbd23e2744b9347f8cc4fbdbe140cd28c88351d828c47dd09`.
 
-Consequently, neither “exact `m=3B-1` arithmetic” nor adding just the first
-mixed R/S connector makes the m5 staircase profile-universal. Any surviving
-target route must exploit more of the legal derivative-shape staircase
-(`R^2`, further mixed connectors, or the complete source) and prove its
-global interaction; extrapolating the low-shape ablation is unsound.
+The honest conclusion is narrower: exact `m=3B-1` arithmetic alone does not
+guarantee this low-family kernel; a source-capacity hypothesis is essential.
+Whether positive capacity plus the first mixed connector suffices must be
+tested separately. Extrapolating either the m5 positive receipt or this m8
+negative-capacity receipt to target scale would be unsound.
 
 ## Literal causal identity (now formal)
 
@@ -187,7 +197,7 @@ surjective when the rest of the full source is restored.
 
 ## Exact remaining universal hypothesis / STOP
 
-The previously suggested low-family theorem
+The previously suggested unconditional low-family theorem
 
 ```text
 raw {1,R} + subcritical S + one adjacent critical pair
@@ -195,18 +205,21 @@ raw {1,R} + subcritical S + one adjacent critical pair
 forces lambdaS • Q'' = 0
 ```
 
-is now finite-falsified. The strongest honest universal hypothesis left is the
-full-source statement itself: the complete legal R/S/mixed-derivative
-staircase must make the global transposed connection output
-`lambdaS • Q'' = 0`. No smaller profile-universal raw family has been
-identified.
+is finite-falsified without source capacity. The strongest honest target
+hypothesis left is a **capacity-aware** version: in the positive-surplus target
+profile, the complete legal R/S/mixed-derivative staircase (or a proved
+capacity-sufficient subfamily) must make the global transposed connection
+output `lambdaS • Q'' = 0`. No smaller capacity-aware universal raw family has
+yet been identified.
 
 The local nilpotent identity and two-seed legality remain valid ingredients,
 and the semantic `Q''` endpoint remains complete, but the missing bridge must
 use higher derivative shapes. Local binomial closure, aggregate rank counts,
 and the special constant-T or m5 receipts do not prove it. Do not claim that
 seed zero alone is universal, that the seed grade is `deg T`, that `Q''` is a
-factor of a local primal relation, or that the first mixed connector suffices.
+factor of a local primal relation, that the first mixed connector suffices
+without capacity, or that the negative-capacity m8 receipt refutes the target
+profile.
 
 ## Reproduction
 
