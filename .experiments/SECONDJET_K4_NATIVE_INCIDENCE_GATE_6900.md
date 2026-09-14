@@ -43,71 +43,81 @@ factor `81,732` for exact-agreement strata appears.  The complete chart cost
 uses only about `0.0256%` of the allowance.  Hence arithmetic and
 characteristic headroom are not the obstruction.
 
-## Correction: ordinary rank four is too strong
+## Retraction of the order-15 tangent proposal
 
-The first focus pass proposed ordinary gradient rank four.  The subsequent
-degree audit identifies a canonical fourth tangent direction.  On an
-agreement set, interpolate the received direction `u1` by a polynomial `h`
-of degree at most `A-1`; then
+The first focus pass proposed ordinary gradient rank four. A subsequent
+version of this note incorrectly replaced it by an order-15 osculating
+condition. On an agreement set, interpolate the received direction `u1` by
+a polynomial `h` of degree at most `A-1`; then
 
 ```text
 v = (h'',h,h',1)
 ```
 
-is the infinitesimal motion `(f,z) -> (f+t*h,z+t)` preserving the agreement
-values.  For `W=D4(Q)`, its base specialization degree is strictly below
-`(m-4)*A`, since
+is the formal motion `(f,z) -> (f+t*h,z+t)` preserving the agreement values.
+For `W=D4(Q)`, its specialization degree is strictly below `(m-4)*A`, since
 
 ```text
 4*(A-w+2) + 4*(w-2) = 4*A.
 ```
 
-Each directional replacement costs at most `A-w-1=49,341` in X degree.
-Consequently root multiplicity forces every directional coefficient through
-order 14 to be zero:
+This identity has already spent all four units of contact: `W` has contact
+only `m-4`, not `m`. There is consequently only the strict one-degree slack
+below `(m-4)A`. Each directional replacement costs at most
+`A-w-1=49,341` in X degree, so the first directional coefficient is already
+outside the root-count range. The literal target-legal endpoint
 
 ```text
-4*A - 14*(A-w-1) = +30,878,
-4*A - 15*(A-w-1) = -18,463.
+X^((m-4)A-1) * S^4
 ```
 
-Thus ordinary conormal rank is expected to be at most three; pointwise rank
-four must not be used as the endpoint.
+shows that the degree envelope is sharp. The earlier expression
+`4*A-14*(A-w-1)` subtracted the four-contact loss when constructing `W` and
+then incorrectly reused the same `4*A` as fresh tangent slack. The first
+root-count-unforced order is `1`, not `15`.
 
-## Corrected load-bearing theorem
+When `degree h <= w`, the motion is a legal polynomial pencil and its first
+coefficient genuinely annihilates the conormal. When `degree h > w`, tangent
+annihilation is not forced. This is exactly the distinction in the archived
+Global-O2 audits.
 
-The corrected target is a higher-osculation statement about the *actual*
-contact kernel:
+## Actual load-bearing theorem
+
+The route is therefore conditional on a rank-defect recovery statement about
+the *actual* derivative image:
 
 ```text
 for every retained selected (f,z),
-  the D4(V) conormal image has transverse rank 3, and
-  some row has nonzero order-15 Hasse coefficient along
-    v=(h'',h,h',1), modulo those three transverse equations.
+  rank over K(X) of grad_(S,Y,R,Z)(D4(V)) < 4
+    implies that u1 on its agreement set has an interpolant
+    h of degree <= w.
 ```
 
-This would make the point isolated with tangent intersection order at least
-15.  Its consumer needs local-intersection-length/Bezout bookkeeping rather
-than the regular-Jacobian wrapper.  A weaker acceptable output is a
-rank-deficient or order-15-zero component theorem whose candidates have a
-separately paid cover.  Kernel dimension `3,553,593,355` by itself proves
-neither form: a large kernel can consist of multiples of a common
-differential factor.
+On the retained/non-pencil branch this gives ordinary pointwise rank four,
+which permits the regular-Jacobian consumer. A weaker acceptable output is a
+rank-deficient component theorem whose candidates have a separately paid
+cover. Kernel dimension `3,553,593,355` by itself proves neither form: a
+large kernel can consist of multiples of a common differential factor, and
+a faithful small chamber in the companion discriminator has `D4(V)=0`
+despite kernel dimension `339`.
 
 The remaining formal consumer join is the already identified Fin4
-component/aggregate-degree producer.  The higher-osculation statement does
-not magically instantiate `AggregateDenseBlockBezoutOutput`; a
-multiplicity-aware source-to-minimal-component cover still has to be
-constructed honestly.
+component/aggregate-degree producer. Rank four does not magically
+instantiate `AggregateDenseBlockBezoutOutput`; the source-to-minimal-component
+cover still has to be constructed honestly.
 
 ## Immediate discriminator and stop rule
 
-Before building wrappers, compute both the derivative-gradient rank and the
-first degree-unforced tangent coefficient on faithful small second-jet
-contact kernels with actual selected graphs.  The binary target is transverse
-rank three plus a nonzero order-15 class, or an exact countercomponent.  A
-collection of generic samples is only evidence; it does not prove the target
-theorem.
+The companion executable
+`secondjet_candidate_major_function_field_rank_gate_6900.py` finds a
+faithful small chamber in which the complete D4 image is zero. This does not
+falsify target-specific noncollapse, but it kills any inference from total
+kernel dimension alone. It also checks the sharper zero-reserve source:
+low-degree tangents have exact rank three and twelve high-degree tangents
+have rank four. That behavior reproduces, rather than solves, the archived
+Global-O2 rank-defect-recovery blocker. Do not run more random grids; the next
+useful unit must be a symbolic recovery theorem or a target derivative-image
+lower bound.
 
 Do not fall back to top-curvature coefficient extraction.  Commit `47180ac`
 gives a kernel-checked Full187 counterexample and an exact `49,344*d`
