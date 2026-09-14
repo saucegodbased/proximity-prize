@@ -348,7 +348,10 @@ def coupled_k17_k18_dual_spec():
     to the three legal lanes A2=G^58*q, A72=a, A29=G^31*r.  The two
     normalized congruence rows have coefficient matrix
 
-      k17: (-27, 43, 0),   k18: (1, 1, 1).
+      k17: (a1, 1, 0),   k18: (a2, 1, 1),
+
+    where a1=P17(2)/P17(72) and a2=P18(2)/P18(72).  It is
+    essential to evaluate these literal products: P18(2) is not P18(72).
 
     Residue pairing, and embedding a dual modulo E^17 into E^18 by
     multiplication by E, reduce the full left-dual question to a structured
@@ -373,11 +376,32 @@ def coupled_k17_k18_dual_spec():
             r_remainder_window, lift_kernel_window) == (
                 83_490, 1_372_474, 40_240, 1_759)
 
-    # Let x=E*g17 and y=g18.  The paired lane equations are
-    # gA=43*x+y and gQ=-27*x+y, hence gA-gQ=70*x is divisible by E.
+    def eval_p18(n):
+        return prod((n - root) % P for root in range(30, 72)) % P
+
+    c18q, c18r, c18a = (eval_p18(n) for n in (2, 29, 72))
+    c17q = (2 - 29) * c18q % P
+    c17a = (72 - 29) * c18a % P
+    determinant = (c17q * c18a - c18q * c17a) % P
+    assert (c17q, c17a, c18q, c18a, c18r) == (
+        842_546_268, 1_616_860_076, 1_389_265_538,
+        1_276_384_207, 1_276_384_207)
+    assert determinant == 865_507_203
+    assert pow(determinant, -1, P) == 471_227_111
+    a1 = c17q * pow(c17a, -1, P) % P
+    a2 = c18q * pow(c18a, -1, P) % P
+    normalized_determinant = (a1 - a2) % P
+    assert (a1, a2, normalized_determinant) == (
+        931_238_467, 95_217_577, 836_020_890)
+    assert normalized_determinant == (
+        determinant * pow(c17a * c18a % P, -1, P) % P)
+
+    # Divide the two rows by c17a and c18a.  Let x=E*g17 and
+    # y=g18 be their duals.  The paired lane equations are
+    # gA=x+y and gQ=a1*x+a2*y.  Thus gA-y is divisible by E.
     # Conversely, choose y=G^-31*r0 mod E^18 with deg r0<40240 and
     # gA=(y mod E)+E*z with deg z<1759.  Then
-    # gQ=(70*y-27*gA)/43.  Only the high 98684 coefficients of
+    # gQ=a1*gA+(a2-a1)*y.  Only the high 98684 coefficients of
     # G^58*gQ mod E^18 remain to be forced to zero.
     reduced_variables = r_remainder_window + lift_kernel_window
     reduced_equations = q_width
@@ -389,7 +413,7 @@ def coupled_k17_k18_dual_spec():
     assert primal_rows == 2_860_585
     assert reduced_equations - reduced_variables == (
         primal_variables - primal_rows) == 56_685
-    assert (-27 * 1 - 43 * 1) % P == (-70) % P != 0
+    assert normalized_determinant != 0
 
     return {
         "Euler_polynomials": {
@@ -401,20 +425,28 @@ def coupled_k17_k18_dual_spec():
             "A72=a, deg a<1387668",
             "A29=G^31*r, deg r<1430918",
         ),
-        "normalized_rows_q_a_r": ((-27, 43, 0), (1, 1, 1)),
-        "q_a_minor_determinant": -70,
+        "literal_rows_q_a_r": (
+            (c17q, c17a, 0), (c18q, c18a, c18r)),
+        "literal_q_a_minor_determinant_and_inverse": (
+            determinant, pow(determinant, -1, P)),
+        "normalized_rows_q_a_r": ((a1, 1, 0), (a2, 1, 1)),
+        "normalized_q_a_minor_determinant": normalized_determinant,
         "primal_variables_rows_surplus": (
             primal_variables, primal_rows, primal_variables - primal_rows),
         "dual_parameterization": (
             "M=E^18; choose r0 in W_40240 and z in W_1759; "
             "y=G^-31*r0 mod M; gA=(y mod E)+E*z; "
-            "gQ=(70*y-27*gA)/43"),
+            "gQ=a1*gA+(a2-a1)*y, where "
+            "(a1,a2)=(931238467,95217577)"),
         "remaining_equations": (
             "deg(G^58*gQ mod E^18)<1372474, i.e. its final 98684 "
             "coefficients vanish"),
         "reduced_variables_equations_defect": (
             reduced_variables, reduced_equations,
             reduced_equations - reduced_variables),
+        "invalidated_prior_constants": (
+            "The rows (-27,43,0),(1,1,1) from commit 706480b were "
+            "incorrect because they silently equated P18(2) and P18(72)."),
         "status": "OPEN_EXACT_41999_BY_98684_STRUCTURED_INJECTIVITY_GATE",
     }
 

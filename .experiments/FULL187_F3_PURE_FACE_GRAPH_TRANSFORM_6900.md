@@ -108,10 +108,27 @@ A72 = a,        deg a < 1,387,668,
 A29 = G^31 r,   deg r < 1,430,918.
 ```
 
-After nonzero row normalization, the `E^17,E^18` congruences have coefficient
-rows `(-27,43,0)` and `(1,1,1)` on `(q,a,r)`.  Their `q,a` determinant is
-`-70`, nonzero in the target field.  The primal restricted map has 2,917,270
-variables and 2,860,585 rows, hence surplus 56,685.
+**Correction to commit `706480b`.**  Its rows `(-27,43,0)` and `(1,1,1)`
+were wrong: that derivation silently replaced `P18(2)` by `P18(72)`.  The
+literal target-field products are
+
+```text
+(P17(2), P17(72))                = (842546268, 1616860076),
+(P18(2), P18(72), P18(29))       = (1389265538,1276384207,1276384207).
+```
+
+The literal `q,a` minor is `865507203`, with inverse `471227111`, so the rank
+and dimension reduction survive.  Divide the two rows by their `a`
+coefficients and put
+
+```text
+a1 = P17(2)/P17(72) = 931238467,
+a2 = P18(2)/P18(72) =  95217577.
+```
+
+The correct normalized rows on `(q,a,r)` are `(a1,1,0)` and `(a2,1,1)`;
+their determinant is `a1-a2=836020890`, nonzero.  The primal restricted map
+still has 2,917,270 variables and 2,860,585 rows, hence surplus 56,685.
 
 Residue pairing reduces its left kernel without a dense matrix.  Put
 `M=E^18`.  Every candidate dual is uniquely parameterized by
@@ -120,7 +137,7 @@ Residue pairing reduces its left kernel without a dense matrix.  Put
 r0 in W_40240,  z in W_1759,
 y  = G^-31 r0 mod M,
 gA = (y mod E) + E z,
-gQ = (70 y - 27 gA)/43.
+gQ = a1 gA + (a2-a1) y.
 ```
 
 The only remaining condition is
