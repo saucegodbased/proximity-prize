@@ -11,13 +11,13 @@ That replacement theorem is already false in a literal nonzero-node,
 retained-bad control with the analogous safe polytope and positive dimension
 surplus.
 
-The same control is nevertheless **GREEN for the weaker four-boundary gate
-over the fraction field**: after deleting its unsafe terminal shape, the
-complete contact kernel has boundary rank four over `F_1009(X)`.  Thus the
-new restriction is not killed; it narrows the honest next gate to direct
-coefficientwise containment of the four named agreement packets.  The
-fraction-field rank alone does not prove that stronger strict-window
-containment.
+The same control is nevertheless **GREEN for both relevant four-packet
+gates**.  After deleting its unsafe terminal shape, the complete contact
+kernel has boundary rank four over `F_1009(X)`.  More strongly, its exact
+coefficientwise boundary image jointly contains the four named agreement
+packets `F0,F1,F2,F3`.  Thus the new restriction survives its first strongest
+faithful finite discriminator.  This remains a finite control, not the target
+recurrence theorem.
 
 ## 1. Independently recomputed target ledger
 
@@ -116,22 +116,50 @@ right kind of evidence for the actual four-normal objective and explains why
 the much stronger blanket theorem should be discarded rather than treating
 the restriction itself as red.
 
-## 3. Scope and next decisive gate
+## 3. Direct coefficientwise four-packet gate
 
-The GREEN fact is fraction-field boundary rank.  It permits rational-function
-linear combinations of complete-contact kernel vectors.  It does **not** yet
-show that the four named agreement-side sections `F0,F1,F2,F3` admit
-coefficientwise corrections inside every strict source window.
+To remove the fraction-field ambiguity, the executable also builds the exact
+agreement sections.  The first three are the standard centered locator
+normals.  The fourth is
 
-The next discriminator must therefore construct those four packet columns
-explicitly and check joint containment in the error-contact image of
+```text
+B  = Lambda_H^(m-1) Lambda_(G\H)^m,
+F3 = B (Y - Z q_H),
+```
+
+with `H={1,...,11}` and `q_H` the degree-at-most-`w` interpolant of `u1` on
+`H`.  Here `q_H=0`, whereas `Q_G-q_H` has degree 11, so the fourth direction
+is genuinely independent by retained badness.  All four rows are checked to
+belong to the restricted source and to have literal zero contact at every
+agreement node.
+
+The coefficient boundary has 245 positions.  The restricted complete-contact
+kernel maps to a 24-dimensional subspace of it.  Exact bordered ranks give
+
+```text
+individual defects (F0,F1,F2,F3) = (0,0,0,0)
+joint four-column defect           = 0
+error contact support sizes        = (65,70,85,70)
+```
+
+This is equivalent to simultaneous coefficientwise containment of the four
+packet contacts in the error-contact image of
 
 ```text
 ker(agreement contact) intersect ker(boundary),
 ```
 
-with the 105-shape terminal restriction imposed.  For the fourth packet one
-must use the retained-bad exact-cardinality row
+for this finite control: subtract each complete-kernel representative from
+its named agreement section.  It is strictly stronger than merely seeing
+rank four after extending to `F_1009(X)`.
+
+## 4. Scope and next decisive gate
+
+The control shows that the safe-terminal restriction and the exact fourth
+packet are mutually compatible.  It does not prove uniform target
+coefficient propagation through 2,703 passive grades.  The remaining theorem
+must orient the target transition recurrence while preserving the four atomic
+packet columns.  In particular, one must keep the exact fourth row
 
 ```text
 B  = Lambda_H^(m-1) Lambda_(G\H)^m,
@@ -142,7 +170,7 @@ where `|H|=w+1` and `q_H` interpolates `u1` on `H`.  Zero-containing toy
 domains are not admissible negative evidence for the target's residual-`Z`
 mechanism.
 
-## 4. Reproduction
+## 5. Reproduction
 
 ```text
 prlimit --as=4294967296 --cpu=900 -- \

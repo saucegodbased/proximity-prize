@@ -10,7 +10,9 @@ It provides:
 
 * an independently recomputed exact target dimension ledger; and
 * literal finite controls with the analogous safe polytope computed from the
-  same inequalities, not selected by hand.
+  same inequalities, not selected by hand; and
+* direct coefficientwise containment of the exact F0,F1,F2,F3 packets in the
+  boundary image of the restricted complete-contact kernel.
 
 For a contact matrix C and a four-row boundary matrix B(x),
 
@@ -40,6 +42,7 @@ from flint import nmod_mat
 sys.path.insert(0, ".experiments")
 from higher_jet_literal_matrix import translated_column  # noqa: E402
 import asymmetric_second_jet_6900 as H  # noqa: E402
+import o2_m60_five_pivot_locator_rhs_falsifier_6900 as F  # noqa: E402
 import prime_o2_conormal_threshold_falsifier as S  # noqa: E402
 
 
@@ -257,6 +260,17 @@ def compact_nullspace(matrix: nmod_mat, prime: int):
     return compact, nullity
 
 
+def horizontal_concat(left: nmod_mat, right: nmod_mat,
+                      prime: int) -> nmod_mat:
+    assert left.nrows() == right.nrows()
+    return nmod_mat(left.nrows(), left.ncols() + right.ncols(), [
+        int(left[i, j]) if j < left.ncols()
+        else int(right[i, j - left.ncols()])
+        for i in range(left.nrows())
+        for j in range(left.ncols() + right.ncols())
+    ], prime)
+
+
 def pivot_columns_of_rref(matrix: nmod_mat):
     reduced, rank = matrix.rref()
     pivots = []
@@ -288,6 +302,47 @@ def boundary_vectors(monomials, coefficients, prime):
                                 for i in range(max(polynomial, default=-1) + 1)))
         vectors.append(tuple(vector))
     return tuple(vectors)
+
+
+def add_scaled(target, source, scalar, prime):
+    for row, value in source.items():
+        new = (target.get(row, 0) + scalar * value) % prime
+        if new:
+            target[row] = new
+        else:
+            target.pop(row, None)
+
+
+def exact_four_normals(case, agreement, anchors, direction):
+    """Build the exact-cardinality F0,F1,F2,F3 packet."""
+    prime, m = case["prime"], case["m"]
+    F.PRIME = prime
+    F.MULTIPLICITY = m
+    F.GAMMA = 0
+    locator_g = F.locator(agreement)
+    first_three = F.centered_locator_normals(locator_g, (0,), direction)
+    q_h_raw = S.interpolate(
+        tuple(poly_eval(direction, node, prime) for node in anchors),
+        anchors)
+    q_h = F.poly_trim(q_h_raw)
+    assert len(q_h) - 1 <= case["w"]
+    assert all(F.poly_eval(q_h, node) == F.poly_eval(direction, node)
+               for node in anchors)
+    complement = tuple(node for node in agreement if node not in anchors)
+    lambda_h = F.locator(anchors)
+    lambda_b = F.locator(complement)
+    factor = F.poly_mul(
+        F.poly_pow(lambda_h, m - 1), F.poly_pow(lambda_b, m))
+    bracket = F.sparse_add(
+        F.Y, F.sparse_mul(F.Z, F.sparse_embed_x(q_h)), -1)
+    fourth = F.sparse_mul(F.sparse_embed_x(factor), bracket)
+    return first_three + (fourth,), {
+        "agreement_locator_degree": len(locator_g) - 1,
+        "anchor_interpolant_q_H_coefficients": q_h,
+        "partial_locator_factor_degree": len(factor) - 1,
+        "relative_direction_Q_G_minus_q_H_degree": len(
+            F.poly_add(direction, q_h, -1)) - 1,
+    }
 
 
 def literal_control(direction: str):
@@ -399,6 +454,73 @@ def literal_control(direction: str):
     restricted_contact_rank = (
         contact_rank + kernel_boundary_rank - full_boundary_rank)
 
+    coefficientwise_packet_gate = None
+    if direction == "retained_bad":
+        normals, normal_data = exact_four_normals(
+            case, agreement, anchors, bad_polynomial)
+        monomial_index = {monomial: index
+                          for index, monomial in enumerate(monomials)}
+        assert all(all(monomial in monomial_index for monomial in normal)
+                   for normal in normals)
+
+        # Literal agreement-contact check for each named row.  Their contact
+        # images may be nonzero only on error nodes.
+        normal_contact_supports = []
+        for normal in normals:
+            image = {}
+            for monomial, scalar in normal.items():
+                add_scaled(image, all_columns_by_monomial[monomial],
+                           scalar, prime)
+            assert not any(node in agreement for node, _local in image)
+            assert any(node in errors for node, _local in image)
+            normal_contact_supports.append(len(image))
+
+        units = (
+            (1, 0, 0, 0), (0, 1, 0, 0),
+            (0, 0, 1, 0), (0, 0, 0, 1),
+        )
+        boundary_positions = tuple(
+            (coordinate, xp)
+            for coordinate, unit in enumerate(units)
+            for xp in range(D)
+            if (xp,) + unit in monomial_index)
+        boundary = nmod_mat(len(boundary_positions), len(monomials), [
+            int(column == monomial_index[(xp,) + units[coordinate]])
+            for coordinate, xp in boundary_positions
+            for column in range(len(monomials))
+        ], prime)
+        coefficient_image = boundary * kernel
+        targets = tuple(tuple(
+            normal.get((xp,) + units[coordinate], 0) % prime
+            for coordinate, xp in boundary_positions)
+            for normal in normals)
+        target_matrix = nmod_mat(len(boundary_positions), 4, [
+            targets[column][row]
+            for row in range(len(boundary_positions))
+            for column in range(4)
+        ], prime)
+        image_rank = coefficient_image.rank()
+        individual_defects = []
+        for target in targets:
+            vector = nmod_mat(len(boundary_positions), 1, target, prime)
+            individual_defects.append(
+                horizontal_concat(coefficient_image, vector, prime).rank()
+                - image_rank)
+        joint_defect = horizontal_concat(
+            coefficient_image, target_matrix, prime).rank() - image_rank
+        coefficientwise_packet_gate = {
+            **normal_data,
+            "boundary_coefficient_position_count": len(boundary_positions),
+            "complete_kernel_coefficient_boundary_image_rank": image_rank,
+            "normal_contact_supports_F0_F1_F2_F3": tuple(
+                normal_contact_supports),
+            "all_four_source_legal_and_agreement_contact_zero": True,
+            "individual_coefficientwise_defects_F0_F1_F2_F3": tuple(
+                individual_defects),
+            "joint_coefficientwise_defect": joint_defect,
+            "all_four_coefficientwise_contained": joint_defect == 0,
+        }
+
     return {
         "direction": direction,
         "nodes_agreements_errors_anchors": (
@@ -419,6 +541,7 @@ def literal_control(direction: str):
         "contact_rank_on_zero_boundary_and_defect": (
             restricted_contact_rank, len(rows) - restricted_contact_rank),
         "zero_boundary_contact_surjective": restricted_contact_rank == len(rows),
+        "exact_four_packet_coefficientwise_gate": coefficientwise_packet_gate,
     }
 
 
@@ -465,10 +588,11 @@ def main() -> None:
         "decision": (
             "STOP blanket contact-on-zero-boundary surjectivity: the exact "
             "retained-bad control has defect 156 despite positive Euler "
-            "room. GREEN only for the weaker fraction-field four-boundary "
-            "image gate: the restricted complete-contact kernel has rank 4 "
-            "over F_1009(X). This does not yet certify coefficientwise "
-            "strict-window containment of four named packet columns."),
+            "room. GREEN for both weaker relevant gates: the restricted "
+            "complete-contact kernel has boundary rank 4 over F_1009(X), "
+            "and its coefficientwise boundary image jointly contains the "
+            "four exact F0,F1,F2,F3 packet columns in this control. This is "
+            "finite evidence, not the target recurrence theorem."),
         "peak_rss_kib": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
     }
     canonical = json.dumps(result, sort_keys=True, separators=(",", ":"))
