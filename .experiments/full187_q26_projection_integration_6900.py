@@ -201,6 +201,19 @@ def main():
                 "1,111 unrelated capacity coordinates."
             ),
         },
+        "weak_projection_q26_common_coefficient": {
+            "formula": (
+                "R_s=binom(61,8)*U1^53*H26(C_s)"
+                "+sum_{f=8}^{57}binom(f,8)*U1^(f-8)*H26(P_{f,s})"),
+            "contributors_per_stream_and_total_expanded_provenance": (
+                51, 11 * 45 * 51),
+            "required_general_FD9_prescription": (
+                "H_(26-k)(Q_(k,s))=(-1)^k*binom(9,k)*R_s"),
+            "specialization_guard": (
+                "The older coefficient binom(61,8)U1^53H26(C_s) is valid "
+                "only for a section setting every unprescribed H26(P_f,s) "
+                "to zero. The universal prescription uses the full R_s."),
+        },
         "subsumption_verdict": (
             "STRICT_EXTENSION: 7504148 leaves all 495 f8,q26 origins in the "
             "strong-capacity residual; FD9 removes their degree<=8 physical "
@@ -215,8 +228,14 @@ def main():
             "construct or prove collision-freedom of the remaining global "
             "simultaneous capacity section."
         ),
+        "complete_depth_supersession_guard": (
+            "This compatibility statement is ONLY for commit 7504148. "
+            "Commit 2d678e8 prescribes q=0..25 in all 99 FD coordinates, "
+            "so the jet sets then collide. The exact adapted-basis rank gate "
+            "full187_q26_complete_depth_rank_6900.py proves all eleven q26 "
+            "classes remain independent modulo that stronger source box."),
         "exact_fourth_packet": "F3=B*(Y-P-(Z-gamma)*q_H)",
-        "decision": "GREEN_Q26_STRICTLY_EXTENDS_AND_JET_COMPATIBLE",
+        "decision": "GREEN_ONLY_VS_WEAK_750__STOP_VS_COMPLETE_DEPTH_2D678E8",
     }
     canonical = json.dumps(stable, sort_keys=True, separators=(",", ":"))
     print(json.dumps({

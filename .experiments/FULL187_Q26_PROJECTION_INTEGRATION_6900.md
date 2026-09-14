@@ -4,10 +4,20 @@ Date: 2026-09-14 UTC. Scope: exact targeted integration of commits `7504148`
 and `d1620d8`; lower-6900 research only. Production and submission files are
 unchanged.
 
+> **Supersession guard (2026-09-14):** the GREEN statement below is only
+> about the weaker `7504148` projection.  It does **not** extend to the
+> complete-depth projection `2d678e8`, which prescribes every q=0,...,25 jet
+> in this d=29 sector.  The exact corrective gate
+> `full187_q26_complete_depth_rank_6900.py` finds source rank 4862/4862 and
+> augmented rank 4873: all eleven q26 blocks remain independent in the
+> complete-depth quotient.  See
+> `FULL187_Q26_COMPLETE_DEPTH_RANK_STOP_6900.md`.
+
 ## Verdict
 
 The ninth-difference q26 construction is a **strict extension** of the new
-all-noncapacity Pascal projection, not a duplicate of it.
+all-noncapacity Pascal projection `7504148`, not a duplicate of it.  This
+sentence is deliberately not a claim about `2d678e8`.
 
 ```text
 7504148 projects every non-strong-capacity terminal top block.
@@ -85,6 +95,25 @@ Thus commit `7504148` is correct to leave this slice in its residual quotient.
 Trying to add the q26 jet to the same direct `P8_s` would require depth 27.
 Its strict window misses `27N` by 54,136 through 54,146 coefficients. This is
 exactly the obstruction proved in `249b160`.
+
+The common q26 coefficient after an arbitrary weak-Pascal section is not just
+the original `C_s` coefficient.  It is
+
+```text
+R_s = binom(61,8) U1^53 H26(C_s)
+    + sum_(f=8)^57 binom(f,8) U1^(f-8) H26(P_(f,s)).
+```
+
+This is 51 provenance contributors per stream (25,245 expanded provenance
+terms over the eleven streams and 45 contact monomials).  The universal FD9
+prescription is therefore
+
+```text
+H_(26-k)(Q_(k,s)) = (-1)^k binom(9,k) R_s.
+```
+
+The earlier specialized coefficient is valid only if the chosen section sets
+all the unused `H26(P_(f,s))` jets to zero.
 
 ## 2. The 99 reused physical coordinates
 
@@ -177,15 +206,15 @@ prlimit --as=1073741824 --cpu=120 -- \
 Recorded run:
 
 ```text
-exit 0; elapsed 1.3 s; peak RSS 18,456 KiB
-canonical sha256 207bb32e60a409e0b77b052866edf24a16feb05dc72f0d19c37998b6c7017011
-script sha256    a19d3f16b1dce50741f1a661179b79aaf24b19bba6dada32dc067f56a309c176
+exit 0; elapsed 1.1 s; peak RSS 17,208 KiB
+canonical sha256 5c3b9ef0b82baa30d45d40b1f1c4b4f29fccf5808ac8924623533fa825c0af5e
+script sha256    03fa7a2be309b605d38c5656d3c370ee2e5e64eb259c4be581e7446cd6e30cfc
 ```
 
 Decision:
 
 ```text
-GREEN_Q26_STRICTLY_EXTENDS_AND_JET_COMPATIBLE
+GREEN_ONLY_VS_WEAK_750__STOP_VS_COMPLETE_DEPTH_2D678E8
 ```
 
 The fourth packet remains exactly
