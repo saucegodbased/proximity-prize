@@ -322,6 +322,44 @@ script SHA-256:
   34f9c98e89abcedd2cd8d545a87e5ad1fd74a92590419786795ec028ecfb3ee9
 ```
 
+### Exact ordered shape-group attribution
+
+A lower-memory exact test orders the complete source as follows:
+
+```text
+stage                                      columns   contact rank   nullity   gain
+selected low family                          9,964          9,964         0      0
++ all 258 remaining S                       10,222         10,222         0      0
++ all 2,640 R^2                             12,862         12,862         0      0
++ all 2,195 R^3                             15,057         15,057         0      0
++ all 2,622 remaining S R (complete source) 17,679         17,411       268      4
+```
+
+The new computation does not rerun the complete 5.5-GiB elimination. It
+restricts every node to the same 2,179 literal term coordinates obtained as
+the pivot columns of node zero's exact 17,679-by-2,965 local transpose. The
+resulting 17,432-by-15,057 matrix has full column rank 15,057. A row
+restriction cannot increase column rank, so this is an exact certificate that
+the literal contact map is injective at the last tested prefix and therefore
+at every preceding prefix. No augmented run is needed while the contact
+kernel is zero.
+
+Combined with the independently certified complete ranks, the remaining raw
+`S R` group is the first group that creates any kernel in this ordering and,
+collectively, it changes boundary gain from zero to four. This is
+order-relative attribution: it does not prove that `S R` is indispensable
+under every alternative ordering, nor identify the first individual
+`Y/Z/X` subband inside `S R`.
+
+```text
+canonical d3e068ea4f05c405c1f1bea66e78def9ed8212be26a32a54b8a973225be8aa9f
+runtime 409.291 s; peak RSS 3,011,588 KiB
+selected-coordinate SHA-256
+  9168e854040c8b35db13547b6e95b00760a030a078cbd448d36923c11c27fd27
+script SHA-256
+  f901c531eb734b8b8458678a590974f3cb848a68c5789a1531d0499bb0250503
+```
+
 ## Reproduction
 
 ```text
@@ -344,6 +382,10 @@ k0_second_exact_chamber_capacity_positive_gate_6900.py
 k0_second_exact_chamber_full_source_rank_gate_6900.py
   --mode contact:   rank 17411; canonical 3ebfbdb8b5583f4384e4bb1d862b96a440de9322b0329f71b736378d2c4cf8af
   --mode augmented: rank 17415; canonical 4cc1465cab2e6c01795573d9969acba36ef585ecc1998835f2cd8188cb8e200f
+
+k0_capacity_positive_layer_attribution_6900.py
+  projected prefix rank 15057/15057
+  canonical d3e068ea4f05c405c1f1bea66e78def9ed8212be26a32a54b8a973225be8aa9f
 ```
 
 Every run was deterministic. The full-source modes were run sequentially and
