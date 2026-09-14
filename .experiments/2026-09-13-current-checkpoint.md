@@ -487,3 +487,30 @@ identify that iteration with the exact HPL transfer at seed 2703.
 ```
 
 This is a real mechanism reduction, not yet THREE-RHS or a candidate.
+
+## 2026-09-14 correction: fixed carriers and first-shell extrapolation STOP
+
+Do not continue the fixed weighted-order-four/full11 trellis described in the
+late 2026-09-13 notes. Commit `cd384ce` supplies a cap-rich nonvacuous
+counterexample for the **complete legal** full11 module, including coupled
+cancellation of individually illegal generators. The lower source plus 248
+independent legal carrier modes still leaves all three locator-normal classes;
+three explicit annihilating duals pair with `(F0,F1,F2)` with determinant
+`40 mod 101`.
+
+The centered mixed-shell evidence also has a newly measured phase boundary.
+At `m=5`, support constraints on the complete affine fibre yield a genuine
+12-shape pure-`V`/`V1` lift family. At `m=6`, however, the complete contact
+kernel has dimension 44 and the 23 canonical top shapes are jointly
+inclusion-minimal: removing every `V2` shape is red, and removing any one
+canonical shape loses target containment. At `m=7`, the complete prefixes
+through both `J` and `J+1` are injective (ranks `5260/5260` and `6119/6119`),
+so the attempted first-shell lift does not exist in that chamber.
+
+The detailed receipt is
+`FULL187_FULL11_STOP_AND_AFFINE_FIBRE_PHASE_PIVOT_6900.md`. The live path is
+now the target-specific transposed four-residue filtered mapping cone
+(THREE-RHS plus Z1), with the literal 187 channels and physical strip widths.
+A graph-level reachability result is only a preflight; the required endpoint
+is either a symbolic annihilation proof or an explicit legal dual separator.
+No 6900 candidate exists, and production remains the accepted 6806 baseline.
