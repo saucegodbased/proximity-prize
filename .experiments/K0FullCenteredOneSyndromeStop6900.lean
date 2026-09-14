@@ -103,6 +103,66 @@ theorem affine_F3_not_square_multiple
     rw [heq] at hleft_degree
     omega
 
+/-- Even after adjoining every zero-boundary `W * C_1` carrier, the pure
+full-centered trace space is still contained in the principal ideal `(a)`.
+At a genuine direction mismatch, the affine F3 trace is not in that ideal.
+-/
+theorem affine_F3_not_multiple
+    (delta epsilon eta B : K) (hdelta : delta ≠ 0)
+    (hepsilon : epsilon ≠ 0) (heta : eta ≠ epsilon) (hB : B ≠ 0)
+    (p : K[X]) :
+    affineResidual delta epsilon * p ≠
+      Polynomial.C B *
+        (Polynomial.C delta + Polynomial.C eta * Polynomial.X) := by
+  let rho : K := -delta / epsilon
+  have hroot : (affineResidual delta epsilon).eval rho = 0 := by
+    dsimp only [rho, affineResidual]
+    simp only [Polynomial.eval_add, Polynomial.eval_C, Polynomial.eval_mul,
+      Polynomial.eval_X]
+    field_simp [hepsilon]
+    ring
+  have htarget :
+      (Polynomial.C B *
+        (Polynomial.C delta + Polynomial.C eta * Polynomial.X)).eval rho ≠ 0 := by
+    simp only [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_add,
+      Polynomial.eval_X]
+    apply mul_ne_zero hB
+    dsimp only [rho]
+    intro hzero
+    have hid :
+        epsilon * (delta + eta * (-delta / epsilon)) =
+          delta * (epsilon - eta) := by
+      field_simp [hepsilon]
+      ring
+    have hprod : delta * (epsilon - eta) = 0 := by
+      rw [← hid, hzero, mul_zero]
+    exact (mul_ne_zero hdelta (sub_ne_zero.mpr heta.symm)) hprod
+  intro heq
+  have heval := congrArg (fun q : K[X] => q.eval rho) heq
+  simp only [Polynomial.eval_mul, hroot, zero_mul] at heval
+  apply htarget
+  rw [Polynomial.eval_mul]
+  exact heval.symm
+
+/-- The entire contact-constant trace of zero-boundary pure centered
+carriers is of the form `a^2*p + W*a*q`: powers `k>=2` enter the first
+summand and `W^z*C_1`, `z>=1`, enter the second.  Hence those two families
+together still miss F3 whenever its affine slope differs from the actual
+direction mismatch. -/
+theorem affine_F3_not_in_zeroBoundary_centered_span
+    (delta epsilon eta B : K) (hdelta : delta ≠ 0)
+    (hepsilon : epsilon ≠ 0) (heta : eta ≠ epsilon) (hB : B ≠ 0)
+    (p q : K[X]) :
+    affineResidual delta epsilon ^ 2 * p +
+        Polynomial.X * affineResidual delta epsilon * q ≠
+      Polynomial.C B *
+        (Polynomial.C delta + Polynomial.C eta * Polynomial.X) := by
+  rw [show affineResidual delta epsilon ^ 2 * p +
+        Polynomial.X * affineResidual delta epsilon * q =
+      affineResidual delta epsilon *
+        (affineResidual delta epsilon * p + Polynomial.X * q) by ring]
+  exact affine_F3_not_multiple delta epsilon eta B hdelta hepsilon heta hB _
+
 /-- Consequently an arbitrary finite family of full-centered powers
 `k>=2` misses the same literal affine F3 trace at every mismatched error.
 This already permits arbitrary polynomial coefficients, so it includes all
@@ -175,6 +235,8 @@ theorem target_full_centered_shape_caps
 
 #print axioms sum_ge_two_powers_eq_square_mul
 #print axioms affine_F3_not_square_multiple
+#print axioms affine_F3_not_multiple
+#print axioms affine_F3_not_in_zeroBoundary_centered_span
 #print axioms affine_F3_not_in_ge_two_family
 #print axioms one_error_full_centered_family_counterexample
 #print axioms target_worst_full_centered_weight

@@ -31,9 +31,11 @@ polynomial variable, not an adically completed or truncated variable.
 In `K[W]`, the units are nonzero constants; `delta_e+epsilon_e W` is a unit
 exactly in the matched case `epsilon_e=0`.
 
-This stops only the requested `k>=2` pure family. It does not stop a coupled
-family containing a linear `A_G` trace, R/S companions, or other complete
-source columns.
+The strengthened receipt also covers every automatically zero-boundary
+linear carrier `W^z C_1`, `z>=1`.  Together those traces generate only the
+principal ideal `(a_e)`, so they still miss F3 whenever
+`eta_e!=epsilon_e`, equivalently `T(e)!=0`.  It does not stop R/S companions
+or other complete-source columns, nor the special errors at roots of `T`.
 
 ## 1. Literal local traces
 
@@ -92,6 +94,22 @@ nonzero polynomial of degree at most one.
 If `epsilon_e!=0`, then `a_e` has degree one. Every nonzero element of
 `(a_e^2)` has degree at least two, so `(F3)` is not in `(SQ)`. This includes
 the special case `eta_e=epsilon_e`: then F3 has one copy of `a_e`, not two.
+
+There is one natural enlargement.  Since `W*C_1` has zero first boundary
+jet, all such linear-carrier shifts may be added.  Their traces and the
+`k>=2` traces have the general form
+
+```text
+a_e(W)^2 p(W) + W*a_e(W) q(W)
+ = a_e(W) * (a_e(W)p(W)+Wq(W)).                       (LIN)
+```
+
+Because `delta_e!=0`, the ideal `(a_e,W)` is the unit ideal, so `(LIN)`
+fills exactly `(a_e)`.  Evaluating at the root `W=-delta_e/epsilon_e`
+shows that F3 belongs to this ideal only if `eta_e=epsilon_e`.  Hence if
+`epsilon_e!=0` and `T(e)!=0`, even the complete automatically
+zero-boundary pure-centered family misses F3.  This is stronger than the
+square obstruction and makes an R/S/non-scalar channel genuinely necessary.
 
 Therefore one mismatched error proves
 
@@ -159,12 +177,13 @@ fits the literal active, seed, slope, and curvature caps. The millions of
 available `(k,z)` columns therefore still live in the same proper ideal at
 one mismatched node.
 
-The two omitted exponents explain why the square is unavoidable:
+The two lowest exponents explain the ideal boundary:
 
 * `C_0=Lambda_G^m` hits weighted degree `mg` and violates the strict source
   cutoff;
 * `C_1=Lambda_G^(m-1)A_G` has only one residual factor but carries a nonzero
-  first boundary jet, so it is not an automatic zero-boundary correction.
+  first boundary jet. Multiplying it by `W` removes that jet, but the enlarged
+  trace space is still only `(a_e)`, as `(LIN)` proves.
 
 Any revival must cancel the boundary jet of a linear-residual carrier using
 other source shapes without reintroducing its error syndrome. That is the
@@ -175,7 +194,8 @@ coupled recurrence problem, not a pure-power argument.
 Stopped:
 
 ```text
-literal F3 one-syndrome correction by pure C_k, k>=2          RED
+literal F3 correction by pure C_k, k>=2                      RED
+add every zero-boundary W^z*C_1 at an error with T(e)!=0      RED
 repair by arbitrary legal X shifts                           RED
 repair by arbitrary legal passive-seed shifts                RED
 claim that delta!=0 makes A_G a unit in the target K[W]       FALSE
@@ -184,7 +204,7 @@ claim that delta!=0 makes A_G a unit in the target K[W]       FALSE
 Still open:
 
 ```text
-zero-boundary combinations retaining a linear A_G trace       OPEN
+pure-centered repair at errors where T(e)=0                   OPEN
 R/S/osculating or complete-source coupled recurrence          OPEN
 rank-adaptive four-boundary theorem                            OPEN
 globally matched epsilon=0 adjacent-carrier branch             OPEN
@@ -203,6 +223,8 @@ requires its own complete-contact argument.
 ```text
 sum_ge_two_powers_eq_square_mul
 affine_F3_not_square_multiple
+affine_F3_not_multiple
+affine_F3_not_in_zeroBoundary_centered_span
 affine_F3_not_in_ge_two_family
 one_error_full_centered_family_counterexample
 target_worst_full_centered_weight
@@ -214,4 +236,3 @@ target_full_centered_shape_caps
 It compiled under the task-local 8 GiB cap in under three seconds. Printed
 axioms are only `propext`, `Classical.choice`, and `Quot.sound`. It contains
 no `sorry`, `admit`, `decide`, or `native_decide`.
-
