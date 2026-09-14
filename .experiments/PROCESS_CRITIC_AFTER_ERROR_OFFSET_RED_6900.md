@@ -19,12 +19,27 @@ source blocks, their three correlated outputs, strict coefficient windows,
 and a precommitted non-low-degree error word. This revives the full187
 filtered-map route; it does not revive the falsified restricted-safe103 claim.
 
+**Contract correction after `f7330e6`:** the fourth residue is the literal
+partial-locator packet
+
+```text
+F3 = B * (Y - P - (Z-gamma) q_H),
+B  = Xi_H^59 Xi_(G\H)^60,
+```
+
+together with its complete error-contact syndrome. A pure `Z1` impulse is a
+useful negative diagnostic in `242891b`, but it is not equivalent to F3 and
+must never seed the target transpose.
+
 ## Ranked GO / STOP
 
 1. **GO now — full187 charge-13 transpose, one cycle only.** Work at the
    target characteristic and parameters, preserve physical source provenance,
    and return either checked legal lifts of the four packets or a checked dual
-   separator. A rank or reachability receipt alone is not a result.
+   separator. Commit `bd2f679` proves that the isolated eleven-stream block is
+   raw-injective, so the transpose must include cross-origin/multi-grade
+   quotient cancellation at final passive grade. A rank or reachability
+   receipt alone is not a result.
 2. **GO as infrastructure — mixed CRT and the local 103 ledger.** Commit
    `a64361e` proves the mixed agreement-Hermite/error-value CRT and `7fe2418`
    specializes its target width. They justify individual eliminations when
@@ -98,9 +113,9 @@ The current iteration is revisiting an older failure/repair loop:
   greens.
 * `242891b`, `F101_TRANSPOSED_FOUR_RESIDUE_MAPPING_CONE_GATE_6900.md`, already
   separated coefficientwise filtered residues from fraction-field rank and
-  named charge 13 as the next target layer. Its `m=5` replay is the required
-  implementation test: THREE-RHS is green while filtered Z1 is red even
-  though localized four-rank is green.
+  named charge 13 as the next target layer. Its `m=5` THREE-RHS-green / pure-
+  `Z1`-red replay remains a cutoff diagnostic only. Commit `f7330e6` supersedes
+  `Z1` as a fourth-packet proxy: exact F3 is green in that cap-rich control.
 * The current corpus also already contains
   `f101_m6_offset_three_shape_connector_witness_6900.py`, which extracts the
   same three-group `m=6` witness and explicitly warns that a dense unrelated
@@ -114,7 +129,7 @@ proposal for it or extend the same multiplicity table.
 Implement
 
 ```text
-.experiments/full187_charge13_transposed_packet_gate_6900.py
+.experiments/full187_target_charge13_transposed_four_residue_gate_6900.py
 ```
 
 with the following frozen contract.
@@ -162,8 +177,23 @@ C: (8,6,1,53),
 ```
 
 Check in `F_2130706433` that `C=54*A` and `B=C/4`. A column operation must
-apply these three outputs together. Preserve the `u1^h` tag, every induced
-positive-Hasse/pivot tail, the passive grade, and each half-open X interval.
+apply these three outputs together. Moreover, exact source provenance gives
+same-row positive-Hasse collisions; the principal outputs are not diagonal
+in the eleven streams:
+
+```text
+A_s/kappa_A = c_s - 2 Hasse_1(c_(s+1)),
+B_s/kappa_B = c_s - 6 Hasse_1(c_(s+1))
+                  + 12 Hasse_2(c_(s+2)) - 8 Hasse_3(c_(s+3)),
+C_s/kappa_C = c_s - Hasse_1(c_(s+1)),
+```
+
+with `c_j=0` above stream ten. The identity
+`width(s+j)-j=width(s)` makes each family upper-unitriangular on the tapered
+module. The B formula is the explicit Hasse-binomial translation operator;
+it is not a composition power of `1-2*Hasse_1`, since
+`Hasse_1 o Hasse_1 = 2 Hasse_2`. Preserve the `u1^h` tag, every remaining
+nonprincipal positive-Hasse/pivot tail, the passive grade, and each half-open X interval.
 Quotient only rows whose mixed CRT or sharp-pivot eliminator is already proved
 and whose exact width hypothesis is checked at that occurrence.
 
@@ -181,15 +211,17 @@ recheck one of:
   vectors whose literal contacts and boundaries re-evaluate to the four
   packets, with all eleven windows and three-output correlations checked.
 
-Before the target run, the same code path must replay the `242891b` m5 control
-and reproduce filtered THREE-RHS green / Z1 red; otherwise it has silently
-localized or dropped a cutoff. Run the target gate under a fixed cap:
+The implementation may retain the `242891b` pure-Z1 replay as a negative
+cutoff diagnostic, but it must not promote that impulse to the fourth packet.
+Its positive packet regression is the `f7330e6` result: exact
+`F0,F1,F2,F3` is coefficientwise green while both pure Z and bare
+`Lambda_G*Z` are red. Run the target gate under a fixed cap:
 
 ```text
-prlimit --as=8589934592 --cpu=2400 -- \
+prlimit --as=4294967296 --cpu=2400 -- \
   python3 -B \
-  .experiments/full187_charge13_transposed_packet_gate_6900.py \
-  --self-check-m5 --target-charge 13
+  .experiments/full187_target_charge13_transposed_four_residue_gate_6900.py \
+  --self-check-target-operator
 ```
 
 Decision rule: weak rank below four stops full187 CS4 for this target
