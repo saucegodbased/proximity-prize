@@ -43,17 +43,42 @@ unbounded pure-face contact module. It is the missing soundness/completeness
 input that a shifted-Popov reducer needs; no generic syzygy discovery is
 required for this face.
 
+The literal affine generator matrix has also been reduced exactly. Starting
+from coefficient rows
+
+```text
+[0,E], [-G,G]                 with shift [0,W],
+```
+
+16,196 full-quotient Euclidean row reductions produce a weak-Popov basis
+with
+
+```text
+row 0 component degrees       (196608, 65535)
+row 0 shifted degree / pivot  (196608, constant position)
+row 1 component degrees       (196607, 65536)
+row 1 shifted degree / pivot  (196607, Y position)
+sum of shifted degrees        393215 = N+W
+determinant                   GE = X^N-1.
+```
+
+This is the exact target-scale starting point for reducing the 60th
+symmetric power. It avoids first expanding 61 rows whose coefficients have
+degrees up to 10,824,780.
+
 ## What remains load-bearing
 
 The 61 raw generators are not themselves inside the Full187 tapered source
-window. Their high weighted terms must cancel during shifted reduction. Thus
-this result does not prove that the fixed F3 boundary is in the tapered
-module. The remaining exact task is:
+window. Their high weighted terms must cancel during shifted reduction.
+Moreover, the two affine Popov degrees cannot simply be multiplied by 60:
+power-ideal S-polynomials can lower the minimum degree (this occurs already
+in the exact small controls). Thus this result does not prove either
+membership or nonmembership of the fixed F3 boundary. The remaining task is:
 
-1. represent the 61 generators as polynomial rows in the `Y^0,...,Y^82`
-   coefficient module, including the permitted `Y` shifts;
-2. shifted-reduce them with the literal caps `deg C_n<n(G-W)` and the
-   `G^(n-60)` high-tail divisibilities;
+1. form/reduce the 60th symmetric power of the two affine Popov rows,
+   retaining the exact S-polynomial cancellations;
+2. include permitted `Y` shifts through degree 82 and impose the literal
+   tapered coefficient shifts;
 3. test membership of the structured boundary residue frozen in `2bd2ce2`.
 
 This narrows the pure-face theorem obligation, but it is not a Full187 F3
@@ -74,6 +99,8 @@ Recorded literal-target receipt:
 gcd(G,E)                           1
 Bezout coefficient degrees        81730, 180412
 compact power-basis rows           61
-canonical sha256                  57e80afc3458a1de4c3fb22d1c9348b8357370e89c90545681c4a21a5de0149d
-peak RSS                          169916 KiB
+affine Euclidean reductions     16196
+affine row hash                  e1c0ca4e32500d7c5bbeaf83b7d80b8b58362444ea4fb8a47218e1e84137f98f
+canonical sha256                1c6980ed5f4b6720b5c0b4e8946f10fb02d8b8123ce34c2061d83736a5be4bff
+peak RSS                        170004 KiB
 ```
