@@ -8,16 +8,19 @@ off-diagonal terms: localization changes only `X^a` to `(x+T)^a`, and the
 outer passive-seed degree remains exactly `z`.  Every one of the 3758 legal
 seed bands therefore has the full `X` window.
 
-The first boundary jet is supported only at `z=1`.  This file identifies the
+At a general boundary seed `gamma`, the first boundary jet in the `Z`
+direction has coefficient `z * gamma^(z-1)`.  This file identifies the
 consequence without a rank-by-dimension argument.  Perfectness of the
-quotient-top pairing says that the `z=1` numerator is the unique numerator
-representing evaluation at the boundary `X` coordinate; every other seed
-numerator vanishes modulo the pole polynomial.
+quotient-top pairing says that every pure-seed numerator is the corresponding
+scalar multiple of the unique numerator representing evaluation at the
+boundary `X` coordinate.  At the centered seed `gamma=0`, only `z=1`
+survives.
 
-This is a useful forced component, but also an exact stop: that evaluation
-numerator is nonzero.  Thus the pure-seed family by itself is compatible with
-an arbitrary nonzero `Z` boundary dual.  A successful recurrence must couple
-the `z=1` numerator to a different PC shape; adjacent pure seed bands do not.
+This is a useful forced one-dimensional jet sequence, but also an exact stop:
+that evaluation numerator is nonzero.  Thus the pure-seed family by itself is
+compatible with an arbitrary nonzero `Z` boundary dual.  A successful
+recurrence must couple this sequence to a different PC shape; adjacent pure
+seed bands do not.
 -/
 
 namespace ProximityPrize.SubmissionLower.K0ZeroCostPureSeedDualEdge6900
@@ -157,44 +160,35 @@ theorem full_window_eval_forces_reduced_numerator
     quotientTopDualMap_injective A M hM hA hAM (hdual.trans heval.symm)
   exact congrArg Subtype.val hsubtype
 
-/-- Literal transpose right side of the pure-seed first-boundary jet.  The
-only nonzero band is `z=1`, where the `Z` boundary coefficient is evaluation
-of the `X` multiplier at the boundary coordinate. -/
-def pureSeedBoundaryRHS (xi lambda : K) (z : Nat) (p : K[X]) : K :=
-  if z = 1 then lambda * p.eval xi else 0
+/-- Scalar in the `Z` derivative of the raw seed monomial `Z^z`, evaluated
+at the boundary seed `gamma`. -/
+def pureSeedBoundaryScalar (gamma lambda : K) (z : Nat) : K :=
+  (z : K) * gamma ^ (z - 1) * lambda
 
-/-- All 3758 legal pure-seed bands determine the actual quotient numerators:
-the `z=1` component is the evaluation numerator and every other component is
-zero modulo `A`. -/
+/-- Literal transpose right side of the pure-seed first-boundary jet. -/
+def pureSeedBoundaryRHS
+    (xi gamma lambda : K) (z : Nat) (p : K[X]) : K :=
+  pureSeedBoundaryScalar gamma lambda z * p.eval xi
+
+/-- All 3758 legal pure-seed bands determine the actual quotient numerators
+as a one-dimensional derivative-jet sequence. -/
 theorem m47_all_pure_seed_bands_force_exact_numerators
     (A : K[X]) (g : Nat) (hg : 180413 ≤ g)
     (hA : A.Monic) (hAdeg : A.natDegree = 47 * g)
-    (xi lambda : K) (q : Fin 3758 → K[X])
+    (xi gamma lambda : K) (q : Fin 3758 → K[X])
     (hpair : ∀ z : Fin 3758, ∀ p : K[X], p.natDegree < 47 * g →
       quotientTopPairing A (q z) p (47 * g) =
-        pureSeedBoundaryRHS xi lambda z.val p) :
+        pureSeedBoundaryRHS xi gamma lambda z.val p) :
     ∀ z : Fin 3758,
-      q z %ₘ A = if z.val = 1 then
-        lambda •
-          (quotientEvalNumerator A (47 * g) (by omega)
-            hA hAdeg xi).val
-      else 0 := by
+      q z %ₘ A =
+        pureSeedBoundaryScalar gamma lambda z.val •
+          (quotientEvalNumerator A (47 * g) (by omega) hA hAdeg xi).val := by
   intro z
-  by_cases hz : z.val = 1
-  · rw [if_pos hz]
-    apply full_window_eval_forces_reduced_numerator
-      A (q z) (47 * g) (by omega) hA hAdeg xi lambda
-    intro p hp
-    simpa [pureSeedBoundaryRHS, hz] using hpair z p hp
-  · rw [if_neg hz]
-    have hann : ∀ p : K[X], p.natDegree < 47 * g →
-        quotientTopPairing A (q z) (1 * p) (47 * g) = 0 := by
-      intro p hp
-      simpa [pureSeedBoundaryRHS, hz] using hpair z p hp
-    have hzero :=
-      (annihilates_full_multiplier_window_iff_remainder_zero
-        A (q z) 1 (47 * g) (by omega) hA hAdeg).mp hann
-    simpa using hzero
+  apply full_window_eval_forces_reduced_numerator
+    A (q z) (47 * g) (by omega) hA hAdeg xi
+      (pureSeedBoundaryScalar gamma lambda z.val)
+  intro p hp
+  exact hpair z p hp
 
 /-! ## Exact non-closure -/
 
@@ -203,29 +197,41 @@ every legal pure-seed equation.  Therefore this zero-cost family cannot by
 itself prove that the `Z` component of the boundary dual vanishes. -/
 theorem exists_all_pure_seed_packet_with_nonzero_Z_numerator
     (A : K[X]) (g : Nat) (hg : 180413 ≤ g)
-    (hA : A.Monic) (hAdeg : A.natDegree = 47 * g) (xi : K) :
+    (hA : A.Monic) (hAdeg : A.natDegree = 47 * g)
+    (xi gamma : K) :
     ∃ q : Fin 3758 → K[X],
       (∀ z : Fin 3758, ∀ p : K[X], p.natDegree < 47 * g →
         quotientTopPairing A (q z) p (47 * g) =
-          pureSeedBoundaryRHS xi 1 z.val p) ∧
+          pureSeedBoundaryRHS xi gamma 1 z.val p) ∧
       q ⟨1, by norm_num⟩ %ₘ A ≠ 0 := by
   let hM : 0 < 47 * g := by omega
   let e := quotientEvalNumerator A (47 * g) hM hA hAdeg xi
-  let q : Fin 3758 → K[X] := fun z ↦ if z.val = 1 then e.val else 0
+  let q : Fin 3758 → K[X] := fun z ↦
+    pureSeedBoundaryScalar gamma 1 z.val • e.val
   refine ⟨q, ?_, ?_⟩
   · intro z p hp
-    by_cases hz : z.val = 1
-    · simp only [q, hz, if_pos, pureSeedBoundaryRHS, one_mul]
-      let pb : K[X]_(47 * g) :=
-        ⟨p, by
-          rw [Polynomial.mem_degreeLT]
-          by_cases hp0 : p = 0
-          · rw [hp0, Polynomial.degree_zero]
-            exact WithBot.bot_lt_coe _
-          · exact (Polynomial.natDegree_lt_iff_degree_lt hp0).1 hp⟩
-      simpa only [e, pb] using
-        quotientTopPairing_evalNumerator A (47 * g) hM hA hAdeg xi pb
-    · simp [q, pureSeedBoundaryRHS, hz, quotientTopPairing]
+    let pb : K[X]_(47 * g) :=
+      ⟨p, by
+        rw [Polynomial.mem_degreeLT]
+        by_cases hp0 : p = 0
+        · rw [hp0, Polynomial.degree_zero]
+          exact WithBot.bot_lt_coe _
+        · exact (Polynomial.natDegree_lt_iff_degree_lt hp0).1 hp⟩
+    have hmap :
+        quotientTopDualMap A (47 * g)
+            (pureSeedBoundaryScalar gamma 1 z.val • e) =
+          pureSeedBoundaryScalar gamma 1 z.val •
+            boundedEvalFunctional (47 * g) xi := by
+      rw [map_smul]
+      exact congrArg
+        (fun ell : Module.Dual K K[X]_(47 * g) ↦
+          pureSeedBoundaryScalar gamma 1 z.val • ell)
+        (quotientEvalNumerator_spec A (47 * g) hM hA hAdeg xi)
+    have hpPair := LinearMap.congr_fun hmap pb
+    change quotientTopPairing A
+        (pureSeedBoundaryScalar gamma 1 z.val • e.val) p (47 * g) =
+      pureSeedBoundaryScalar gamma 1 z.val * p.eval xi at hpPair
+    simpa only [q, pureSeedBoundaryRHS] using hpPair
   · have heNat : e.val.natDegree < 47 * g := by
       have heDegree : e.val.degree < ((47 * g : Nat) : WithBot Nat) :=
         Polynomial.mem_degreeLT.mp e.property
@@ -234,7 +240,7 @@ theorem exists_all_pure_seed_packet_with_nonzero_Z_numerator
       · exact (Polynomial.natDegree_lt_iff_degree_lt he0).2 heDegree
     have hemod := modByMonic_eq_self_of_natDegree_lt
       A e.val (47 * g) hA hAdeg heNat
-    simp only [q, if_pos]
+    simp [q, pureSeedBoundaryScalar]
     rw [hemod]
     intro heval
     have hene : e ≠ 0 := by

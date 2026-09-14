@@ -8,12 +8,12 @@ The family
 X^a Z^z,  0 <= a < 47g,  0 <= z <= 3757,
 ```
 
-does expose one actual component of a boundary-compatible contact dual.  It
-determines the entire reduced quotient numerator in each outer-seed band:
+does expose one actual component of a boundary-compatible contact dual.  At
+a general boundary seed value `gamma`, it determines the entire reduced
+quotient numerator in each outer-seed band:
 
 ```text
-q_z mod A = 0                                      (z != 1),
-q_1 mod A = lambda_Z * E_xi                       (z = 1),
+q_z mod A = z * gamma^(z-1) * lambda_Z * E_xi.
 ```
 
 where `A` is the monic degree-`47g` pole polynomial and `E_xi` is the unique
@@ -25,6 +25,11 @@ topCoeff(((E_xi * p) mod A), 47g-1) = p(xi)
 
 for every `p` of degree `<47g`.
 
+At the centered constant-`T` control (`gamma=0`) this specializes to
+`q_z=0` for `z!=1` and `q_1=lambda_Z*E_xi`.  The general displayed identity
+is the literal derivative of `Z^z` at `gamma`, so the theorem is not limited
+to that centered chamber.
+
 This is a genuine quotient-numerator statement, proved from the explicit
 perfectness/injectivity of the quotient-top pairing.  It is not a maximal-rank
 claim inferred from dimensions.
@@ -32,8 +37,8 @@ claim inferred from dimensions.
 It is also an exact **STOP for the pure-seed family alone**.  `E_xi` is
 nonzero (pair it with `p=1`), so every one of the pure-seed equations is
 compatible with `lambda_Z != 0`.  The next useful edge must connect this
-distinguished `z=1` numerator to a numerator already forced to zero by a
-different PC shape.  More adjacent pure-seed bands do not do that.
+one-dimensional derivative sequence to numerators constrained by a different
+PC shape.  More adjacent pure-seed bands do not do that.
 
 ## Why the bands separate
 
@@ -51,12 +56,12 @@ only field-linear, not automatically linear over the outer polynomial ring.
 The Lean file records this disjoint-support identity as
 `pureSeedColumn_coeff` and `pureSeedColumn_coeff_other`.
 
-The boundary formula used in the deterministic K0 model is literal first-jet
-evaluation (`k0_constantT_packet_conormal_ablation_6900.py`,
-`raw_boundary_column`): a raw monomial has boundary support only when
-`y+r+s+z=1`.  Therefore the pure family has boundary zero for `z=0` and
-`z>=2`; at `z=1` its `Z` coordinate is `p(xi)`.  This is exactly the right
-side encoded by `pureSeedBoundaryRHS`.
+The general raw boundary formula is literal first-jet evaluation.  For the
+pure monomial `p(X) Z^z`, its `Z` coordinate is
+`z*gamma^(z-1)*p(xi)`.  This is exactly the right side encoded by
+`pureSeedBoundaryScalar` and `pureSeedBoundaryRHS`.  The deterministic K0
+model's `raw_boundary_column` is the centered `gamma=0` specialization, where
+only total active degree one remains visible.
 
 ## Formal receipt
 
@@ -76,7 +81,8 @@ Main declarations:
   evaluation equation forces the reduced numerator to be the evaluation
   carrier;
 * `m47_all_pure_seed_bands_force_exact_numerators`: simultaneous target m47
-  statement for all `Fin 3758` legal seed bands;
+  statement for all `Fin 3758` legal seed bands and arbitrary boundary seed
+  `gamma`;
 * `exists_all_pure_seed_packet_with_nonzero_Z_numerator`: exact nonclosure
   witness with `lambda_Z=1` satisfying all pure-seed equations.
 
@@ -104,7 +110,7 @@ E_xi = (A(X) - A(xi)) / (X - xi)
 inside `K[X]/(A)`.  The formal interface intentionally characterizes it by
 the perfect pairing, avoiding a second polynomial-division proof.  This gives
 the correct seed recurrence boundary condition: any future coupled PC edge
-must transport a known-zero numerator into this `E_xi` component.  Merely
-adding `Z^2`, `Z^3`, or all remaining pure seed degrees only proves more
-independent zero statements and cannot eliminate `lambda_Z`.
-
+must constrain the scalar derivative sequence
+`z*gamma^(z-1)*lambda_Z*E_xi`.  Merely adding `Z^2`, `Z^3`, or all remaining
+pure seed degrees only determines more members of that sequence and cannot
+eliminate `lambda_Z`.
