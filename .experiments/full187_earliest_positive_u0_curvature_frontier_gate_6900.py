@@ -311,7 +311,7 @@ def entire_same_key_provenance(all_coordinates):
     coordinate_keys = {key for key, _column in all_coordinates}
     origin_count_histogram = Counter()
     kind_histogram = Counter()
-    physical_blocks = set()
+    grouped_blocks = defaultdict(dict)
     for row in rows:
         origins = C.exact_target_provenance(row)
         assert origins and all(origin["u0_power"] == 1 for origin in origins)
@@ -319,33 +319,60 @@ def entire_same_key_provenance(all_coordinates):
         payload.append((row, signatures))
         origin_count_histogram[len(origins)] += 1
         kind_histogram.update(origin["kind"] for origin in origins)
-        physical_blocks.update((
-            origin["kind"], origin["r"], origin["s"],
-            origin["source_y_or_k"], origin["contact_f"],
-            origin["coefficient_hasse_q"],
-        ) for origin in origins)
-        assert all((
-            origin["contact_f"], origin["r"], origin["s"],
-            origin["coefficient_hasse_q"], OUTER_Z,
-        ) in coordinate_keys for origin in origins)
+        for origin in origins:
+            sink = (
+                origin["contact_f"], origin["r"], origin["s"],
+                origin["coefficient_hasse_q"], OUTER_Z,
+            )
+            assert sink in coordinate_keys
+            group = (
+                origin["kind"], origin["r"], origin["s"],
+                origin["source_y_or_k"], origin["contact_f"],
+                origin["u_power_h"], origin["u0_power"],
+                origin["coefficient_hasse_q"],
+                origin["coefficient_width"],
+            )
+            assert row not in grouped_blocks[group]
+            grouped_blocks[group][row] = (
+                origin["scalar_mod_p_before_Uh_Hq"])
+
+    # A physical group must aggregate to one complete raw contact column,
+    # not merely have each of its individual origins land somewhere in the
+    # row universe.  Check the coefficient identity including its common
+    # Pascal scalar.
+    group_receipts = []
+    for group, actual_column in sorted(grouped_blocks.items()):
+        kind, r, s, k, f, h, rem, q, width = group
+        sink = (f, r, s, q, OUTER_Z)
+        common_scalar = comb(k, f) * comb(k - f, h) % P
+        expected_column = {
+            row: common_scalar * coefficient % P
+            for row, coefficient in raw_contact_column(sink).items()
+        }
+        assert actual_column == expected_column
+        group_receipts.append((group, sink, common_scalar,
+                               tuple(sorted(actual_column.items()))))
 
     assert sum(count * multiplicity for multiplicity, count
                in origin_count_histogram.items()) == 880
     assert kind_histogram == Counter({"P": 616, "C": 264})
-    assert len(physical_blocks) == 330
+    assert len(grouped_blocks) == 330
     return rows, {
         "raw_coordinate_row_origin_block_counts": (
-            len(all_coordinates), len(rows), 880, len(physical_blocks)),
+            len(all_coordinates), len(rows), 880, len(grouped_blocks)),
         "origin_count_per_row_histogram": tuple(sorted(
             origin_count_histogram.items())),
         "origin_kind_histogram": tuple(sorted(kind_histogram.items())),
         "every_original_origin_has_u0_power_one": True,
         "every_original_origin_sink_is_one_of_110_raw_coordinates": True,
+        "every_group_aggregates_to_common_scalar_times_raw_column": True,
         "row_universe_sha256": hashlib.sha256(
             repr(rows).encode()).hexdigest(),
         "all_880_origin_signatures_sha256": hashlib.sha256(
             json.dumps(payload, separators=(",", ":")).encode()
         ).hexdigest(),
+        "all_330_grouped_raw_column_identities_sha256": hashlib.sha256(
+            repr(tuple(group_receipts)).encode()).hexdigest(),
     }
 
 

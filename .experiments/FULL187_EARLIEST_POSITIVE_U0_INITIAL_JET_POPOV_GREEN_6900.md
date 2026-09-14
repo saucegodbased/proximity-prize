@@ -75,6 +75,15 @@ coordinates. Thus arbitrary aggregation of all original same-key origins is
 already inside the raw module spanned below; this conclusion does not depend
 on a sampled coefficient or on a hoped-for Pascal cancellation.
 
+More strongly, grouping by the complete physical C/P provenance gives 330
+blocks. Every group is checked coefficientwise to equal its full raw contact
+column times the common Pascal scalar
+`binom(k,f) binom(k-f,h)`. The grouped-column identity hash is
+
+```text
+1f5378a3c279c58829f4a14ed6f9601d53e7c9a07fe62bc3b4d95f0784db0212.
+```
+
 The 73-row and 880-origin hashes are
 
 ```text
@@ -256,6 +265,6 @@ prlimit --as=3221225472 --cpu=600 -- \
 Recorded run: exit zero in about one second, peak RSS about 20 MiB.
 
 ```text
-canonical sha256  227cf49e760bd5d9bbcd3c49f479fce8a43c56b8be191c238948913e9aada0c0
-script sha256     9111bd64484b3238a3c78fb7d880a4fcaf033f594e3ca2d169f64bae6714962c
+canonical sha256  07feaaaad824410e72e317cc1f16409dc04e02a5dec578fbafe4d96f39b430ed
+script sha256     cd763ffc825c0a9e1d73f055d1278b583fdcdac162a5ed597e289e24d4db53b0
 ```
