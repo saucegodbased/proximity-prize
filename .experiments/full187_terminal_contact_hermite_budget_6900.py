@@ -6,7 +6,9 @@ at most 80, so its lower source coefficient window exceeds the number of
 nodes.  Full contact cancellation, however, can require more than values: a
 term of contact weight ``k`` may require a residue modulo ``Lambda_G^(60-k)``,
 of degree ``g*(60-k)``.  This script classifies exactly which terminal
-contact choices fit that *unconditional* Hermite interpolation budget.
+contact choices can carry that agreement-side Hermite factor.  This alone is
+not arbitrary error-node interpolation: prescribing one scalar value at each
+of the ``N-G`` error nodes needs a further ``N-G`` coefficient slots.
 
 A negative margin is an unresolved structured-residue case, not an
 impossibility certificate: the actual residue comes from a low-degree top
@@ -26,6 +28,7 @@ import sys
 N = 262_144
 W = 131_071
 G = 180_413
+ERRORS = N - G
 M = 60
 D = M * G
 J = 82
@@ -52,6 +55,8 @@ def main() -> None:
     rows = []
     total_contact_choices = 0
     unconditional_choices = 0
+    scalar_crt_choices = 0
+    agreement_only_choices = 0
     unresolved_choices = 0
     global_min_margin = None
     global_min_data = None
@@ -98,6 +103,10 @@ def main() -> None:
                     if margin >= 0:
                         shape_green += 1
                         unconditional_choices += 1
+                        if margin >= ERRORS:
+                            scalar_crt_choices += 1
+                        else:
+                            agreement_only_choices += 1
                     else:
                         shape_red += 1
                         unresolved_choices += 1
@@ -121,19 +130,22 @@ def main() -> None:
             "derivative_shape_r_s": (r, s),
             "terminal_y": y,
             "top_coefficient_width": top_width,
-            "worst_choice_first_unconditional_f": threshold,
+            "worst_choice_first_agreement_factor_f": threshold,
             "contact_choice_count": shape_total,
-            "unconditional_Hermite_choices": shape_green,
+            "agreement_Hermite_factor_choices": shape_green,
             "structured_residue_choices": shape_red,
             "minimum_margin_at_f_aE_cS_h_margin": shape_min_tuple,
         })
 
     assert total_contact_choices == unconditional_choices + unresolved_choices
+    assert unconditional_choices == scalar_crt_choices + agreement_only_choices
     assert global_min_data == (21, 0, 0, 0, 0, 61, -2_752_470)
     assert coefficient_width(59, 21, 0) == 339_121
     assert coefficient_width(59, 21, 0) - N == 76_977
     assert total_contact_choices == 1_266_925
     assert unconditional_choices == 1_194_075
+    assert scalar_crt_choices == 1_186_372
+    assert agreement_only_choices == 7_703
     assert unresolved_choices == 72_850
     assert len(unresolved_transition_types) == 1_056
     assert max(unresolved_by_extra_contact_charge) == 13
@@ -181,11 +193,15 @@ def main() -> None:
         "terminal_top_width_interval": (
             min(row["top_coefficient_width"] for row in rows),
             max(row["top_coefficient_width"] for row in rows)),
-        "first_unconditional_f_histogram": tuple(sorted(
+        "first_agreement_factor_f_histogram": tuple(sorted(
             threshold_histogram.items())),
         "contact_choice_counts": {
             "total": total_contact_choices,
-            "unconditional_full_Hermite_budget": unconditional_choices,
+            "agreement_Hermite_factor_fits": unconditional_choices,
+            "agreement_factor_plus_arbitrary_error_scalar_CRT_fits":
+                scalar_crt_choices,
+            "agreement_factor_fits_but_arbitrary_error_scalar_CRT_does_not":
+                agreement_only_choices,
             "structured_residue_recurrence_needed": unresolved_choices,
         },
         "structured_frontier": {
@@ -197,7 +213,7 @@ def main() -> None:
                 unresolved_by_extra_contact_charge.items())),
             "counts_by_total_contact_weight": tuple(sorted(
                 unresolved_by_contact_weight.items())),
-            "all_extra_charge_at_least_14_unconditional": True,
+            "all_extra_charge_at_least_14_agreement_factor_fits": True,
         },
         "generic_node_interpolant_product_frontier": {
             "automatic_for_seed_shift_h_at_least_3": True,
@@ -225,11 +241,13 @@ def main() -> None:
         },
         "per_derivative_shape": tuple(rows),
         "interpretation": (
-            "High-f/high-contact-weight terms are directly absorbable by "
-            "complete agreement-node Hermite interpolation.  Low-f terms "
-            "can exceed the independent Hermite budget and must be carried "
-            "as structured residues through the exact transpose/confluence "
-            "recurrence; they are not certified obstructions."
+            "The 1,194,075 count certifies only that the agreement-locator "
+            "Hermite factor fits.  Of those, 1,186,372 also leave enough "
+            "room for arbitrary scalar data on every error node; even that "
+            "is a capacity gate, not a confluence or THREE-RHS theorem.  "
+            "Low-f terms can exceed the agreement-side budget and must be "
+            "carried as structured residues through the exact transpose/"
+            "confluence recurrence; they are not certified obstructions."
         ),
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
