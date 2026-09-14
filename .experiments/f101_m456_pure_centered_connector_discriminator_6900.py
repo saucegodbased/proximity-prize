@@ -33,6 +33,7 @@ CASES = {
     "m5": (10, 4, 7, 5, 35, 1, 1, 7, 11),
     "m6": (10, 4, 7, 6, 42, 1, 1, 8, 12),
 }
+ERROR_OFFSETS = (3, 5, 7)
 
 
 def add_scaled(target, source, scale):
@@ -75,17 +76,18 @@ def proportional_scalar(left, right):
     return scalar if not add_scaled(left, right, -scalar) else None
 
 
-def analyze(label):
+def analyze(label, error_offsets=None):
     case = CASES[label]
     n, w, g, m, degree, slope, curvature, jet, seed = case
     assert (n, w, g, degree, slope, curvature) == (
         10, 4, 7, m * g, 1, 1)
     literal = M.build_case(
-        f"{label}_matched_exact_F3_pure_centered_connector",
+        f"{label}_{'offset' if error_offsets else 'matched'}_exact_F3_connector",
         case,
         actual_agreement_count=g,
         anchor_count=g,
         normal_coordinates=4,
+        error_direction_offsets=error_offsets,
     )
 
     prefix = tuple(
@@ -185,6 +187,7 @@ def analyze(label):
         if not any(set(other) < set(subset) for other in closing_subsets))
     return {
         "label": label,
+        "error_direction_offsets": error_offsets,
         "parameters_n_w_g_m_D_s_t_J_L": case,
         "prefix_columns_rank": (len(prefix), prefix_echelon.rank),
         "packet_individual_defects": tuple(bool(x) for x in target_residues),
@@ -210,17 +213,22 @@ def analyze(label):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--case", choices=tuple(CASES), action="append")
+    parser.add_argument(
+        "--offset-errors", action="store_true",
+        help="replace the three error-node Q values by Q+(3,5,7)")
     args = parser.parse_args()
     labels = tuple(args.case or CASES)
     started = time.monotonic()
     M.PRIME = M.T.PRIME = M.F.PRIME = F.PRIME = P
-    rows = tuple(analyze(label) for label in labels)
+    error_offsets = ERROR_OFFSETS if args.offset_errors else None
+    rows = tuple(analyze(label, error_offsets) for label in labels)
     stable = {
         "scope": (
             "exact coefficientwise F101 matched four-packet quotient modulo "
             "the complete grade-J prefix; finite controls only"
         ),
         "field": P,
+        "error_direction_offsets": error_offsets,
         "rows": rows,
         "decision": (
             "PURE_CENTERED_CONNECTOR_UNIVERSAL_ACROSS_TESTED_M"

@@ -113,6 +113,24 @@ Pure plus curvature remains defect four, and slope plus curvature without
 the pure group remains defect four. This evolving pattern is the highest-risk
 part of any m=60 extrapolation.
 
+### Arbitrary-error replay
+
+The complete test was repeated after replacing the error-node values of `Q`
+by `Q+(3,5,7)`, while leaving every agreement value and the exact four
+normals unchanged. At m=5 the result is robust: the raw pure group alone still
+closes all four packets. At m=6 the matched two-shape answer is **not** robust.
+The unique inclusion-minimal set becomes
+
+```text
+{(0,0),(1,0),(0,1)}.
+```
+
+Every proper subset leaves all four packets individually at defect one and
+joint defect four. Thus `{pure,R}` is a matched-direction artifact at m=6;
+the smallest candidate supported by this arbitrary-error replay includes the
+curvature group as well. All three shapes lie in conservative103. This is a
+finite robustness gate, not a proof for arbitrary symbolic error values.
+
 ## Exact universal source-legality statement
 
 Put `D=m*g`, assume `deg Q <= g-1`, `w<g`, `m<=J+1`, and `J+1<=L`. Expanding
@@ -254,13 +272,15 @@ Observed exact receipts before this note was written:
 m4 connector canonical    6051da479adba552dfe771c69fec583fe7a6e49849f4a0aa6415c7a0a4c70c60
 m5 shape canonical        c30341a79f57c93f47b5745c21537a4ec01e1ab096109166cc1a0e596dd0e66b
 m6 shape canonical        e09a66988d0b8f09b0f62cbecb328eb40910294664f2856b2c41f8b395aa0cfe
+m5 offset canonical       5ae6bc8b2c03a4e5d1fe0118bc8b8b06fcab6260a5d547c0370a416d1d5befa4
+m6 offset canonical       37893a7a4fd298a13ecb88ac219c72afb36430b852bc1184014600ef9f2d45d3
 small m7 canonical        fffdf5ac5c2d144e3c748bac5e54b7ae6daeec4adbc086cc52a7b9383025b4c0
 small m8 canonical        d42900a36f42abf2c542d863ba4df030994086da17be77c7434bfe16ccd5e334
 ```
 
 Peak RSS was 87 MiB for the detailed m=4 connector, 185 MiB for m=5, 376 MiB
-for m=6, 219 MiB for the small m=7 scaling control, and 382 MiB for m=8.
-Every run stayed below the external 4 GiB cap.
+for matched m=6, 589 MiB for offset m=6, 219 MiB for the small m=7 scaling
+control, and 382 MiB for m=8. Every run stayed below the external 4 GiB cap.
 
 ## Next theorem, with the false shortcut removed
 
@@ -268,9 +288,10 @@ Do not try to prove that one pure centered shell universally maps to the four
 normals. The exact next target is a shape-tapered connecting statement:
 
 > modulo the complete grade-82 prefix, the coefficientwise images of the
-> legal centered/raw `(0,0)` and `(1,0)` first-shell groups contain the four exact
+> legal centered/raw `(0,0)`, `(1,0)`, and `(0,1)` first-shell groups contain the four exact
 > `F0,F1,F2,F3` residues, with a determinant whose leading term survives the
 > Full187 strict X windows.
 
-The finite results identify a plausible two-shape interface and decisively
-remove the rank-one/C00 shortcut. They do not prove the displayed target.
+The finite results identify a plausible three-shape robust interface and
+decisively remove both the rank-one/C00 shortcut and a universal two-shape
+shortcut. They do not prove the displayed target.
