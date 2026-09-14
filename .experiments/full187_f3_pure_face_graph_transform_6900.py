@@ -25,6 +25,7 @@ import resource
 from flint import nmod_poly
 
 import full187_target_charge13_transposed_four_residue_gate_6900 as T
+import full187_actual_pascal_residual_and_first_fringe_gate_6900 as BM
 
 
 P = T.P
@@ -95,8 +96,7 @@ def exact_dimension_receipt():
     }
 
 
-def locator_and_inverse_receipt():
-    instance = T.build_target_instance()
+def locator_and_inverse_receipt(instance):
     h = nmod_poly(instance.xi_h_coefficients, P)
     r = nmod_poly(instance.xi_r_coefficients, P)
     e = nmod_poly(instance.xi_e_coefficients, P)
@@ -121,7 +121,7 @@ def locator_and_inverse_receipt():
     assert boundary_degree == raw_width(1) - 1 == 10_693_708
     assert R_DEG == A_WEIGHT - 1
 
-    return {
+    return ({
         "locator_degrees_H_R_G_E": (
             h.degree(), r.degree(), g.degree(), e.degree()),
         "G_times_E_equals_X_to_N_minus_1": True,
@@ -136,6 +136,79 @@ def locator_and_inverse_receipt():
             boundary_degree, raw_width(1)),
         "a_equals_G_minus_W_equals_degR_plus_one": (
             A_WEIGHT, G_DEG - W, R_DEG + 1),
+    }, g, e)
+
+
+def first_unsettled_scalar_hankel_gate(g, e, k: int):
+    """Certify the root-maximal scalar projections at k=17 and k=18.
+
+    At these two orders the individually-surjective lanes use the entire
+    root budget of P.  The surviving high lanes contain the prefix W_h from
+    A_72.  Together with A_2=G^58 W_(2a), surjectivity reduces by the residue
+    pairing to a leading Hankel minor of the Laurent series G^58/E^k.
+    """
+    assert k in (17, 18)
+    polynomial_degree = M - k
+    modulus_dimension = k * E_DEG
+    roots = tuple(
+        n for n in range(2, J + 1)
+        if transformed_free_width(n) >= modulus_dimension)
+    assert len(roots) == polynomial_degree
+    assert roots == (
+        tuple(range(29, 72)) if k == 17 else tuple(range(30, 72)))
+    assert 1 not in roots and 2 not in roots and 72 not in roots
+
+    high_prefix = transformed_free_width(72)
+    low_window = transformed_free_width(2)
+    quotient_rows = modulus_dimension - high_prefix
+    assert (high_prefix, low_window) == (1_387_668, 98_684)
+    assert 0 < quotient_rows <= low_window
+
+    modulus = e ** k
+    assert modulus.degree() == modulus_dimension
+    multiplier = g.pow_mod(58, modulus)
+    assert multiplier.degree() == modulus_dimension - 1
+
+    # Let S(z)=rev(G^58 mod E^k)/rev(E^k).  Under the Frobenius residue
+    # pairing <f,g>=[X^(m-1)](fg mod E^k), the annihilator of W_h is W_c.
+    # A nonzero dual would be a polynomial q of degree<c for which
+    # G^58*q mod E^k has degree<m-low_window.  Its first c Laurent equations
+    # are the Hankel system S[i+j] q_j=0.  A nonsingular leading c-minor
+    # therefore proves W_h + G^58 W_(2a) is the whole quotient.
+    count = 2 * quotient_rows
+    reversed_modulus = modulus.reverse(
+        degree=modulus_dimension).truncate(count)
+    reversed_multiplier = multiplier.reverse(
+        degree=multiplier.degree()).truncate(count)
+    series = (reversed_multiplier
+              * reversed_modulus.inverse_series_trunc(count)).truncate(count)
+    sequence = tuple(int(series[i]) for i in range(count))
+    connection, remainder, reduce_calls = BM.exact_bm(sequence)
+    assert len(connection) - 1 == quotient_rows
+    assert len(remainder) - 1 == quotient_rows - 1
+    assert connection[0] and connection[-1]
+
+    return {
+        "E_adic_order_k": k,
+        "Euler_polynomial_degree": polynomial_degree,
+        "forced_distinct_roots": (
+            roots[0], roots[-1], len(roots)),
+        "modulus_degree": modulus_dimension,
+        "surviving_high_prefix_lane_and_width": (72, high_prefix),
+        "surviving_low_lane_multiplier_and_width": (
+            2, "G^58", low_window),
+        "quotient_Hankel_rows": quotient_rows,
+        "multiplier_modulus_degree_and_gap": (
+            multiplier.degree(), modulus_dimension - multiplier.degree()),
+        "BM_complexity_and_remainder_degree": (
+            len(connection) - 1, len(remainder) - 1),
+        "BM_reduce_calls": reduce_calls,
+        "connection_first_last": (connection[0], connection[-1]),
+        "series_sha256_u64": BM.sha256_u64(sequence),
+        "connection_sha256_u64": BM.sha256_u64(connection),
+        "remainder_sha256_u64": BM.sha256_u64(remainder),
+        "exact_rank": quotient_rows,
+        "decision": "GREEN_SCALAR_PROJECTION_EXACTLY_SURJECTIVE",
     }
 
 
@@ -227,8 +300,11 @@ def scalar_euler_projection_gate():
 
 def main():
     dimensions = exact_dimension_receipt()
-    locators = locator_and_inverse_receipt()
+    instance = T.build_target_instance()
+    locators, g, e = locator_and_inverse_receipt(instance)
     scalar_gate = scalar_euler_projection_gate()
+    first_unsettled = tuple(
+        first_unsettled_scalar_hankel_gate(g, e, k) for k in (17, 18))
     stable = {
         "scope": (
             "exact necessary R=S=Z=0 face of a hypothetical Full187 F3 "
@@ -259,9 +335,11 @@ def main():
         "dimensions": dimensions,
         "exact_locator_checks": locators,
         "scalar_euler_projection_gate": scalar_gate,
+        "first_unsettled_scalar_exact_hankel_gates": first_unsettled,
         "decision": (
             "GREEN_EXACT_PURE_FACE_GRAPH_COMPRESSION__"
-            "STOP_SCALAR_EULER_DUALS_TOO_WEAK__"
+            "GREEN_SCALAR_EULER_PROJECTIONS_THROUGH_K18__"
+            "STOP_SCALAR_EULER_ROUTE_TOO_WEAK__"
             "NEXT_GENUINE_MULTIROW_SHIFTED_POPOV_ON_HIGH_TAIL"),
     }
     canonical = json.dumps(stable, sort_keys=True, separators=(",", ":"))

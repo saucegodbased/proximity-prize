@@ -55,6 +55,29 @@ k=17: 43 individually-surjective lanes and root budget 43;
 k=18: 42 individually-surjective lanes and root budget 42.
 ```
 
+The two equality cases are also target-exact **GREEN**.  For each, root the
+entire individually-surjective interval (`29..71` at `k=17`, `30..71` at
+`k=18`).  The surviving high tail contains the prefix supplied by `A_72`, of
+dimension 1,387,668.  Adding only the surviving low lane
+
+```text
+A_2 = G^58 Q_2,  deg Q_2 < 98684,
+```
+
+reduces surjectivity to a Hankel minor of the Laurent series `G^58/E^k`:
+
+```text
+k=17: modulus 1,389,427; missing/Hankel size  1,759; exact rank  1,759
+k=18: modulus 1,471,158; missing/Hankel size 83,490; exact rank 83,490
+```
+
+FLINT Berlekamp--Massey returns linear complexity equal to the minor size and
+remainder degree one less in both cases.  Thus even the first two scalar
+orders not settled by dimension/root counting are exactly surjective on the
+literal target.  This is strong evidence that the scalar-Euler route is the
+wrong dual compression; the next computation must keep multiple Hasse rows
+coupled.
+
 In particular, the apparent 24-component shortcut
 
 ```text
@@ -118,5 +141,7 @@ python3 .experiments/full187_f3_pure_face_graph_transform_6900.py
 
 The run constructs the literal target locators, checks `GE=X^N-1`,
 `gcd(G,E)=1`, the inverse formula, every dimension identity, and the complete
-60-order scalar-surjectivity census.  It uses far below the 4 GiB experiment
-ceiling and makes no production edits.
+60-order scalar-surjectivity census.  It then builds only `E^17`, `E^18` and
+the two small Laurent/Hankel certificates above.  It uses under 0.5 GiB in
+the recorded run, far below the 4 GiB experiment ceiling, and makes no
+production edits.
