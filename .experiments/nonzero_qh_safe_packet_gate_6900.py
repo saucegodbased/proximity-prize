@@ -52,6 +52,12 @@ CONTROL = {
 # direction is Q_G = q_H + Lambda_H, so Q_G-q_H has degree w+1 > w.
 Q_H = (1, 1)
 
+# Optional replay changes no source parameter, agreement value, packet, or
+# safe/unsafe shape.  It perturbs only the four error-node U1 values, thereby
+# removing the accidental hypothesis that all U1 values come from one global
+# polynomial.  These offsets are fixed before the replay rank is computed.
+ERROR_U1_OFFSETS = (37, 74, 111, 148)
+
 
 def horizontal_concat(left: nmod_mat, right: nmod_mat,
                       prime: int) -> nmod_mat:
@@ -95,7 +101,7 @@ def add_scaled(target, source, scalar, prime):
             target.pop(row, None)
 
 
-def run_control():
+def run_control(perturb_error_values: bool = False):
     case = CONTROL
     prime = case["prime"]
     S.PRIME = prime
@@ -141,13 +147,22 @@ def run_control():
     assert relative == lambda_h
     assert len(direction_polynomial) - 1 == w + 1
     assert len(relative) - 1 == w + 1 > w
-    values = tuple(A.poly_eval(direction_polynomial, node, prime)
-                   for node in nodes)
+    polynomial_values = tuple(
+        A.poly_eval(direction_polynomial, node, prime) for node in nodes)
+    offsets = ((0,) * g + ERROR_U1_OFFSETS
+               if perturb_error_values else (0,) * n)
+    assert len(offsets) == n
+    values = tuple((value + offset) % prime
+                   for value, offset in zip(polynomial_values, offsets))
     qh_values = tuple(A.poly_eval(Q_H, node, prime) for node in nodes)
     assert all(values)
     assert all(qh_values)
+    assert values[:g] == polynomial_values[:g]
     assert all(values[i] == qh_values[i] for i in range(w + 1))
     assert any(values[i] != qh_values[i] for i in range(w + 1, n))
+    if perturb_error_values:
+        assert all(offsets[g:])
+        assert values[g:] != polynomial_values[g:]
 
     all_columns_by_monomial = {}
     for monomial in all_monomials:
@@ -277,7 +292,13 @@ def run_control():
         "q_H_coefficients": Q_H,
         "q_H_is_nonzero_and_nonconstant": Q_H != () and len(Q_H) > 1,
         "Q_G_coefficients": direction_polynomial,
-        "Q_G_values_are_all_nonzero": all(values),
+        "agreement_U1_values_equal_Q_G": (
+            values[:g] == polynomial_values[:g]),
+        "error_U1_offsets": offsets[g:],
+        "error_U1_values": values[g:],
+        "error_U1_values_differ_from_global_Q_G": (
+            values[g:] != polynomial_values[g:]),
+        "all_actual_U1_values_are_nonzero": all(values),
         "Q_G_minus_q_H_equals_Lambda_H": relative == lambda_h,
         "Q_G_minus_q_H_degree_and_exceeds_w": (
             len(relative) - 1, len(relative) - 1 > w),
@@ -302,7 +323,8 @@ def run_control():
 
 
 def main():
-    result = run_control()
+    perturb = "--offset-errors" in sys.argv
+    result = run_control(perturb_error_values=perturb)
     result["decision"] = (
         "GREEN" if result["fraction_field_CS4_green"]
         and result["direct_coefficientwise_four_packet_green"] else "RED")
