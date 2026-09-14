@@ -1,0 +1,20 @@
+import WeightedFinitePrefixPrimaryKernelW1332216900
+
+/-! Thin public facade for the separately compiled W=133221 target, source
+column, and reconstructed-kernel receipts.  All substantial proofs live in
+memory-bounded imported modules. -/
+namespace ProximityPrize.SubmissionLower.WeightedFinitePrefixPrimarySourceW1332216900
+
+export WeightedFinitePrefixPrimaryTargetW1332216900
+  (finiteHighPrefix_533_486_118 primary_totalTarget_rank_le)
+export WeightedFinitePrefixPrimaryColumnsW1332216900
+  (primary_columns_lower)
+export WeightedFinitePrefixPrimaryKernelW1332216900
+  (primaryPolynomialKernel primaryPolynomialKernel_dimension primary_source_exists)
+
+end ProximityPrize.SubmissionLower.WeightedFinitePrefixPrimarySourceW1332216900
+
+#print axioms ProximityPrize.SubmissionLower.WeightedFinitePrefixPrimarySourceW1332216900.primary_totalTarget_rank_le
+#print axioms ProximityPrize.SubmissionLower.WeightedFinitePrefixPrimarySourceW1332216900.primary_columns_lower
+#print axioms ProximityPrize.SubmissionLower.WeightedFinitePrefixPrimarySourceW1332216900.primaryPolynomialKernel_dimension
+#print axioms ProximityPrize.SubmissionLower.WeightedFinitePrefixPrimarySourceW1332216900.primary_source_exists
