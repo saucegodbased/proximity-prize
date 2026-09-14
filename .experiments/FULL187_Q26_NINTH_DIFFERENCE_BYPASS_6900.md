@@ -168,6 +168,54 @@ There are `11*45=495` independent original provenance occurrences. Each has
 nine correction occurrences, and every one of the 495 grouped scalar sums is
 zero. The exact row audit also finds 495 distinct target rows.
 
+### Exact shape of the same-Z remainder
+
+The row-wise cancellation is the low-contact part of a stronger polynomial
+identity. Put
+
+```text
+A = contactY = E+T*R-T^2*S/2,
+U = E-T^2*S/2.
+```
+
+Before contact truncation, the original top block plus the nine FD terms is
+
+```text
+binom(61,8) * [T^26 A^8 R^(21-s)
+  + sum_(k=1)^9 (-1)^k binom(9,k)
+      T^(26-k) A^(8+k) R^(21-s-k)] * S^s
+
+= -binom(61,8) T^17 A^8 R^(12-s) U^9 S^s.        (U9)
+```
+
+The cancellation `T*R-A=-U` is exact; it explains why every surviving
+same-Z monomial has `aE+cS>=9`.
+
+More importantly, `(U9)` decomposes exactly into the already formalized
+order-two basis at
+
+```text
+(active d, slope q, curvature t) = (29,21,10).
+```
+
+For stream `s`, set `h=s+9`, `b=12-s`, `rho=max(h-10,0)`, and expand only
+the remaining `U^(9-rho)`. The resulting basis generators have unique pivot
+weights 43 through 52, all below `m=60`. The executable checks the sparse
+polynomial equality for all eleven streams; each side has 126 monomials.
+
+Every ordinary active monomial in this `d=29` source flag has coefficient
+window at least
+
+```text
+D-w*29 = 7023721 = 26N+207977.
+```
+
+This proves exact local sharp-flag membership and enough bounded-X room for
+an `A_26` coefficient on every ordinary source monomial. It does **not** by
+itself choose an independent global preimage: some canonical order-two basis
+terms have outer coefficient-Hasse order above 25. That remaining coupling is
+kept explicit.
+
 ## 4. Complete tail classification
 
 The construction does not pretend that the 99 new physical source
@@ -261,9 +309,9 @@ prlimit --as=1073741824 --cpu=120 -- \
 Recorded run:
 
 ```text
-exit 0; elapsed 3.6 s; peak RSS 26,616 KiB
-canonical sha256 5a381f6ec4be969a858d812405a0eafd075eed50cbb3bf2cc2d845e7f23e6d06
-script sha256    ca8699a105398096bf8d0413abbc90e9bc1fbcd52d5558dfc2e34964d8396b2a
+exit 0; elapsed 4.5 s; peak RSS 27,084 KiB
+canonical sha256 b66264643e3a9880ab292cc9ebb2cfe93a98723550e7a21be1e854745fef98aa
+script sha256    13718c9e46aa5193a3c26446a12f2a78ac47980e68447b0feaddaaa51ab3279f
 ```
 
 Decision:

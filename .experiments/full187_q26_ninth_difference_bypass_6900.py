@@ -95,6 +95,190 @@ def correction_coefficient(k: int) -> int:
         DIFFERENCE_ORDER, k) % P
 
 
+# Sparse polynomials in the four local contact variables (T,E,R,S).  This is
+# deliberately independent of the row-by-row scalar check below.
+Exponent = tuple[int, int, int, int]
+SparsePolynomial = dict[Exponent, int]
+
+
+def poly_add(a: SparsePolynomial, b: SparsePolynomial) -> SparsePolynomial:
+    answer = dict(a)
+    for exponent, coefficient in b.items():
+        answer[exponent] = (answer.get(exponent, 0) + coefficient) % P
+        if answer[exponent] == 0:
+            del answer[exponent]
+    return answer
+
+
+def poly_scale(c: int, a: SparsePolynomial) -> SparsePolynomial:
+    return {e: c * v % P for e, v in a.items() if c * v % P}
+
+
+def poly_mul(a: SparsePolynomial, b: SparsePolynomial) -> SparsePolynomial:
+    answer: SparsePolynomial = {}
+    for ea, ca in a.items():
+        for eb, cb in b.items():
+            exponent = tuple(ea[i] + eb[i] for i in range(4))
+            answer[exponent] = (answer.get(exponent, 0) + ca * cb) % P
+    return {e: c for e, c in answer.items() if c}
+
+
+def poly_pow(a: SparsePolynomial, n: int) -> SparsePolynomial:
+    answer: SparsePolynomial = {(0, 0, 0, 0): 1}
+    base = a
+    while n:
+        if n & 1:
+            answer = poly_mul(answer, base)
+        base = poly_mul(base, base)
+        n //= 2
+    return answer
+
+
+def monomial(t: int = 0, e: int = 0, r: int = 0,
+             s: int = 0) -> SparsePolynomial:
+    assert min(t, e, r, s) >= 0
+    return {(t, e, r, s): 1}
+
+
+def polynomial_product(*factors: SparsePolynomial) -> SparsePolynomial:
+    answer = monomial()
+    for factor in factors:
+        answer = poly_mul(answer, factor)
+    return answer
+
+
+def sharp_basis_factorization_receipt():
+    """Factor the whole same-Z remainder through the exact Order2 basis.
+
+    Put A=contactY=E+T*R-T^2*S/2 and U=E-T^2*S/2.  Trading one
+    coefficient-Hasse T for one A/R ratio makes the ninth finite difference
+
+      T^17 A^8 R^(12-s) (T*R-A)^9 S^s
+        = -T^17 A^8 R^(12-s) U^9 S^s.
+
+    Expanding only the excess U factors writes this as an exact sum of the
+    ``fullOrder2Basis`` generators at (d,q,t)=(29,21,10).
+    """
+    inv2 = pow(2, -1, P)
+    Tvar = monomial(t=1)
+    Evar = monomial(e=1)
+    Rvar = monomial(r=1)
+    Svar = monomial(s=1)
+    contact_y = poly_add(
+        Evar,
+        poly_add(poly_mul(Tvar, Rvar),
+                 poly_scale(-inv2 % P,
+                            polynomial_product(Tvar, Tvar, Svar))),
+    )
+    order2_u = poly_add(
+        Evar,
+        poly_scale(-inv2 % P,
+                   polynomial_product(Tvar, Tvar, Svar)),
+    )
+    base = comb(ORIGINAL_Y, ORIGINAL_F) % P
+
+    receipts = []
+    for source_s in range(CURVATURE + 1):
+        original_r = SLOPE - source_s
+        direct = poly_scale(base, polynomial_product(
+            poly_pow(Tvar, ORIGINAL_Q),
+            poly_pow(contact_y, ORIGINAL_F),
+            poly_pow(Rvar, original_r),
+            poly_pow(Svar, source_s),
+        ))
+        for k in range(1, DIFFERENCE_ORDER + 1):
+            direct = poly_add(direct, poly_scale(
+                correction_coefficient(k), polynomial_product(
+                    poly_pow(Tvar, ORIGINAL_Q - k),
+                    poly_pow(contact_y, ORIGINAL_F + k),
+                    poly_pow(Rvar, original_r - k),
+                    poly_pow(Svar, source_s),
+                )))
+
+        factorized = poly_scale(-base % P, polynomial_product(
+            poly_pow(Tvar, ORIGINAL_Q - DIFFERENCE_ORDER),
+            poly_pow(contact_y, ORIGINAL_F),
+            poly_pow(Rvar, original_r - DIFFERENCE_ORDER),
+            poly_pow(order2_u, DIFFERENCE_ORDER),
+            poly_pow(Svar, source_s),
+        ))
+        assert direct == factorized
+
+        # Canonical order-two parameters use
+        #   A^a0 R^b U^rho E^e S^(min(h,t)-e),
+        # preceded by T^outer.  Here d=a0+b+h=29 and b+h=21.
+        a0 = 8
+        h = source_s + DIFFERENCE_ORDER
+        t_cap = CURVATURE
+        b = original_r - DIFFERENCE_ORDER
+        rho = max(h - t_cap, 0)
+        extra_u = DIFFERENCE_ORDER - rho
+        assert (a0 + b + h, b + h, t_cap) == (29, SLOPE, 10)
+        assert extra_u == min(DIFFERENCE_ORDER, t_cap - source_s)
+
+        decomposed: SparsePolynomial = {}
+        parameters = []
+        for e in range(extra_u + 1):
+            outer = (ORIGINAL_Q - DIFFERENCE_ORDER
+                     + 2 * (extra_u - e))
+            coefficient = (
+                -base * comb(extra_u, e)
+                * pow(-inv2 % P, extra_u - e, P)) % P
+            basis_term = polynomial_product(
+                poly_pow(Tvar, outer),
+                poly_pow(contact_y, a0),
+                poly_pow(Rvar, b),
+                poly_pow(order2_u, rho),
+                poly_pow(Evar, e),
+                poly_pow(Svar, min(h, t_cap) - e),
+            )
+            decomposed = poly_add(
+                decomposed, poly_scale(coefficient, basis_term))
+            pivot_weight = outer + a0 + 2 * rho + 3 * e
+            assert pivot_weight == 43 + e < M
+            parameters.append((a0, h, t_cap, b, e, outer,
+                               pivot_weight, coefficient))
+        assert decomposed == factorized
+
+        # Every ordinary active monomial in this d=29 source flag has at
+        # least this much coefficient room.  It is enough for A_26, although
+        # the basis components with outer>25 cannot themselves be prescribed
+        # independently from only 26 all-node jets; that coupling remains.
+        minimum_flag_width = D - W * 29
+        assert minimum_flag_width == 7_023_721
+        assert minimum_flag_width > 26 * N
+        receipts.append({
+            "stream_s": source_s,
+            "direct_and_factorized_support_sizes": (
+                len(direct), len(factorized)),
+            "factorization": (
+                "-binom(61,8)*T^17*A^8*R^(12-s)*U^9*S^s",
+                "A=E+T*R-T^2*S/2; U=E-T^2*S/2"),
+            "order2_d_q_t": (a0 + b + h, b + h, t_cap),
+            "basis_parameters_a0_h_t_b_e_outer_weight_coefficient": tuple(
+                parameters),
+        })
+
+    return {
+        "exact_factorization_per_stream": (
+            "original plus FD9 corrections = -binom(61,8) "
+            "T^17 contactY^8 R^(12-s) "
+            "(E-T^2*S/2)^9 S^s"),
+        "existing_sharp_flag_d_q_t": (29, 21, 10),
+        "all_basis_pivot_weights": (43, 52),
+        "minimum_ordinary_source_width_in_d29_flag": 7_023_721,
+        "minimum_flag_width_minus_26N": 7_023_721 - 26 * N,
+        "stream_receipts": tuple(receipts),
+        "scope_guard": (
+            "This proves exact local membership of the same-Z remainder in "
+            "the existing order-two flag and bounded room for A_26 on every "
+            "ordinary d29 source monomial. Some canonical basis terms have "
+            "outer T order above 25, so an independent global coefficient "
+            "section does not follow merely from this factorization."
+        ),
+    }
+
+
 def finite_difference_and_target_receipt():
     base = comb(ORIGINAL_Y, ORIGINAL_F)
     assert base % P == 814_121_332
@@ -362,6 +546,7 @@ def classify_other_tails():
 def main():
     target = finite_difference_and_target_receipt()
     tails = classify_other_tails()
+    sharp_factorization = sharp_basis_factorization_receipt()
     stable = {
         "scope": (
             "exact target-field/source-window ninth-finite-difference "
@@ -386,6 +571,7 @@ def main():
         ),
         "target_receipt": target,
         "tail_receipt": tails,
+        "sharp_basis_factorization": sharp_factorization,
         "exact_fourth_packet": "F3=B*(Y-P-(Z-gamma)*q_H)",
         "pure_Z1_rejected": True,
         "decision": "GREEN_UNIFORM_F8_Q26_NINTH_DIFFERENCE_BYPASS",
