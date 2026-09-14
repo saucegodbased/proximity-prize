@@ -25,7 +25,9 @@ because E0 has constant term -1 and m=4.  All other generators are converted
 to exact boundary-zero corrections.  We then ask, by exact F_101 rank, if
 polynomial X-shifts of those corrections can cancel every source-illegal
 coefficient of the base.  A GREEN result is an explicit sparse/factorized
-F3 lift; RED falsifies this bounded Popov ansatz, not the full source.
+F3 lift; RED falsifies this bounded Popov ansatz, not the full source.  The
+``--targetlike-error-direction`` replay replaces the matched zero error
+direction by X^2, the exact small analogue of target X^81730.
 """
 
 from __future__ import annotations
@@ -163,7 +165,7 @@ def target_minimal_three_shape_pair_count():
     return len(exponent_triples), len(pairs)
 
 
-def build_module():
+def build_module(targetlike_error_direction=False):
     F.GAMMA = 0
     T.PRIME = P
     xi_error, direction = C.xi_and_q()
@@ -177,9 +179,13 @@ def build_module():
     assert four_boundary_determinant
 
     agreement_blocks = centered_blocks(locator, (0,), direction)
-    # On the three error nodes the received scalar is 1 and the direction is
-    # zero.  These blocks are therefore the literal error-side covariants.
-    error_blocks = centered_blocks(xi_error, (1,), (0,))
+    # The original successful chamber has zero error direction.  The
+    # target-fidelity replay instead uses X^(|E|-1)=X^2, exactly mirroring
+    # the target's X^81730 error direction while leaving the agreement word
+    # and packet fixed.
+    error_direction = ((0, 0, 1)
+                       if targetlike_error_direction else (0,))
+    error_blocks = centered_blocks(xi_error, (1,), error_direction)
     v_h = F.sparse_add(
         F.Y, F.sparse_mul(F.Z, F.sparse_embed_x(q_h)), -1)
     h = F.sparse_embed_x(lambda_h)
@@ -235,7 +241,12 @@ def build_module():
 
     u0 = tuple(0 if node in C.AGREEMENT else 1
                for node in range(C.N))
-    u1 = tuple(C.poly_eval(direction, node) for node in range(C.N))
+    u1 = tuple(
+        C.poly_eval(direction, node)
+        if node in C.AGREEMENT
+        else C.poly_eval(error_direction, node)
+        for node in range(C.N)
+    )
     assert not F.contact_image(base, u0, u1)
 
     corrections = []
@@ -279,6 +290,7 @@ def build_module():
         "exponent_pair_count": len(exponent_pairs),
         "q_h": q_h,
         "direction": direction,
+        "error_direction": error_direction,
         "locator": locator,
         "xi_error": xi_error,
         "four_boundary_determinant": four_boundary_determinant,
@@ -420,11 +432,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--max-shift", type=int, default=7)
     parser.add_argument("--max-seed-shift", type=int, default=7)
+    parser.add_argument("--targetlike-error-direction", action="store_true")
     args = parser.parse_args()
     if args.max_shift < 0 or args.max_seed_shift < 0:
         raise SystemExit("shift bounds must be nonnegative")
 
-    module = build_module()
+    module = build_module(args.targetlike_error_direction)
     gate = solve_illegal_tail(
         module, args.max_shift, args.max_seed_shift)
     stable = {
@@ -437,6 +450,7 @@ def main():
         "actual_packet": "F3=B*(Y-Z*q_H)",
         "q_H_coefficients": module["q_h"],
         "agreement_direction_coefficients": module["direction"],
+        "error_direction_coefficients": module["error_direction"],
         "all_factorized_generators_complete_contact_zero": True,
         "factorized_generator_contact_checks": module["contact_checks"],
         "literal_exponent_pairs": module["exponent_pair_count"],
@@ -457,6 +471,9 @@ def main():
                 target_safe_103_shape(r, s)
                 for r, s in ((0, 0), (1, 0), (0, 1))),
             "raw_generators_individually_source_legal": False,
+            "key_error_weight_balance_F101_target": (
+                C.A - ((C.N - C.A) + C.W),
+                180_413 - (81_731 + 131_071)),
             "certification_needed": (
                 "shifted bivariate Popov/module membership showing the "
                 "combined representative, not each raw generator, lies in "

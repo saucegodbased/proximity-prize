@@ -5,8 +5,8 @@ submission roots, claim, score, and radius are unchanged.
 
 ## Verdict
 
-The exact partial-locator packet `F3` in the already-successful F101
-complete-source chamber has a new explicit **factor-module** lift. This is
+The exact partial-locator packet `F3` in the already-successful matched-error
+F101 complete-source chamber has a new explicit **factor-module** lift. This is
 not an arbitrary terminal-`C` test and it is not a separated packet family.
 It simultaneously uses:
 
@@ -45,6 +45,25 @@ The sharp adjacent ablations are RED:
 Thus passive propagation is load-bearing, and the positive result is not the
 already-refuted `K[X]`-only/separated extrapolation.
 
+There is also a critical target-fidelity RED. The original successful F101
+chamber has error direction zero, whereas Full187 has the nonzero error
+direction `X^81730`. Keeping the agreement word, `F3`, source box, and factor
+module fixed, and changing only the error direction to the exact small
+analogue `X^2`, gives:
+
+| max X shift | max passive-Z shift | correction rank | augmented rank | result |
+|---:|---:|---:|---:|:---|
+| 7 | 7 | 3135 | 3136 | RED |
+| 8 | 7 | 3303 | 3304 | RED |
+| 7 | 8 | 3506 | 3507 | RED |
+| 8 | 8 | 3691 | 3692 | RED |
+
+Every targetlike generator still has literal complete contact zero, so this
+is a strict-window module failure rather than an incorrectly centered error
+block. The matched GREEN therefore explains how the previous dense F101 lift
+can arise, but it is **not yet positive evidence for the target error word**.
+Larger or differently generated simultaneous modules remain open.
+
 ## The factor module
 
 Write `L=Lambda_G`, split the agreement locator as `L=H*R`, and let
@@ -65,8 +84,8 @@ A2 = L^2*(S-ZQ'') - 2LL'*(R-ZQ')
        + (2(L')^2-LL'')*A0.
 ```
 
-They have literal agreement contact orders `1,2,3`. The error covariants use
-the error locator and the actual error graph `(P_E,Q_E)=(1,0)`:
+They have literal agreement contact orders `1,2,3`. For the matched GREEN,
+the error covariants use the error locator and graph `(P_E,Q_E)=(1,0)`:
 
 ```text
 E0 = Y-1,
@@ -75,6 +94,10 @@ E2 = E^2*S - 2EE'*R + (2(E')^2-EE'')*E0,
 ```
 
 and have error contact orders `1,2,3`.
+
+The target-fidelity replay instead uses `(P_E,Q_E)=(1,X^2)` in all three
+error covariants and in the literal received contact map. This is the exact
+small-degree analogue of `(1,X^81730)`; using `Y-1` there would be invalid.
 
 For exponent triples `alpha=(ay,ar,as)` and `epsilon=(ey,er,es)`, set
 
@@ -109,7 +132,7 @@ an agreement covariant is already boundary-zero. The final task is purely a
 shifted coefficient-module problem: cancel all source-illegal coefficients
 with `X^i Z^j` multiples of these complete-contact, boundary-zero elements.
 
-The GREEN solve uses 1,802 shifted generators from 58 distinct covariant
+The matched-direction GREEN solve uses 1,802 shifted generators from 58 distinct covariant
 factor pairs. Both shift maxima seven are attained. The resulting source has
 only derivative shapes `(r,s)=(0,0),(1,0)`.
 
@@ -155,6 +178,17 @@ time would reject the mechanism for the wrong reason. A dense target matrix
 is also the wrong implementation. The factorized contact proof removes all
 contact rows in advance; only the polynomial tail module remains.
 
+There is a second scaling warning independent of the nonzero-direction RED:
+
+```text
+F101:   g = 8 = e+w = 3+5,
+target: g-(e+w) = 180413-(81731+131071) = -32389.
+```
+
+Thus the original F101 chamber is not ratio-faithful in the key
+error-degree/active-weight balance. No target conclusion should be inferred
+from its matched GREEN without a ratio-faithful, nonzero-error-direction gate.
+
 An informal saturated-contact lemma in the GitHub discussion
 [comment 18427358](https://github.com/proximity-prize/proximity-prize/discussions/530#discussioncomment-18427358)
 suggests the right completeness proof: normalized order-1/2/3 covariants with
@@ -169,7 +203,7 @@ requirement is claimed here.
 GREEN:
 
 * one faithful F101 chamber;
-* the actual `F3=B*(Y-Z*q_H)` boundary;
+* the actual `F3=B*(Y-Z*q_H)` boundary in the matched-error chamber;
 * complete literal contact zero;
 * literal source legality after simultaneous cancellation;
 * no dependence on unsafe terminal-103 shapes.
@@ -181,11 +215,20 @@ OPEN:
 * the analogous simultaneous representatives for `F0,F1,F2`; and
 * integration into `ProtocolClaim 6900`.
 
+RED:
+
+* the same module and packet with targetlike error direction `X^2`, through
+  every nearest `7/8` shift rectangle listed above.
+
 ## Reproduction
 
 ```bash
 python3 -B \
   .experiments/f101_actual_f3_bicovariant_popov_gate_6900.py
+
+python3 -B \
+  .experiments/f101_actual_f3_bicovariant_popov_gate_6900.py \
+  --targetlike-error-direction --max-shift 8 --max-seed-shift 8
 ```
 
 The default exact run uses under 0.8 GiB peak RSS. The executable also accepts
