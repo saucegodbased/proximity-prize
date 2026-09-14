@@ -43,38 +43,71 @@ factor `81,732` for exact-agreement strata appears.  The complete chart cost
 uses only about `0.0256%` of the allowance.  Hence arithmetic and
 characteristic headroom are not the obstruction.
 
-## Exact load-bearing theorem
+## Correction: ordinary rank four is too strong
 
-The route is conditional on a new statement about the *actual* contact
-kernel.  The strongest convenient form is
+The first focus pass proposed ordinary gradient rank four.  The subsequent
+degree audit identifies a canonical fourth tangent direction.  On an
+agreement set, interpolate the received direction `u1` by a polynomial `h`
+of degree at most `A-1`; then
+
+```text
+v = (h'',h,h',1)
+```
+
+is the infinitesimal motion `(f,z) -> (f+t*h,z+t)` preserving the agreement
+values.  For `W=D4(Q)`, its base specialization degree is strictly below
+`(m-4)*A`, since
+
+```text
+4*(A-w+2) + 4*(w-2) = 4*A.
+```
+
+Each directional replacement costs at most `A-w-1=49,341` in X degree.
+Consequently root multiplicity forces every directional coefficient through
+order 14 to be zero:
+
+```text
+4*A - 14*(A-w-1) = +30,878,
+4*A - 15*(A-w-1) = -18,463.
+```
+
+Thus ordinary conormal rank is expected to be at most three; pointwise rank
+four must not be used as the endpoint.
+
+## Corrected load-bearing theorem
+
+The corrected target is a higher-osculation statement about the *actual*
+contact kernel:
 
 ```text
 for every retained selected (f,z),
-  rank over K(X) of
-    Q in V |-> grad_(S,Y,R,Z) (D4 Q)(f'',f,f',z)
-  is 4.
+  the D4(V) conormal image has transverse rank 3, and
+  some row has nonzero order-15 Hasse coefficient along
+    v=(h'',h,h',1), modulo those three transverse equations.
 ```
 
-Pointwise rank four permits simultaneous generic row selection after base
-change and makes every selected graph point regular/isolated for four fixed
-rows.  A weaker acceptable output is a rank-deficient component theorem
-whose exceptional candidates have a separately paid cover.  Kernel
-dimension `3,553,593,355` by itself proves neither form: a large kernel can
-consist of multiples of a common differential factor.
+This would make the point isolated with tangent intersection order at least
+15.  Its consumer needs local-intersection-length/Bezout bookkeeping rather
+than the regular-Jacobian wrapper.  A weaker acceptable output is a
+rank-deficient or order-15-zero component theorem whose candidates have a
+separately paid cover.  Kernel dimension `3,553,593,355` by itself proves
+neither form: a large kernel can consist of multiples of a common
+differential factor.
 
 The remaining formal consumer join is the already identified Fin4
-component/aggregate-degree producer.  Rank four makes that join simpler but
-does not magically instantiate `AggregateDenseBlockBezoutOutput`; the
-source-to-minimal-component cover still has to be constructed honestly.
+component/aggregate-degree producer.  The higher-osculation statement does
+not magically instantiate `AggregateDenseBlockBezoutOutput`; a
+multiplicity-aware source-to-minimal-component cover still has to be
+constructed honestly.
 
 ## Immediate discriminator and stop rule
 
-Before building wrappers, compute the displayed derivative-gradient rank on
-faithful small second-jet contact kernels with actual selected graphs.  A
-rank-three-or-less chamber which preserves the derivative/root-count
-interface kills universal pointwise rank four and forces the component
-branch.  A collection of generic random rank-four samples is only evidence;
-it does not prove the target theorem.
+Before building wrappers, compute both the derivative-gradient rank and the
+first degree-unforced tangent coefficient on faithful small second-jet
+contact kernels with actual selected graphs.  The binary target is transverse
+rank three plus a nonzero order-15 class, or an exact countercomponent.  A
+collection of generic samples is only evidence; it does not prove the target
+theorem.
 
 Do not fall back to top-curvature coefficient extraction.  Commit `47180ac`
 gives a kernel-checked Full187 counterexample and an exact `49,344*d`
@@ -85,4 +118,3 @@ root-forcing deficit for that operation.
 `SecondJetK4NativeIncidenceArithmetic6900.lean` compiles with an 8 GB Lean
 allocator cap and prints only `[propext, Classical.choice, Quot.sound]`.  It
 contains no `sorry`, `decide`, or `native_decide`.
-
