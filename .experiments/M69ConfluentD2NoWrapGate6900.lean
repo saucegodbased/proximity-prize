@@ -118,6 +118,63 @@ theorem three_confluentRelations_kill_middle_triple
     mul_ne_zero htwo (mul_ne_zero hN hE)
   exact (mul_eq_zero.mp h234').resolve_left hprod
 
+/-- The same kill applied to the step-two/all-high subsequence.  Its
+confluent factors are `E^2,N^2`, so the short middle polynomial only has to
+lie below degree `2 * (deg E + deg N)`. -/
+theorem three_stepTwoRelations_kill_middle_triple
+    {K : Type*} [Field K]
+    (E N H0 H1 H2 H3 H4 H5 H6 : K[X])
+    (hE : E ≠ 0) (hN : N ≠ 0) (htwo : (2 : K[X]) ≠ 0)
+    (hcop : IsCoprime E N)
+    (h012 : ConfluentRelation (E ^ 2) (N ^ 2) H0 H1 H2)
+    (h234 : ConfluentRelation (E ^ 2) (N ^ 2) H2 H3 H4)
+    (h456 : ConfluentRelation (E ^ 2) (N ^ 2) H4 H5 H6)
+    (hH2 : H2.natDegree < 2 * (E.natDegree + N.natDegree))
+    (hH4 : H4.natDegree < 2 * (E.natDegree + N.natDegree)) :
+    H2 = 0 ∧ H3 = 0 ∧ H4 = 0 := by
+  apply three_confluentRelations_kill_middle_triple
+    (E ^ 2) (N ^ 2) H0 H1 H2 H3 H4 H5 H6
+    (pow_ne_zero 2 hE) (pow_ne_zero 2 hN) htwo hcop.pow
+    h012 h234 h456
+  · rw [natDegree_pow, natDegree_pow]
+    omega
+  · rw [natDegree_pow, natDegree_pow]
+    omega
+
+/-- Vanishing of the normalized literal Pascal modes at offsets `4` and `6`
+forces both value/derivative dual coefficients to vanish away from `W=0`.
+The only characteristic requirement is that `2` is nonzero. -/
+theorem two_even_modes_injective
+    {K : Type*} [Field K]
+    (W lambda0 lambda1 : K) (hW : W ≠ 0) (htwo : (2 : K) ≠ 0)
+    (h4 : W ^ 4 * lambda0 + 4 * W ^ 3 * lambda1 = 0)
+    (h6 : W ^ 6 * lambda0 + 6 * W ^ 5 * lambda1 = 0) :
+    lambda0 = 0 ∧ lambda1 = 0 := by
+  have hl1raw : (2 : K) * W ^ 5 * lambda1 = 0 := by
+    linear_combination h6 - W ^ 2 * h4
+  have hcoef : (2 : K) * W ^ 5 ≠ 0 :=
+    mul_ne_zero htwo (pow_ne_zero 5 hW)
+  have hl1 : lambda1 = 0 :=
+    (mul_eq_zero.mp hl1raw).resolve_left hcoef
+  rw [hl1, mul_zero, add_zero] at h4
+  have hl0 : lambda0 = 0 :=
+    (mul_eq_zero.mp h4).resolve_left (pow_ne_zero 4 hW)
+  exact ⟨hl0, hl1⟩
+
+/-- Once two even modes kill the two dual coefficients, the physical terminal
+mode at `K-a = 94-41 = 53` is zero.  At `W=0` it is zero directly. -/
+theorem terminal53_zero_of_even_modes
+    {K : Type*} [Field K]
+    (W lambda0 lambda1 : K) (htwo : (2 : K) ≠ 0)
+    (h4 : W ^ 4 * lambda0 + 4 * W ^ 3 * lambda1 = 0)
+    (h6 : W ^ 6 * lambda0 + 6 * W ^ 5 * lambda1 = 0) :
+    W ^ 53 * lambda0 + 53 * W ^ 52 * lambda1 = 0 := by
+  by_cases hW : W = 0
+  · subst W
+    norm_num
+  · obtain ⟨rfl, rfl⟩ := two_even_modes_injective W lambda0 lambda1 hW htwo h4 h6
+    simp
+
 /-- Exact degree arithmetic for the physical contacts `41,...,47`.
 
 The even contacts have exclusive dual caps `3302,3300,3298,3296`; the odd
@@ -140,12 +197,35 @@ theorem d2_no_wrap_degree_arithmetic
       3300 ≤ e + n ∧ 3298 ≤ e + n := by
   omega
 
+/-- Exact all-high/step-two arithmetic for the complementary low-sum band.
+
+The seven even physical contacts are `41,43,...,53`, with exclusive caps
+`3302,3300,...,3290`.  All three fourth-order cleared relations are far below
+the cyclic modulus, and the two middle contacts are shorter than `E^2*N^2`. -/
+theorem d2_low_sum_stepTwo_degree_arithmetic
+    (e n : Nat) (he : 2151 ≤ e) (hsum : e + n < 3300) :
+    4 * n + 3301 < 262144 ∧
+      2 * n + 2 * e + 3299 < 262144 ∧
+      4 * e + 3297 < 262144 ∧
+      4 * n + 3297 < 262144 ∧
+      2 * n + 2 * e + 3295 < 262144 ∧
+      4 * e + 3293 < 262144 ∧
+      4 * n + 3293 < 262144 ∧
+      2 * n + 2 * e + 3291 < 262144 ∧
+      4 * e + 3289 < 262144 ∧
+      3297 < 2 * (e + n) ∧ 3293 < 2 * (e + n) := by
+  omega
+
 #print axioms right_dvd_of_confluentRelation
 #print axioms left_dvd_of_confluentRelation
 #print axioms mul_dvd_middle_of_overlapping_confluentRelations
 #print axioms middle_eq_zero_of_overlapping_confluentRelations
 #print axioms three_confluentRelations_kill_middle_triple
+#print axioms three_stepTwoRelations_kill_middle_triple
+#print axioms two_even_modes_injective
+#print axioms terminal53_zero_of_even_modes
 #print axioms d2_no_wrap_degree_arithmetic
+#print axioms d2_low_sum_stepTwo_degree_arithmetic
 
 end
 end ProximityPrize.SubmissionLower.M69ConfluentD2NoWrapGate6900

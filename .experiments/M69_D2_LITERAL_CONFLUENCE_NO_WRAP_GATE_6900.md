@@ -26,7 +26,7 @@ polynomial too.
 degree-kill, and exact physical integer inequalities without `sorry`,
 `decide`, `native_decide`, or nonstandard axioms.
 
-## Exact covered parameter band
+## Exact covered parameter range
 
 Write `e = deg E` and `n = deg N`.  Under the actual leaf bounds
 
@@ -34,7 +34,7 @@ Write `e = deg E` and `n = deg N`.  Under the actual leaf bounds
 2151 <= e <= 18414,     n <= 149776,
 ```
 
-this gate covers exactly the sub-band
+the ordinary high-low-high gate covers exactly the sub-band
 
 ```text
 3300 <= e+n <= 127771.
@@ -44,6 +44,24 @@ Equivalently, for each fixed `e`, it covers
 `max(0,3300-e) <= n <= 127771-e`.  The lower exclusion exists only when
 `e < 3300`; the upper cyclic-wrap exclusion begins at `n = 127772-e`.
 This is a parameter-band statement, not yet a census of actual leaves.
+
+The same Lean file now closes the complementary low-sum band
+`e+n < 3300`.  It restricts to the all-high even contacts
+`41,43,...,53`.  Their direct step-two recurrence has factors `E^2,N^2`;
+all products have degree below 16,500, and overlapping relations force the
+middle high polynomials to contain `E^2*N^2`, whose degree already exceeds
+their caps.  A formal pointwise determinant then shows that vanishing modes at
+offsets 4 and 6 kill both literal dual coefficients and hence the terminal
+offset-53 mode (with `W=0` handled separately).
+
+Thus the proved algebra and arithmetic cover every parameter with
+
+```text
+e+n <= 127771.
+```
+
+provided the required nodal relations and bounded polynomial representatives
+are supplied by the still-missing leaf adapter.
 
 ## What was falsified
 
@@ -55,12 +73,10 @@ high-low-high triples, for which all three exact bounds are below the modulus.
 
 ## Remaining d=2 work
 
-1. For `e+n < 3300`, use the direct step-two relation on the all-high even
-   subsequence, with factors `E^2,N^2`; its products are very short.
-2. For `e+n >= 127772`, retain the quotient by `X^262144-1` and prove the
+1. For `e+n >= 127772`, retain the quotient by `X^262144-1` and prove the
    needed cyclic Sylvester/resultant statement rather than pretending there is
    no wrap.
-3. Derive these polynomial/nodal hypotheses from an actual m69 leaf and attach
+2. Derive these polynomial/nodal hypotheses from an actual m69 leaf and attach
    their vanishing conclusion to the terminal coefficient.  No current module
    provides that source/terminal provenance.
 
