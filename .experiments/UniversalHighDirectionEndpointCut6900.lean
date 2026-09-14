@@ -1,4 +1,4 @@
-import LowReceivedDirectionScalarSplit6900
+import LowReceivedDirectionScalarSplit1331196900
 import Order2ProtocolBadFamily6900
 
 /-!
@@ -16,7 +16,7 @@ namespace ProximityPrize.SubmissionLower.UniversalHighDirectionEndpointCut6900
 
 open ProximityPrize.Benchmark
 open ProximityPrize.SubmissionLower.AffineLineBadFamilyContract6900
-open ProximityPrize.SubmissionLower.LowReceivedDirectionScalarSplit6900
+open ProximityPrize.SubmissionLower.LowReceivedDirectionScalarSplit1331196900
 open ProximityPrize.SubmissionLower.Order2ProtocolBadFamily6900
 open ProximityPrize.SubmissionLower.Order2Protocol6900
 
@@ -27,7 +27,7 @@ set_option maxHeartbeats 500000
 /-- The exact universal theorem still required from any Full187/high-degree
 source construction.  Every hypothesis is inherited from the benchmark's
 selected-bad-family contract; the only additional fact is that the canonical
-interpolant of the second received row has degree at least `132103`. -/
+interpolant of the second received row has degree at least `133120`. -/
 def UniversalHighDirectionBadFamilyBound
     {I K : Type} [Fintype I] [Field K]
     (nodes : I ↪ K) : Prop :=
@@ -41,7 +41,7 @@ def UniversalHighDirectionBadFamilyBound
       LinearCode.projectedWord (U j) (A gamma) ∉
         LinearCode.projectedCodeSubmod
           (ReedSolomon.code nodes 131072) (A gamma)) →
-    132103 ≤ (receivedDirectionInterpolant nodes (U 1)).natDegree →
+    133120 ≤ (receivedDirectionInterpolant nodes (U 1)).natDegree →
     seeds.card ≤ 254684620614660120
 
 /-- The low-degree scalar theorem and the exact universal high-direction cut
@@ -51,7 +51,7 @@ the proof term. -/
 theorem selectedBadGivenSetsBound_of_universalHighDirection
     {I K : Type} [Fintype I] [Nonempty I] [DecidableEq I]
     [Field K] [Fintype K] [DecidableEq K]
-    [CharP K Order2ValueYCap132102Ledger.targetPrime]
+    [CharP K 2130706433]
     (nodes : I ↪ K) (hI : Fintype.card I = 262144)
     (hhigh : UniversalHighDirectionBadFamilyBound nodes) :
     SelectedBadGivenSetsBound nodes 131071 81731
@@ -70,7 +70,7 @@ theorem selectedBadGivenSetsBound_of_universalHighDirection
     refine ⟨j, ?_⟩
     fin_cases j <;> simpa using hj
   by_cases hVsmall :
-      (receivedDirectionInterpolant nodes (U 1)).natDegree ≤ 132102
+      (receivedDirectionInterpolant nodes (U 1)).natDegree ≤ 133119
   · have hsmall : seeds.card < 254684620614660120 :=
       low_received_direction_bad_family_lt_mca
         (nodes := nodes) hI (U 0) (U 1)
@@ -78,7 +78,7 @@ theorem selectedBadGivenSetsBound_of_universalHighDirection
         (fun i ↦ receivedDirectionInterpolant_eval nodes (U 1) i)
         seeds A selected hdegree hcard' hagreement hbad'
     exact Nat.le_of_lt hsmall
-  · have hV : 132103 ≤
+  · have hV : 133120 ≤
         (receivedDirectionInterpolant nodes (U 1)).natDegree := by
       omega
     exact hhigh U seeds A selected hdegree hcard' hagreement hbad hV
@@ -86,7 +86,7 @@ theorem selectedBadGivenSetsBound_of_universalHighDirection
 local instance : DecidableEq IRSProfile.Field := Classical.decEq _
 local instance : DecidableEq IRSProfile.Index := Classical.decEq _
 local instance : CharP IRSProfile.Field
-    Order2ValueYCap132102Ledger.targetPrime := by
+    2130706433 := by
   change CharP KoalaBear.Ext6 2130706433
   exact charP_of_injective_algebraMap' KoalaBear.Field 2130706433
 
