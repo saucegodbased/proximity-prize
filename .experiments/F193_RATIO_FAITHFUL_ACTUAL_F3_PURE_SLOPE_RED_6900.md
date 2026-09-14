@@ -20,8 +20,15 @@ joint defect remains four. This decisively falsifies a uniform
 pure-plus-first-slope connecting-surjectivity theorem.
 
 It does **not** falsify the complete first shell. Curvature `(0,1)` was
-deliberately omitted from this binary gate, and the earlier arbitrary-error
-small controls make it the next semantically justified family.
+deliberately omitted from the first binary gate, and the earlier
+arbitrary-error small controls made it the next semantically justified
+family.
+
+That terminal gate has now also run. The complete raw first shell
+`{pure,R,S}` is **RED**: all 1,436 shell columns are independent modulo the
+prefix, including all 425 curvature columns, but every packet still has
+defect one and their joint defect is still four. Therefore the entire
+first-shell connector architecture is stopped in this target-ratio chamber.
 
 ## Exact chamber and fidelity
 
@@ -88,6 +95,36 @@ script at execution
 Runtime was 1,216.34 seconds. Peak RSS was 633,508 KiB under a hard
 3,221,225,472-byte address-space limit.
 
+### Complete first-shell STOP receipt
+
+The same artifact was then invoked with `--full-shell-only`, changing no
+field, packet, prefix, contact map, or source policy:
+
+```text
+prefix columns / rank                          7,202 / 7,202
+full pure+S+R shell columns / quotient rank    1,436 / 1,436
+verified pure+R quotient rank                  1,011
+marginal rank supplied by all S columns          425
+F0,F1,F2,F3 defects after complete shell       (1,1,1,1)
+joint packet defect                                4
+```
+
+Stable full-shell fingerprints are:
+
+```text
+canonical result
+  c7d6c92b4c272a81b0a7e5267d8ebbefdb06984a1db8c0830ce30a4f6491cdf5
+streamed monomial list
+  2f5406e17e6dc8157ad7f632498de34d0985dbb42ceb091bcb5e6a66de996c70
+script at execution
+  ff7f49b80029c95353182752d18ea218a4542b30c444dca4178a8bc76bdd1c25
+```
+
+Runtime was 1,571.33 seconds and peak RSS was 691,668 KiB under the same
+hard 3 GiB address-space cap. Curvature therefore contributes its full
+source quotient dimension without contributing even one of the four missing
+packet directions. This is stronger than a simple capacity failure.
+
 ## Relation to the F101 GREEN
 
 Commit `5c33fa9` proves that in the smaller balanced chamber
@@ -110,30 +147,28 @@ RED (rank 270/270, target residue support 62; canonical hash begins
 reinterpreted as a pure bivariate membership problem. If curvature closes
 the F193 packet, it will be genuine translated derivative coupling.
 
-## Target implication and next gate
+## Target implication and architecture STOP
 
 Do not formalize or scale the 165-channel pure-plus-slope target ansatz from
 the F101 GREEN. It lacks a true statement in the target chamber. Widening
 the old individually-contact-zero bicovariant rectangle is also unsupported;
 that ansatz was already exact RED by one in the targetlike N11 replay.
 
-The narrow next discriminator is the same F193 prefix with the *complete*
-first shell
+The complete first-shell test is now RED. Do not spend more time adding
+coefficient shifts, centered carriers, or derivative shapes within that
+shell. The failure is not insufficient source rank: the entire shell is
+independent, and the four packet classes stay transverse to it.
 
-```text
-{(0,0),(1,0),(0,1)}.
-```
-
-There are only 425 additional curvature columns. If all three shapes close,
-the target theorem candidate becomes a 247-channel polynomial connecting
-map (83 pure, 82 slope, 82 curvature channels), still subject to target
-width and passive-continuation proofs. If all three remain RED, first-shell
-surjectivity itself is falsified in a ratio-faithful chamber and the route
-must move to a higher shell or a genuinely different mapping-cone family.
+This finite RED does not prove Full187 impossible and does not logically
+exclude a higher source shell. It does decisively remove the only
+low-state first-shell extrapolation supported by the balanced small
+chambers. A return to this route would require a new theorem explaining why
+the actual target differs from the ratio-faithful chamber, not another
+rectangle or shell-group computation. The active search should pivot to a
+genuinely different mapping-cone/cross-slope mechanism.
 
 The first attempt computed every redundant subset and hit its 30-minute
 outer timeout after finishing source reduction. The committed code reuses
 each base elimination, and `--decisive-only` performs just the required
 binary test. This is a process correction only; it does not change the
 literal columns or result.
-

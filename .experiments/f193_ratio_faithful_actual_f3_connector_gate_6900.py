@@ -182,7 +182,7 @@ def build_packet(case):
     }
 
 
-def analyze(progress_every, decisive_only):
+def analyze(progress_every, decisive_only, full_shell_only):
     n, w, g, m, degree, slope, curvature, jet, seed = CASE
     packet = build_packet(CASE)
     all_monomials = T.support(w, degree, slope, curvature, jet, seed)
@@ -215,22 +215,23 @@ def analyze(progress_every, decisive_only):
         prefix_echelon.reduce(target) for target in packet["targets"])
     packet_rank = quotient_rank(target_residues)
 
-    if decisive_only:
-        decisive_shapes = ((0, 0), (1, 0))
-        decisive_shell = tuple(
+    if decisive_only or full_shell_only:
+        selected_shapes = (
+            shell_shapes if full_shell_only else ((0, 0), (1, 0)))
+        selected_shell = tuple(
             monomial for monomial in shell
-            if (monomial[2], monomial[3]) in decisive_shapes
+            if (monomial[2], monomial[3]) in selected_shapes
         )
         shell_echelon = BM.ColumnEchelon()
         started_shell = time.monotonic()
-        for position, monomial in enumerate(decisive_shell, 1):
+        for position, monomial in enumerate(selected_shell, 1):
             column = coupled_column(
                 monomial, packet["u0"], packet["u1"], m)
             residue = prefix_echelon.reduce(column)
             shell_echelon.add(residue, position - 1)
             if progress_every and position % progress_every == 0:
                 print(
-                    f"decisive shell {position}/{len(decisive_shell)} "
+                    f"selected shell {position}/{len(selected_shell)} "
                     f"quotient-rank={shell_echelon.rank} "
                     f"elapsed={time.monotonic()-started_shell:.1f}s",
                     file=sys.stderr,
@@ -264,18 +265,27 @@ def analyze(progress_every, decisive_only):
             "prefix_columns_and_rank": (len(prefix), prefix_echelon.rank),
             "prefix_packet_residue_supports": tuple(map(len, target_residues)),
             "prefix_packet_quotient_rank": packet_rank,
-            "tested_first_shell_shapes": decisive_shapes,
+            "tested_first_shell_shapes": selected_shapes,
             "tested_first_shell_columns_and_quotient_rank": (
-                len(decisive_shell), shell_echelon.rank),
-            "packet_individual_and_joint_defects_after_pure_plus_R": defects,
+                len(selected_shell), shell_echelon.rank),
+            "packet_individual_and_joint_defects_after_selected_shell":
+                defects,
             "decision": (
-                "RATIO_FAITHFUL_PURE_PLUS_R_CONNECTOR_GREEN"
+                ("RATIO_FAITHFUL_FULL_FIRST_SHELL_CONNECTOR_GREEN"
+                 if full_shell_only else
+                 "RATIO_FAITHFUL_PURE_PLUS_R_CONNECTOR_GREEN")
                 if defects[1] == 0 else
-                "RATIO_FAITHFUL_PURE_PLUS_R_CONNECTOR_RED"
+                ("RATIO_FAITHFUL_FULL_FIRST_SHELL_CONNECTOR_RED"
+                 if full_shell_only else
+                 "RATIO_FAITHFUL_PURE_PLUS_R_CONNECTOR_RED")
             ),
             "minimality_not_claimed": True,
+            "verified_prior_pure_plus_R_quotient_rank": (
+                1011 if full_shell_only else None),
+            "marginal_quotient_rank_contributed_by_S_over_pure_plus_R": (
+                shell_echelon.rank - 1011 if full_shell_only else None),
             "streamed_monomials_sha256": hashlib.sha256(
-                repr(prefix + decisive_shell).encode()).hexdigest(),
+                repr(prefix + selected_shell).encode()).hexdigest(),
         }
 
     shell_residues = {shape: [] for shape in shell_shapes}
@@ -384,12 +394,18 @@ def main():
     parser.add_argument(
         "--decisive-only", action="store_true",
         help="test pure+R first and skip all redundant shape ablations")
+    parser.add_argument(
+        "--full-shell-only", action="store_true",
+        help="test pure+R+S once and skip all redundant shape ablations")
     args = parser.parse_args()
+    if args.decisive_only and args.full_shell_only:
+        parser.error("choose at most one single-pass shell gate")
     resource.setrlimit(resource.RLIMIT_AS, (MEMORY_CAP_BYTES, MEMORY_CAP_BYTES))
     BM.PRIME = BM.T.PRIME = BM.F.PRIME = F.PRIME = T.PRIME = P
     F.GAMMA = 0
     started = time.monotonic()
-    stable = analyze(args.progress_every, args.decisive_only)
+    stable = analyze(
+        args.progress_every, args.decisive_only, args.full_shell_only)
     canonical = json.dumps(stable, sort_keys=True, separators=(",", ":"))
     print(json.dumps({
         **stable,
