@@ -141,6 +141,33 @@ def main() -> None:
     # Those two refunds together exceed the maximum derivative-shape charge.
     assert 7 * (G - W) + 14 * G > (W - 1) * SLOPE
 
+    product_frontier = []
+    for r, s in derivative_shapes:
+        y = J - r - s
+        if y - 59 != 2:
+            continue
+        assert r + s == SLOPE
+        top_width = coefficient_width(y, r, s)
+        predecessor_width = coefficient_width(59, r, s)
+        maximum_product_degree = (top_width - 1) + (N - 1)
+        assert predecessor_width == top_width + 2 * W
+        assert maximum_product_degree == predecessor_width
+        product_frontier.append({
+            "shape_y_r_s": (y, r, s),
+            "surviving_f_h_aE_cS": (59, 2, 0, 0),
+            "top_width": top_width,
+            "predecessor_width": predecessor_width,
+            "maximum_generic_product_degree": maximum_product_degree,
+            "strict_width_overrun_degrees": 1,
+            "contact_weight_and_Hermite_depth": (59, 1),
+            "reduced_mod_all_node_locator_fits": True,
+        })
+    assert len(product_frontier) == 11
+    assert tuple(row["shape_y_r_s"] for row in product_frontier) == tuple(
+        (61, 21 - s, s) for s in range(11))
+    # For h>=3 the minimum legal-degree slack is already 131070.
+    assert 3 * W - N + 1 == 131_070
+
     payload = {
         "scope": (
             "exact integer Hermite-capacity classification of all surviving "
@@ -171,6 +198,23 @@ def main() -> None:
             "counts_by_total_contact_weight": tuple(sorted(
                 unresolved_by_contact_weight.items())),
             "all_extra_charge_at_least_14_unconditional": True,
+        },
+        "generic_node_interpolant_product_frontier": {
+            "automatic_for_seed_shift_h_at_least_3": True,
+            "minimum_legal_degree_slack_when_h_is_3": 3 * W - N + 1,
+            "only_h_equals_2_shapes": tuple(product_frontier),
+            "shape_count": len(product_frontier),
+            "interpretation": (
+                "For these eleven and only these eleven terminal shapes, "
+                "multiplying maximally wide top data by a worst-degree "
+                "all-node interpolant reaches the predecessor cutoff exactly "
+                "and is source-illegal by one leading coefficient.  This "
+                "stops only the unreduced-product ansatz: contact weight 59 "
+                "has Hermite depth one, so reducing its node-value data "
+                "modulo the all-node locator gives degree below n and fits "
+                "the predecessor window.  It is not a linear transition "
+                "obstruction."
+            ),
         },
         "global_minimum_margin_at_r_s_f_aE_cS_h_margin": global_min_data,
         "all_surviving_lower_windows_exceed_all_node_value_budget": True,

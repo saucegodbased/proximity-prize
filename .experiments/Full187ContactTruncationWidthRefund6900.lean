@@ -165,6 +165,60 @@ theorem second_jet_raw_diagonal_width
         131070 * (r - 2 * cS) - 131069 * (s + cS) := by
   omega
 
+/-! ## The unique unreduced coefficient-product cliff
+
+To transport a top coefficient of degree `<topWidth` using an arbitrary
+all-node interpolant of degree `<262144`, the largest product degree is
+`topWidth+262142`.  A passive shift `h` refunds `131071*h` degrees.  Thus
+every `h>=3` transport fits, while `h=2` reaches the strict cutoff exactly.
+This is only a STOP for retaining the unreduced product.  The `h=2` case has
+contact weight 59 and hence Hermite depth one; its node values may instead be
+reduced modulo the all-node locator to degree `<262144`, which fits the
+predecessor window proved above.
+-/
+
+theorem generic_product_fits_of_three_seed_steps
+    (topWidth h : ℕ) (htop : 0 < topWidth) (hh : 3 ≤ h) :
+    (topWidth - 1) + (262144 - 1) < topWidth + 131071 * h := by
+  omega
+
+theorem generic_product_two_seed_exact_cliff
+    (topWidth : ℕ) (htop : 0 < topWidth) :
+    (topWidth - 1) + (262144 - 1) = topWidth + 2 * 131071 := by
+  omega
+
+/-- Combining terminal active degree, derivative cap, same-grade transport,
+and contact survival shows that `h=2` is possible only on the eleven-shape
+outer derivative boundary.  Survival also forces the pure all-`TR` contact
+choice `aE=cS=0`. -/
+theorem two_seed_cliff_classification
+    (y r s f h aE cS : ℕ)
+    (hactive : y + r + s = 82)
+    (hderivative : r + s ≤ 21)
+    (hgrade : f + h = y)
+    (hsurvive : f + 2 * aE + cS < 60)
+    (hh : h ≤ 2) :
+    h = 2 ∧ y = 61 ∧ f = 59 ∧ r + s = 21 ∧
+      aE = 0 ∧ cS = 0 := by
+  omega
+
+theorem outer_boundary_shape_parameterization
+    (r s : ℕ) (hboundary : r + s = 21) (hs : s ≤ 10) :
+    r = 21 - s ∧ s < 11 := by
+  omega
+
+/-- The apparent two-seed cliff is an actual linear GREEN after reduction:
+its contact row has Hermite depth one and every derivative-boundary
+predecessor has more than one full node domain of coefficient width. -/
+theorem two_seed_cliff_depth_one_reduction_fits
+    (r s : ℕ) (hderivative : r + s ≤ 21) :
+    60 - 59 = 1 ∧
+      262144 <
+        60 * 180413 - 131071 * 59 - 131070 * r - 131069 * s := by
+  constructor
+  · norm_num
+  · exact terminal_187_raw_diagonal_width r s 59 0 0 hderivative (by omega)
+
 #print axioms active_count_le_59_of_contact_survival
 #print axioms top82_same_grade_seed_shift
 #print axioms top82_surviving_raw_diagonal_width
@@ -179,5 +233,10 @@ theorem second_jet_raw_diagonal_width
 #print axioms second_jet_raw_diagonal_active_degree
 #print axioms second_jet_raw_diagonal_derivative_cap
 #print axioms second_jet_raw_diagonal_width
+#print axioms generic_product_fits_of_three_seed_steps
+#print axioms generic_product_two_seed_exact_cliff
+#print axioms two_seed_cliff_classification
+#print axioms outer_boundary_shape_parameterization
+#print axioms two_seed_cliff_depth_one_reduction_fits
 
 end ProximityPrize.SubmissionLower.Full187ContactTruncationWidthRefund6900
