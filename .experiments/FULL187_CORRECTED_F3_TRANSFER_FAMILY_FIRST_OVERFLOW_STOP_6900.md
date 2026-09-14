@@ -13,6 +13,12 @@ arbitrary polynomial cannot repair it: exact division of `Xi_H` by `Xi_E`
 leaves a degree-81,730 remainder, so the best possible coefficient still
 misses the legal bound by 81,729.
 
+There is also a shorter global STOP: even allowing *every* `c_i` to be an
+arbitrary polynomial cannot make the family legal. Its top `Y^61`
+coefficient has an unavoidable `R^60` factor whose degree already exceeds
+the complete `Y^61` source window, while the zero identity it would require
+is impossible modulo `E0`.
+
 This is a STOP for the proposed factor-by-factor transfer family, not for a
 full target-specific simultaneous Padé cascade.  The latter can use source
 layers of degree at least three to change the error-side condition imposed on
@@ -111,12 +117,35 @@ remainder is
 1e4843a39155ed311f8c66a6136184d76528847be0f0478222dce8f8689cfca2.
 ```
 
+## Global polynomial-coefficient STOP
+
+Let every `c_i(X)` be arbitrary, retaining only `c_0=1` so the packet
+boundary is unchanged. The coefficient of the top monomial `Y^61` is
+
+```text
+R^60 * sum_(i=0)^59 c_i(X) H^(59-i) E0^i.               (2)
+```
+
+The factor `R^60` alone has degree `60*49341=2960460`, whereas the entire
+half-open `Y^61` coefficient window has width
+
+```text
+D-61W = 2829449
+```
+
+(maximum legal degree `2829448`). Thus source legality forces the sum in
+(2) to vanish identically. Reducing that identity modulo `E0` leaves
+`H^59=0 mod E0`, because every `i>0` summand contains `E0` and `c_0=1`.
+This is impossible: `H` and `E0` are locators of disjoint node sets and are
+therefore coprime. No polynomial tuning of any of the sixty separated
+transfer coefficients can repair the family.
+
 ## Process consequence
 
-Do not spend time tuning scalar/binomial/lacunary `c_i` in this separated
-family: no such tuning reaches even `Y^2`.  The next viable test is the full
-multi-degree target-specific Padé problem, in which all higher source layers
-are solved simultaneously.  It must retain passive `Z` coefficientwise.
+Do not spend time tuning scalar/binomial/lacunary or polynomial `c_i` in this
+separated family. The next viable test is the full multi-degree
+target-specific Padé problem, in which genuinely different higher source
+layers are solved simultaneously. It must retain passive `Z` coefficientwise.
 Collapsing `Z`, replacing `W_E` by `V-1`, or promoting the present family to
 a source lift is unsound.
 
@@ -128,10 +157,9 @@ prlimit --as=2147483648 --cpu=180 -- \
   .experiments/full187_corrected_f3_transfer_family_first_overflow_6900.py
 ```
 
-Recorded run: exit 0, peak RSS 151,816 KiB.
+Recorded run: exit 0, peak RSS 946,912 KiB.
 
 ```text
-canonical sha256 1ba1e76c1054bd9e940d48c135ed5cb5418bf126d4eac24f16a2ae52fa29af9f
-script sha256    37a7b12def3250906739ad2ad06c686b7124e9b5f91c997e83ba3345ed96986b
+canonical sha256 8febd723d4c9ea072fd8dc012a83f276af5f241354ba6a08b6faab3be2fc94c2
+script sha256    05da0bfd36a05b3826fcbb1eabccef532c76b0e4828d643b35f3fce71ed41eea
 ```
-

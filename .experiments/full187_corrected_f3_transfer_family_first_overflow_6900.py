@@ -14,9 +14,11 @@ has literal contact order 60 on H, R, and E separately.  Only K_0 contains
 the raw degree-one packet B*V, B=H^59 R^60.
 
 This script proves that neither scalar nor polynomial coefficients on this
-60-summand separated family make it source-legal: its degree-two Y^2
-coefficient already violates the Full187 taper.  The obstruction uses the
-exact target locator remainder H mod E0, not a generic-degree inference.
+60-summand separated family make it source-legal.  Its degree-two Y^2
+coefficient already violates the Full187 taper.  More decisively, for
+arbitrary polynomial coefficients c_i(X), c_0=1, the top Y^61 coefficient
+has an unavoidable R^60 factor larger than its entire source window; the
+required zero identity then contradicts coprimality of H and E0.
 It does not rule out a larger simultaneous Padé cascade in which degree >=3
 source layers change the error-side conditions on the degree-two layer.
 """
@@ -91,10 +93,23 @@ def main():
     assert scalar_family_degree - legal_max_degree_y2 == W
     assert best_polynomial_family_degree - legal_max_degree_y2 == ECOUNT - 2
 
+    # Close the whole separated family for arbitrary polynomial c_i(X).
+    # The Y^(M+1) coefficient is
+    #   R^M * sum_i c_i H^(M-1-i) E0^i.
+    # R^M alone is wider than the legal coefficient window, so legality
+    # forces the sum to vanish.  Mod E0 it is H^(M-1), since c_0=1, which
+    # cannot vanish because H and E0 are coprime disjoint-set locators.
+    r_power_degree = M * RCOUNT
+    legal_width_top_y = D - W * (M + 1)
+    legal_max_degree_top_y = legal_width_top_y - 1
+    assert r_power_degree >= legal_width_top_y
+    assert H.gcd(E0).degree() == 0
+    assert (H ** (M - 1) % E0) != 0
+
     stable = {
         "scope": (
-            "corrected passive-Z F3 transfer family and its first strict-"
-            "window overflow only; no claim about the larger simultaneous "
+            "corrected passive-Z F3 transfer family: exact Y2 overflow and "
+            "all-polynomial top-degree stop; no claim about the larger simultaneous "
             "Pade cascade, u0 tails, packet lift, or ProtocolClaim 6900"),
         "target_p_N_W_G_E_H_R_M_D": (
             P, N, W, G, ECOUNT, HCOUNT, RCOUNT, M, D),
@@ -129,8 +144,24 @@ def main():
             "H_mod_E0_coefficients_sha256": T.sha256_u32(
                 int(h_remainder[j]) for j in range(h_remainder.degree() + 1)),
         },
+        "all_polynomial_coefficients_stop": {
+            "top_source_monomial": "Y^61",
+            "coefficient": (
+                "R^60*sum_(i=0)^59 c_i(X)H^(59-i)E0^i, c_0=1"),
+            "degree_R60": r_power_degree,
+            "legal_half_open_width_Y61": legal_width_top_y,
+            "legal_max_degree_Y61": legal_max_degree_top_y,
+            "R60_alone_exceeds_legal_max_by": (
+                r_power_degree - legal_max_degree_top_y),
+            "forced_zero_identity_mod_E0": "H^59 = 0 mod E0",
+            "gcd_H_E0_degree": H.gcd(E0).degree(),
+            "H59_mod_E0_nonzero": True,
+            "conclusion": (
+                "no arbitrary polynomial c_i(X), c_0=1, makes the "
+                "separated family source-legal"),
+        },
         "decision": (
-            "RED_SEPARATED_60_SUMMAND_FAMILY_AT_Y2__"
+            "RED_ALL_POLYNOMIAL_MIXING_IN_SEPARATED_FAMILY__"
             "NEXT_GATE_FULL_MULTI_DEGREE_TARGET_PADE_CASCADE"),
     }
     canonical = json.dumps(stable, sort_keys=True, separators=(",", ":"))
