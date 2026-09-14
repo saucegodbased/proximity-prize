@@ -294,6 +294,51 @@ def CanonicalHighTailDirectionIndependent
       (receivedDirectionInterpolant nodes
         (fun i ↦ a * U 0 i + b * U 1 i)).natDegree
 
+/-- Unconditional structural dichotomy for an actual selected bad family:
+either the exact target count already holds strictly, or the canonical
+received two-plane is high in every projective direction. -/
+theorem bad_family_small_or_canonicalHighTailDirectionIndependent
+    {I K : Type} [Fintype I] [Nonempty I] [Field K] [Fintype K]
+    [CharP K 2130706433]
+    (nodes : I ↪ K) (hI : Fintype.card I = 262144)
+    (U : Fin 2 → I → K) (seeds : Finset K)
+    (A : K → Finset I) (selected : K → K[X])
+    (hdegree : ∀ gamma ∈ seeds,
+      (selected gamma).natDegree ≤ 131071)
+    (hcard : ∀ gamma ∈ seeds, 180413 ≤ (A gamma).card)
+    (hagrees : ∀ gamma ∈ seeds, ∀ i ∈ A gamma,
+      (selected gamma).eval (nodes i) = U 0 i + gamma * U 1 i)
+    (hbad : ∀ gamma ∈ seeds, ∃ j : Fin 2,
+      LinearCode.projectedWord (U j) (A gamma) ∉
+        LinearCode.projectedCodeSubmod
+          (ReedSolomon.code nodes 131072) (A gamma)) :
+    seeds.card < 254684620614660120 ∨
+      CanonicalHighTailDirectionIndependent nodes U := by
+  classical
+  by_cases hdirections : CanonicalHighTailDirectionIndependent nodes U
+  · exact Or.inr hdirections
+  · left
+    simp only [CanonicalHighTailDirectionIndependent, not_forall] at hdirections
+    obtain ⟨a, b, hab, hlow⟩ := hdirections
+    let V := receivedDirectionInterpolant nodes
+      (fun i ↦ a * U 0 i + b * U 1 i)
+    have hVdegree : V.natDegree ≤ 133119 := by
+      dsimp only [V] at hlow ⊢
+      omega
+    have hbad' : ∀ gamma ∈ seeds, ∃ j : Fin 2,
+        LinearCode.projectedWord (![U 0, U 1] j) (A gamma) ∉
+          LinearCode.projectedCodeSubmod
+            (ReedSolomon.code nodes 131072) (A gamma) := by
+      intro gamma hgamma
+      obtain ⟨j, hj⟩ := hbad gamma hgamma
+      refine ⟨j, ?_⟩
+      fin_cases j <;> simpa using hj
+    exact low_projective_direction_degree133119_bad_family_lt_mca
+      nodes hI (U 0) (U 1) a b hab V hVdegree
+      (fun i ↦ receivedDirectionInterpolant_eval nodes
+        (fun x ↦ a * U 0 x + b * U 1 x) i)
+      seeds A selected hdegree hcard hagrees hbad'
+
 /-- The genuinely open universal theorem after the projective degree cut. -/
 def UniversalProjectiveHighDirectionBadFamilyBound
     {I K : Type} [Fintype I] [Field K]
@@ -378,5 +423,6 @@ end ProximityPrize.SubmissionLower.UniversalProjectiveHighDirectionEndpointCut69
 
 #print axioms ProximityPrize.SubmissionLower.UniversalProjectiveHighDirectionEndpointCut6900.projectiveScalarized_injOn_of_degree_gt
 #print axioms ProximityPrize.SubmissionLower.UniversalProjectiveHighDirectionEndpointCut6900.low_projective_direction_degree133119_bad_family_lt_mca
+#print axioms ProximityPrize.SubmissionLower.UniversalProjectiveHighDirectionEndpointCut6900.bad_family_small_or_canonicalHighTailDirectionIndependent
 #print axioms ProximityPrize.SubmissionLower.UniversalProjectiveHighDirectionEndpointCut6900.selectedBadGivenSetsBound_of_projectiveHighDirection
 #print axioms ProximityPrize.SubmissionLower.UniversalProjectiveHighDirectionEndpointCut6900.protocolClaim6900_of_projectiveHighDirection
