@@ -221,6 +221,49 @@ factor of a local primal relation, that the first mixed connector suffices
 without capacity, or that the negative-capacity m8 receipt refutes the target
 profile.
 
+### Capacity-positive correction: the low family is still injective
+
+Increasing only the passive cap to `L=16` makes the same three-error exact
+profile source-positive:
+
+```text
+(n,w,g,m,B,s,U,L) = (8,3,5,8,3,1,12,16)
+full source / local bound / margin = 17679 / 2179 / +247.
+```
+
+On deterministic trial 811, the corrected low family has 9,964 columns:
+
+```text
+raw {1,R}                         6830
+all subcritical S                 2976
+complete S Y^7 R connector         128
+critical Y^8 S, z=0,1               30
+```
+
+The exact result is again
+
+```text
+columns/contact/kernel/gain = 9964/9964/0/0.
+```
+
+This time the ambient profile is capacity-positive, so the conclusion is
+target-relevant and precise: the low semantic family does not produce its own
+kernel even when the *full* source has surplus. Any proof must use the omitted
+higher layers as a **relative capacity scaffold**, then show the low critical
+cells act modulo that scaffold. This does not say the complete source fails;
+its normal rank is the next discriminator.
+
+The low-memory exact matrix had 20,893 rows, ran in 270.8 seconds, and peaked
+at 4.09 GiB under a hard 7.5 GB cap. Canonical SHA-256:
+`6db8246bfae90671f49969ad794aea8e245b2353c0acd5b69d81c87ad1cc8377`.
+
+The complete-layer counts explain why isolated ablations are low-information:
+the omitted layers are 258 remaining S, 2,622 remaining SR, 2,640 R^2, and
+2,195 R^3 columns. Omitting even the smallest complete layer leaves only
+17,421 columns, eleven below the summed local bound 17,432. Nearly the entire
+source is intrinsically needed to obtain a dimension-forced kernel in this
+control.
+
 ## Reproduction
 
 ```text
@@ -235,6 +278,10 @@ k0_target_ratio_high_tangent_s_grade_extension_6900.py
 k0_second_exact_chamber_corrected_connector_gate_6900.py
   canonical 48cf97402b1126bcbd23e2744b9347f8cc4fbdbe140cd28c88351d828c47dd09
   runtime 215.9 s; peak RSS 3.85 GiB
+
+k0_second_exact_chamber_capacity_positive_gate_6900.py
+  canonical 6db8246bfae90671f49969ad794aea8e245b2353c0acd5b69d81c87ad1cc8377
+  runtime 270.8 s; peak RSS 4.09 GiB
 ```
 
 Every run was deterministic. At most three finite matrices were live in the
