@@ -31,6 +31,19 @@ def secondCompanion (H H1 H2 A RG SG : K[X]) : K[X] :=
   H ^ 2 * SG - 2 * H * H1 * RG +
     (2 * H1 ^ 2 - H * H2) * A
 
+/-- The minimal cubic-order covariant carrying a quadratic raw-slope term. -/
+def thirdR2Companion (H H1 H2 A RG SG : K[X]) : K[X] :=
+  2 * H * RG ^ 2 - 2 * H1 * A * RG - H * A * SG + H2 * A ^ 2
+
+/-- The apparent quartic numerator has a literal locator factor. -/
+theorem two_first_sq_sub_value_second_eq_locator_mul_third
+    (H H1 H2 A RG SG : K[X]) :
+    2 * firstCompanion H H1 A RG ^ 2 -
+        A * secondCompanion H H1 H2 A RG SG =
+      H * thirdR2Companion H H1 H2 A RG SG := by
+  simp only [firstCompanion, secondCompanion, thirdR2Companion]
+  ring
+
 /-- Abstract three-coefficient form of a translated agreement locator. -/
 def locatorSeries (h1 h2 : K) (tail : K[X]) : K[X] :=
   X * C h1 + X ^ 2 * C h2 + X ^ 3 * tail
@@ -169,6 +182,36 @@ theorem secondCompanion_order_three
     slopeResidualSeries, curvatureResidualSeries, map_sub]
   ring
 
+/-- The R2 covariant itself starts in order three, uniformly in every higher
+tail.  This is stronger and cheaper than carrying `B1^2` and `A*B2`
+separately. -/
+theorem thirdR2Companion_order_three
+    (h1 h2 a1 a2 r1 : K)
+    (hTail h1Tail h2Tail aTail rTail sTail : K[X]) :
+    X ^ 3 ∣ thirdR2Companion
+      (locatorSeries h1 h2 hTail)
+      (locatorDerivativeSeries h1 h2 h1Tail)
+      (locatorSecondDerivativeSeries h2 h2Tail)
+      (valueResidualSeries a1 a2 aTail)
+      (slopeResidualSeries a1 r1 rTail)
+      (curvatureResidualSeries a2 r1 sTail) := by
+  let hBar : K[X] := C h1 + X * C h2 + X ^ 2 * hTail
+  let aBar : K[X] := C a1 + X * C a2 + X ^ 2 * aTail
+  let dBar : K[X] := C h2 + X * (h1Tail - hTail)
+  let rBar : K[X] := C (r1 - a2) + X * (rTail - aTail)
+  let quotient : K[X] :=
+    2 * hBar * aBar * (rTail - aTail) +
+      (h2Tail - 2 * (h1Tail - hTail)) * aBar ^ 2 +
+      2 * hBar * rBar ^ 2 - 2 * dBar * aBar * rBar -
+      hBar * aBar * sTail
+  refine ⟨quotient, ?_⟩
+  dsimp [quotient, hBar, aBar, dBar, rBar]
+  simp only [thirdR2Companion, locatorSeries,
+    locatorDerivativeSeries, locatorSecondDerivativeSeries,
+    valueResidualSeries, slopeResidualSeries, curvatureResidualSeries,
+    map_sub]
+  ring
+
 /-- Explicit remainder after extracting the unique quadratic-slope term
 from the square of the first covariant.  It is affine in `R`; hence it uses
 only the lower `{raw,R}` derivative shapes. -/
@@ -193,6 +236,28 @@ theorem locator_carrier_square_extracts_R2
         H ^ n * firstCompanionSquareRemainder H H1 A C0 R := by
   rw [firstCompanion_square_extracts_R2]
   rw [mul_add, ← mul_assoc, ← pow_add]
+
+def thirdR2LowerRemainder
+    (H H1 H2 A C0 R SG : K[X]) : K[X] :=
+  (-4 * H * C0 - 2 * H1 * A) * R +
+    2 * H * C0 ^ 2 + 2 * H1 * A * C0 - H * A * SG + H2 * A ^ 2
+
+/-- The cubic-order companion is triangular at the literal R2 seam: its
+only quadratic-slope term is `2*H*R^2`; the remainder is in `{raw,R,S}`. -/
+theorem thirdR2Companion_extracts_R2
+    (H H1 H2 A C0 R SG : K[X]) :
+    thirdR2Companion H H1 H2 A (R - C0) SG =
+      2 * H * R ^ 2 + thirdR2LowerRemainder H H1 H2 A C0 R SG := by
+  simp only [thirdR2Companion, thirdR2LowerRemainder]
+  ring
+
+theorem target_R2_cubic_carrier_leading_margin :
+    47 * 180413 - (45 * 180413 + 2 * (131071 - 1)) = 98686 := by
+  norm_num
+
+theorem target_R2_cubic_carrier_uniform_shift_count :
+    4 * (3757 - 1) = 15024 := by
+  norm_num
 
 /-! At target, `n=m-4=43`.  The extremal monomial shapes below cover the
 `H^43*B1^2` expansion: quadratic derivative shapes at active degree about
@@ -290,8 +355,11 @@ theorem target_naive_SG_C1_leading_shape_illegal :
 #print axioms secondCompanion_low_jet_order_three
 #print axioms firstCompanion_order_two
 #print axioms secondCompanion_order_three
+#print axioms two_first_sq_sub_value_second_eq_locator_mul_third
+#print axioms thirdR2Companion_order_three
 #print axioms firstCompanion_square_extracts_R2
 #print axioms locator_carrier_square_extracts_R2
+#print axioms thirdR2Companion_extracts_R2
 #print axioms target_R2_carrier_extremal_shapes_legal
 #print axioms target_lower_R_S_companion_extremal_shapes_legal
 #print axioms c2_wc1_T_channel_integral_identity

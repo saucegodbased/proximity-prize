@@ -145,9 +145,9 @@ def full_relative_contact_control(profile, receipt, face):
         "combined_contact_rank": combined_contact_rank,
         "relative_contact_rank": relative_rank,
         "relative_contact_kernel": len(face) - relative_rank,
-        "boundary_gain_scope": (
-            "WITHDRAWN: compressed/formal contact row equivalence does not "
-            "intertwine the raw-S boundary functional"
+        "boundary_augmentation_scope": (
+            "not computed here; formal conjugacy uses raw S=HasseDeriv2 "
+            "and compressed V2=ordinary derivative2=2*S"
         ),
     }
 
@@ -231,9 +231,9 @@ def main():
         "combined_contact_rank": 3070,
         "relative_contact_rank": 169,
         "relative_contact_kernel": 11,
-        "boundary_gain_scope": (
-            "WITHDRAWN: compressed/formal contact row equivalence does not "
-            "intertwine the raw-S boundary functional"
+        "boundary_augmentation_scope": (
+            "not computed here; formal conjugacy uses raw S=HasseDeriv2 "
+            "and compressed V2=ordinary derivative2=2*S"
         ),
     }
     assert cases[2]["modulo_complete_previous_cap_contact"] == {
@@ -243,9 +243,9 @@ def main():
         "combined_contact_rank": 4115,
         "relative_contact_rank": 248,
         "relative_contact_kernel": 4,
-        "boundary_gain_scope": (
-            "WITHDRAWN: compressed/formal contact row equivalence does not "
-            "intertwine the raw-S boundary functional"
+        "boundary_augmentation_scope": (
+            "not computed here; formal conjugacy uses raw S=HasseDeriv2 "
+            "and compressed V2=ordinary derivative2=2*S"
         ),
     }
     payload = {
