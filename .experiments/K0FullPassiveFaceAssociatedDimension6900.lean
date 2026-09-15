@@ -13,7 +13,7 @@ piece of its literal contact is
 
 The first theorem below records this identity without suppressing any of the
 formal `S,T,R,Z` channels.  The numerical section then isolates the exact
-dimension statement for the complete `3758 \\ 3757` face.  It deliberately
+dimension statement for the target complete `3757 \\ 3756` face.  It deliberately
 keeps the two remaining bridges as hypotheses:
 
 * the associated map must have rank at most the published local face cap;
@@ -76,15 +76,15 @@ theorem fullAssociatedFaceColumn_is_zero_constant_summand
 /-! ## Literal target face legality and arithmetic -/
 
 /-- A tuple satisfying the active, curvature, and weighted-X conditions
-gives a literal monomial on the cap-3758 face. -/
+gives a literal monomial on the cap-3757 face. -/
 theorem target_fullFace_shape_legal
     (a s y r : Nat)
     (hB : 2 * s + r ≤ 16) (hs : s ≤ 8)
     (hU : s + y + r ≤ 64)
     (ha : a + 131071 * y + (131071 - 1) * r +
         (131071 - 2) * s < 47 * 180413) :
-    rawShapeLegal (47 * 180413) 131071 3758 16 8 64
-      a s y r (3758 - (s + y + r)) := by
+    rawShapeLegal (47 * 180413) 131071 3757 16 8 64
+      a s y r (3757 - (s + y + r)) := by
   unfold rawShapeLegal
   omega
 

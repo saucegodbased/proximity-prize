@@ -122,7 +122,7 @@ def profile(
 def main() -> None:
     target = profile(
         n=262_144, g=180_413, m=47, w=131_071,
-        B=16, s_cap=8, U=64, old_cap=3757, crosscheck_closed=True,
+        B=16, s_cap=8, U=64, old_cap=3756, crosscheck_closed=True,
     )
     assert target["global_face_columns_by_raw_S"] == (
         3_671_014_323,

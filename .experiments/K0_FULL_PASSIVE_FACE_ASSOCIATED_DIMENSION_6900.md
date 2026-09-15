@@ -5,7 +5,7 @@ contact. This changes no production candidate, score, or claim.
 
 ## Verdict
 
-The **complete** cap-3758 successor face has a target-scale associated
+The **complete** target cap-3757 face over cap 3756 has a target-scale associated
 dimension surplus:
 
 ```text
@@ -21,7 +21,7 @@ derivative shapes are therefore genuinely load-bearing.
 
 The result is **GREEN as exact associated-grade arithmetic, conditional on
 the filtration-compatible local rank-cap theorem; OPEN as a complete-contact
-producer**. Separate full-rank bounds at cap 3757 and cap 3758 do not imply a
+producer**. Separate full-rank bounds at cap 3756 and cap 3757 do not imply a
 bound on their rank increment. Even after that nesting theorem is supplied,
 an associated relation only kills the top passive grade. It still has to be
 corrected through every lower passive grade by the old source, and its
@@ -38,7 +38,7 @@ Y -> u0 + u1 Z + epsilon R - epsilon^2 S + epsilon^3 T.
 For a complete face monomial
 
 ```text
-X^a S^s Y^y R^r Z^z,        s+y+r+z = 3758,
+X^a S^s Y^y R^r Z^z,        s+y+r+z = 3757,
 ```
 
 the unique top-passive-degree contact term is
@@ -54,7 +54,7 @@ identity is proved, with the `T` term present and the accepted Hasse `S`
 normalization unchanged, in
 `K0FullPassiveFaceAssociatedDimension6900.lean`.
 
-The same file proves source legality on the cap-3758 face, the exact ledger
+The same file proves source legality on the cap-3757 face, the exact ledger
 subtractions, and the rank-nullity implication
 
 ```text
@@ -108,7 +108,7 @@ total              91,368               24,948           66,420
 ```
 
 These totals independently equal the differences of the accepted closed
-source/rank formulas at 3758 and 3757.
+source/rank formulas at 3757 and 3756.
 
 The structural reason the local-cap bridge should be true is stronger than
 mere subtraction: each weighted `U/J/V` generator is homogeneous in total
@@ -153,7 +153,7 @@ To turn this into the 6900 producer, three statements must stay separate:
 1. **Associated cap:** prove the complete new-face associated map has rank at
    most `262144*66420` using the homogeneous nested weighted-kernel family.
 2. **Strictness/liftability:** show that some associated-kernel class can be
-   corrected by cap-3757 columns through all lower passive grades, i.e. lies
+   corrected by cap-3756 columns through all lower passive grades, i.e. lies
    in the `liftableFace` space for complete contact.
 3. **Boundary separation:** show one such lift pairs nontrivially with the
    one-dimensional annihilator of the old rank-three normal image.
@@ -176,6 +176,6 @@ compiles at `-j1 -M3500`; printed axioms are only `propext`,
 `sorry`, or `admit`.
 
 ```text
-canonical result SHA-256  fae71111b34b8608ac7371c2cdeaab24042be0a8f5958598b071f15f3415fdbb
-script SHA-256            7d40524a87c2ea90283a8690dbcb8095f8c86f20ec837511bfe9e8797718fbf2
+canonical result SHA-256  2d56ebdf44c09e8c38ccb9ae33342939fb17dd7fc1059fd2084eddb6a40a0028
+script SHA-256            9130c031475c920f2688d01c3dace9ad8a32414202b0c941306e048d159bfc97
 ```
