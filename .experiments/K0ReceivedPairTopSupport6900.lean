@@ -151,14 +151,16 @@ theorem max_received_interpolant_degree_ge_agreement
       (hdegree gamma hgamma) (hdegree delta hdelta)
       (hagrees gamma hgamma) hdelta_on_gamma r
 
-/-- Exact target arithmetic for the first boundary-capable optimized
-`(M,K)=(e,2)` order-seven box. -/
+/-- Exact target arithmetic for the current falsifier-surviving optimized
+`(M,K)=(e,3)` order-seven box.  This is a dimension/cap receipt, not a
+surjectivity theorem.  The adjacent `K=2` box has an exact small-field rank
+counterexample even though its ambient dimension is sufficient. -/
 theorem target_orderSeven_M_eq_errors_receipt :
     262144 - 180413 = 81731 /\
-      4 * (81731 + 1) * (2 + 1) = 980784 /\
-      (81731 + 30879) * (2 + 2) = 450440 /\
-      980784 - 450440 = 530344 /\
-      4 * 81731 + 4 ≤ 530344 /\
+      4 * (81731 + 1) * (3 + 1) = 1307712 /\
+      (81731 + 30879) * (3 + 2) = 563050 /\
+      1307712 - 563050 = 744662 /\
+      4 * 81731 + 4 ≤ 744662 /\
       37 * 180413 + 6 * 262144 + 131071 + 81731 = 8460947 /\
       8460947 < 47 * 180413 /\
       47 * 180413 - 8460947 = 18464 := by
