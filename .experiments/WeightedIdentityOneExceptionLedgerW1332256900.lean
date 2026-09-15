@@ -62,6 +62,38 @@ def fixedLedgerCap : Nat := cheapRegularCap+positiveTCleanupCap+
 def fullLedgerCap (helperFlag : FlagDegree) : Nat :=
   fixedLedgerCap+helperExitCap helperFlag
 
+def cheapFlagFor (J D : Nat) : FlagDegree :=
+  ⟨J-D,D-D/2,D/2⟩
+
+def cheapAgreementFor (J D : Nat) : FlagDegree :=
+  honestReducedAgreementFlag w J D (D/2)
+
+def cheapCapFor (J D : Nat) : Nat :=
+  ceilQuotient
+    ((n-v)^2*flagMixed (cheapFlagFor J D)
+      (cheapAgreementFor J D) (cheapAgreementFor J D)) ((a-v)^2)
+
+def primaryCleanupFor (M D T : Nat) : Nat :=
+  let auxY := (2*T-1)*M
+  let auxR := (2*T-1)*D
+  firstOrderRegularCap auxY auxR+firstOrderSingularCap auxY auxR+
+    firstOrderRegularCap M D+firstOrderSingularCap M D
+
+/-- Exhaustive source scanning identifies `(61,547)`, whose box is
+`(M,D,T)=(740,244,122)`, as the minimum-cleanup positive primary. -/
+def minimumPrimaryCleanupCap : Nat := primaryCleanupFor 740 244 122
+
+def minimumPrimaryFlag : FlagDegree := ⟨740-244,122,122⟩
+def minimumPrimaryAgreement : FlagDegree :=
+  honestReducedAgreementFlag w 740 244 122
+
+def jHeavyHelperFlag : FlagDegree := ⟨14217-4688,2344,2344⟩
+def dHeavyHelperFlag : FlagDegree := ⟨15188-4960,2480,2480⟩
+
+def minimumPrimaryHelperExitCap (helper : FlagDegree) : Nat :=
+  ceilQuotient
+    ((n-v)*flagMixed minimumPrimaryFlag helper minimumPrimaryAgreement) (a-v)
+
 /-- The highest-J-upper profile in the exhaustive joint helper audit. -/
 def nearJointHelperFlag : FlagDegree := ⟨15983-5248,2624,2624⟩
 
@@ -125,9 +157,44 @@ theorem near_joint_full_ledger_exact :
     primaryAgreement,honestReducedAgreementFlag,ceilQuotient,n,v,w,a,
     coreFloor,flagMixed]
 
+/-- Exact list boundaries used by the exhaustive joint primary/helper STOP.
+Every omitted helper-exit term is nonnegative. -/
+theorem joint_cap_boundary_ledger_exact :
+    minimumPrimaryCleanupCap=15522723255702274 ∧
+    cheapCapFor 212 55=248732026234678355 ∧
+    cheapCapFor 204 56=248517929112559309 ∧
+    cheapCapFor 111 111=250585275413487227 ∧
+    cheapCapFor 212 55+minimumPrimaryCleanupCap-coreFloor=
+      643192288595280 ∧
+    cheapCapFor 204 56+minimumPrimaryCleanupCap-coreFloor=
+      429095166476234 ∧
+    cheapCapFor 111 111+minimumPrimaryCleanupCap-coreFloor=
+      2496441467404152 := by
+  norm_num [minimumPrimaryCleanupCap,primaryCleanupFor,cheapCapFor,
+    cheapFlagFor,cheapAgreementFor,firstOrderRegularCap,
+    firstOrderSingularCap,firstOrderMixedCost,ceilQuotient,n,v,w,a,
+    coreFloor,honestReducedAgreementFlag,flagMixed]
+
+theorem separate_helper_flags_and_exit_costs_exact :
+    minimumPrimaryFlag=⟨496,122,122⟩ ∧
+    minimumPrimaryAgreement=⟨132025976,32640125,32240450⟩ ∧
+    jHeavyHelperFlag=⟨9529,2344,2344⟩ ∧
+    dHeavyHelperFlag=⟨10228,2480,2480⟩ ∧
+    flagMixed minimumPrimaryFlag jHeavyHelperFlag minimumPrimaryAgreement=
+      403968771465754 ∧
+    flagMixed minimumPrimaryFlag dHeavyHelperFlag minimumPrimaryAgreement=
+      429138608127080 ∧
+    minimumPrimaryHelperExitCap jHeavyHelperFlag=699681872154479 ∧
+    minimumPrimaryHelperExitCap dHeavyHelperFlag=743276525209268 := by
+  norm_num [minimumPrimaryFlag,minimumPrimaryAgreement,jHeavyHelperFlag,
+    dHeavyHelperFlag,minimumPrimaryHelperExitCap,honestReducedAgreementFlag,
+    ceilQuotient,n,v,w,a,flagMixed]
+
 #print axioms one_exception_Johnson_gate
 #print axioms full_fixed_ledger
 #print axioms helper_mixed_cost_threshold_exact
 #print axioms near_joint_full_ledger_exact
+#print axioms joint_cap_boundary_ledger_exact
+#print axioms separate_helper_flags_and_exit_costs_exact
 
 end ProximityPrize.SubmissionLower.WeightedIdentityOneExceptionLedgerW1332256900
