@@ -109,12 +109,14 @@ Two deliberate loosenings are load-bearing.
    the valid loose nested box
 
    ```text
-   (J,RT,T)=(744,5,5), source flag=(739,0,5),
-   agreement flag=(196774803,133226,1065808).
+   (J,RT,T)=(744,7,7), source flag=(737,0,7),
+   agreement flag=(196241899,133226,1598712).
    ```
 
    This is still a true box bound, has `1 <= T <= RT < J`, and clears both
-   absorption inequalities.  Its projection cost is only `11324210<p`.
+   absorption inequalities uniformly for every node set of cardinality at
+   least the agreement cutoff: `agreement.all=1598712 >= small=1453806`.
+   Its projection cost is only `23314550<p`.
 
 2. `J <= 32` directly implies `RT,T <= 32`.  Embed it in
 
@@ -160,13 +162,14 @@ primary flag independently.  The common helper-exit cap is
 
 ```text
 terminal                 rest+exit+cleanup       headroom
-derivative <= 3 loose      26643452134072575    236968105067450631
+derivative <= 3 loose      37326710447254461    226284846754268745
 J <= 32 loose              23584483773907223    240027073427615983.
 ```
 
 Thus every possible terminal is strictly below the retained core floor.  All
-figures use `N=262144`; smaller actual identity sets follow by the same
-max-node monotonicity used by the existing identity-core consumer.
+figures use `N=262144`; smaller actual identity sets follow by max-node
+monotonicity.  The derivative-skinny absorption itself is cardinality-safe
+because its agreement `all` coordinate already dominates `small`.
 
 ## Formal state and remaining work
 

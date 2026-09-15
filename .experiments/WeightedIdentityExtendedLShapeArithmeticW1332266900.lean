@@ -9,12 +9,14 @@ This is the arithmetic receipt for the uniform `N ≤ 262144` route.  Keep the
 two old L-terminal arms and add two skinny terminals:
 
 * `derivativeDegree ≤ 3`, embedded in the deliberately loose nested box
-  `(J,RT,T)=(744,5,5)`;
+  `(J,RT,T)=(744,7,7)`;
 * `jetDegree ≤ 32`, embedded in `(33,32,32)`.
 
 The loosenings are semantic, not numerical decoration.  `T=1` gives a zero
-`all` coordinate in the reduced agreement and cannot absorb small families;
-`T=5` is the first integer that restores the curve absorption inequality.
+`all` coordinate in the reduced agreement and cannot absorb small families.
+The uniform semantic theorem must work for every actual node cardinality down
+to the agreement cutoff, not just at the maximal cardinality; `T=7` is the
+first integer for which `small ≤ agreement.all`, making absorption uniform.
 Likewise `J=33` supplies the strict `RT<J` premise of the honest reduced-cut
 support theorem.
 
@@ -52,9 +54,9 @@ def armAAgreement : FlagDegree := honestReducedAgreementFlag w 211 55 27
 def armBAgreement : FlagDegree := honestReducedAgreementFlag w 212 54 27
 
 /-- Loose count box for an actual product of derivative degree at most three. -/
-def derivativeSkinnyFlag : FlagDegree := ⟨739,0,5⟩
+def derivativeSkinnyFlag : FlagDegree := ⟨737,0,7⟩
 def derivativeSkinnyAgreement : FlagDegree :=
-  honestReducedAgreementFlag w 744 5 5
+  honestReducedAgreementFlag w 744 7 7
 
 /-- Loose count box for an actual product of jet degree at most 32. -/
 def jetSkinnyFlag : FlagDegree := ⟨1,0,32⟩
@@ -121,13 +123,13 @@ theorem helper_profiles_of_not_extended_terminal (J D : Nat)
 
 variable {K : Type} [Field K]
 
-/-- A derivative-skinny product really does fit the loose `(744,5,5)` box.
+/-- A derivative-skinny product really does fit the loose `(744,7,7)` box.
 The loosened T-cap, rather than the sharp cap one, is what keeps the reduced
-agreement useful for small-family absorption. -/
+agreement useful for uniform small-family absorption. -/
 theorem derivative_skinny_nested_bounds (P : MvPolynomial (Fin 4) K)
     (hJ : jetDegree P≤744) (hD : derivativeDegree P≤3) :
-    MvPolynomial.weightedTotalDegree ![0,0,0,1] P≤5 ∧
-    MvPolynomial.weightedTotalDegree ![0,0,1,1] P≤5 ∧ jetDegree P≤744 := by
+    MvPolynomial.weightedTotalDegree ![0,0,0,1] P≤7 ∧
+    MvPolynomial.weightedTotalDegree ![0,0,1,1] P≤7 ∧ jetDegree P≤744 := by
   have hd := WeightedFactorFlagBudgetW1332246900.derivative_nested_bounds P
   exact ⟨hd.1.trans (by omega),hd.2.trans (by omega),hJ⟩
 
@@ -165,7 +167,7 @@ theorem flags_exact :
     primaryAgreement=⟨133092775,32640370,32240692⟩ ∧
     armAAgreement=⟨41433287,7593882,6927752⟩ ∧
     armBAgreement=⟨41966191,7327430,6927752⟩ ∧
-    derivativeSkinnyAgreement=⟨196774803,133226,1065808⟩ ∧
+    derivativeSkinnyAgreement=⟨196241899,133226,1598712⟩ ∧
     jetSkinnyAgreement=⟨133227,133226,8260012⟩ := by
   norm_num [primaryAgreement,armAAgreement,armBAgreement,
     derivativeSkinnyAgreement,jetSkinnyAgreement,
@@ -220,7 +222,7 @@ theorem active_caps_exact :
     commonCap armBFlag armBExitFlag armBAgreement=244053597157924510 ∧
     helperExitCap=788423032100813 ∧
     independentRestCap derivativeSkinnyFlag derivativeSkinnyAgreement=
-      10247951347274314 ∧
+      20931209660456200 ∧
     independentRestCap jetSkinnyFlag jetSkinnyAgreement=7188982987108962 := by
   norm_num [commonCap,commonNumerator,helperExitCap,independentRestCap,
     ceilQuotient,n,a,v,primaryFlag,helperFlag,primaryAgreement,
@@ -240,12 +242,12 @@ theorem all_terminal_ledgers_green :
     commonCap armBFlag armBExitFlag armBAgreement+primaryCleanupCap=
       259660674912621958 ∧
     independentRestCap derivativeSkinnyFlag derivativeSkinnyAgreement+
-        helperExitCap+primaryCleanupCap=26643452134072575 ∧
+        helperExitCap+primaryCleanupCap=37326710447254461 ∧
     independentRestCap jetSkinnyFlag jetSkinnyAgreement+
         helperExitCap+primaryCleanupCap=23584483773907223 ∧
     263552381097916929<coreFloor ∧
     259660674912621958<coreFloor ∧
-    26643452134072575<coreFloor ∧
+    37326710447254461<coreFloor ∧
     23584483773907223<coreFloor := by
   rw [active_caps_exact.1,active_caps_exact.2.1,
     active_caps_exact.2.2.1,active_caps_exact.2.2.2.1,
@@ -253,9 +255,11 @@ theorem all_terminal_ledgers_green :
   norm_num [coreFloor]
 
 /-- Every reduced-cut absorption and finite-characteristic gate needed by the
-four terminal consumers.  In particular, the deliberately loose `T=5` skinny
-box clears the formerly failing one-incidence absorption inequality. -/
+four terminal consumers at the maximal node count.  The additional first
+conjunct below records the stronger fact that makes derivative-skinny curve
+absorption uniform for every actual node cardinality at least `a`. -/
 theorem terminal_semantic_numeric_gates :
+    small≤derivativeSkinnyAgreement.all ∧
     small*(a-v)≤(n-v)*armAAgreement.all ∧
     small*(a-v)^2≤(n-v)^2*armAAgreement.all^2 ∧
     small*(a-v)≤(n-v)*armBAgreement.all ∧

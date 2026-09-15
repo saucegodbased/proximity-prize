@@ -182,9 +182,10 @@ static void full_scope_max_node_route() {
       Terminal{211, 55, 27, "old-arm-A", true},
       Terminal{212, 54, 27, "old-arm-B", true},
       // derivativeDegree<=3 implies RT<=3 and T<=1.  We deliberately loosen
-      // to S=T=5: T=1 would make the reduced agreement all-coordinate zero
-      // and fail the small-family curve absorption gate.
-      Terminal{744, 5, 5, "derivative<=3-loose", false},
+      // to S=T=7: T=1 would make the reduced agreement all-coordinate zero.
+      // T=7 is the first choice with agreement.all >= SMALL, hence the curve
+      // absorption remains valid uniformly even when node count is only A.
+      Terminal{744, 7, 7, "derivative<=3-loose", false},
       // jetDegree<=32 implies RT,T<=32.  M is loosened to 33 because the
       // reduced-agreement support theorem requires S<M.
       Terminal{33, 32, 32, "jet<=32-loose", false}}) {
