@@ -1,9 +1,8 @@
 # Target full-face coupled cap: exact weighted-kernel bridge
 
-Status: **GREEN production local-kernel homogeneity/count ingredients once the
-companion Lean file finishes its production-module replay; YELLOW as an
-assembled target associated-rank certificate.  Complete-contact liftability
-and boundary separation remain OPEN.**
+Status: **GREEN production local-kernel homogeneity/count ingredients; YELLOW
+as an assembled target associated-rank certificate.  Complete-contact
+liftability and boundary separation remain OPEN.**
 
 ## Result in plain language
 
@@ -152,8 +151,11 @@ A small error-supported obstruction factor would have closed much of this
 gap, but commit `e522925` falsifies that generic route: in a correct literal
 m4 chamber with two errors the obstruction has rank 15, greater than `3e=6`,
 and survives scalar epsilon-zero, all epsilon-zero, and three-layer scalar
-packets.  The m6 chamber has obstruction zero only vacuously.  Consequently a
-target-specific identity, not generic triangularity, is required.
+packets.  The tested m6 chamber has zero obstruction, but commit `37358cc`
+finds nine exact counterexamples to the proposed universal rule that
+`L >= U` makes strictness automatic, including an arbitrary-direction case
+with obstruction rank 3.  Consequently a target-specific identity, not
+generic triangularity or passive-cap size alone, is required.
 
 ## Deterministic replay
 
@@ -176,6 +178,13 @@ Lean replay (after the production module is built):
 ```text
 lake env lean .experiments/K0FullFaceCoupledCap6900.lean -j1 -M4200
 ```
+
+The replay completed successfully in 26.6 seconds.  `-M4200` bounds Lean's
+managed-memory allocation below 4.2 GB; no process RSS sampler was available
+for this run.  Every printed theorem uses only `propext`, `Classical.choice`,
+and `Quot.sound` (the two final arithmetic receipts use only `propext`).  The
+file contains no `sorry`, `admit`, `native_decide`, explicit `axiom`, or
+`unsafe` declaration.
 
 ## Honest remaining premises
 
