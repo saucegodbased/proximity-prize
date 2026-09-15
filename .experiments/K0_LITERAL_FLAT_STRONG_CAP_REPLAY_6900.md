@@ -1,32 +1,35 @@
-# k0 literal flattened strong-cap replay: the first kernel is already rank four
+# k0 literal flattened strong-cap replay: Hasse-boundary correction
 
 Date: 2026-09-15 UTC. Scope: exact finite discriminator for the lower-6900
 k0 route. This changes no production candidate, score, or submission.
 
 ## Verdict
 
-The former `L=8` rank-three / `L=9` rank-four passive-repair story was an
-artifact of pairing the compressed second-jet contact matrix with the wrong
-curvature normalization in the boundary map. Replaying the same frozen
-receipt against the literal formal contact and literal graph boundary gives:
+This note supersedes the first version committed in `ae57cb7`. That version
+incorrectly evaluated the formal `S` graph coordinate at the ordinary second
+derivative `P''`. The accepted second-jet specialization uses the second
+Hasse derivative `HasseDeriv 2 P = P''/2`. Replaying the frozen receipt with
+that coordinate gives:
 
 ```text
 profile                                  contact rank/nullity   boundary gain
 L=7 complete (margin -88)                     3905 / 0               0
 L=7 eps>=3 head                              3069 / 836               4
-L=8 complete (margin +45)                    4719 / 45                4
+L=8 complete (margin +45)                    4719 / 45                3
 L=8 eps>=3 head                              3663 / 1101              4
 ```
 
-Thus the head already has all four boundary directions at `L=7`, but its
-relations do not lift through the terminal ordinary epsilon orders `0,1,2`.
-At the first positive-margin cap `L=8`, the complete contact kernel appears
-and its boundary image is immediately rank four. There is no rank-three
-complete kernel for a later passive layer to repair in this receipt.
+Thus the correctly weighted head has all four boundary directions already at
+`L=7`, but those relations do not lift through terminal epsilon orders
+`0,1,2`. At the first positive-margin cap `L=8`, the complete contact kernel
+appears with only three boundary directions. This agrees with the old
+compressed complete-map calculation. The surviving useful signal is the
+rank-four head together with a one-dimensional loss while lifting through the
+terminal rows; it is not yet a mechanism that repairs that loss.
 
-This is positive evidence for the desired rank-four conclusion and negative
-evidence for the claimed one-spare-layer mechanism. It does not prove the
-target-uniform theorem.
+This is evidence for where a fourth direction is lost, not evidence that the
+complete target map has rank four. It does not prove the target-uniform
+theorem.
 
 ## 1. Literal map used
 
@@ -48,9 +51,10 @@ literal expander committed in `500c732`; it does not call
 `translated_column(k=2)`.
 
 The boundary rows evaluate the four raw partial derivatives at
-`(Y,R,S,Z)=(P,P',P'',gamma)` and `X=n`, in script order `(Y,R,S,Z)`.
+`(Y,R,S,Z)=(P,P',HasseDeriv 2 P,gamma)` and `X=n`, in script order
+`(Y,R,S,Z)`.
 
-## 2. Why complete contact rank survived but boundary gain did not
+## 2. Why the corrected complete augmented rank agrees with the old oracle
 
 The older compressed oracle is not arbitrary. Its row
 
@@ -64,18 +68,13 @@ embeds into the formal flattened row
 (outer=q+3*b, S-power=s, T-power=b, R-power=r, Z-power=z).
 ```
 
-The compressed truncation `q+3*b<m` is exactly the formal outer truncation,
-and the divided-power curvature difference is an invertible row/source
-scaling over `F_101`. This explains why the complete contact rank remains
-`4719` in both calculations.
-
-That scaling does **not** preserve the joint `(contact,boundary)` matrix used
-in the old receipt. The old boundary evaluator fixes the raw curvature value
-at `P''`; transporting the contact coordinate by `Sdiv=2*S` would also have
-to transport the graph point and the raw source coordinates. Merely reusing
-the old gradient rows is not a conjugacy. On the identical receipt the old
-calculation reported gain three, while the literal paired calculation gives
-gain four.
+The compressed truncation `q+3*b<m` is exactly the formal outer truncation.
+The coordinate transport is `E -> epsilon^3*T` and `Sdiv -> 2*S`; every raw
+source column is then scaled by the nonzero factor `2^(S power)`. At the
+correct formal graph point `S=P''/2`, the boundary rows transport under the
+same invertible scaling (the `S` gradient row differs by one global nonzero
+factor). Consequently both the complete contact rank `4719` and augmented
+rank `4722` agree with the compressed oracle.
 
 Likewise, a projected-head test in compressed coordinates must select rows by
 the formal order `q+3*b`, not by `q` alone. The present replay avoids this
@@ -98,14 +97,14 @@ The dense exact matrices were reduced in place by FLINT under an external
 4 GiB address-space cap. The combined `L=7,8`, complete/head run reports:
 
 ```text
-canonical SHA-256  bb78efe7098d6536dd934d0a89d4dca7fe142da1c0a03243c85369040cf27f9a
-script SHA-256     af6733bbd3519546a0f13a393de2865be04d7c5481eb3ee754fddacace34ae57
-runtime            87.107 s
+canonical SHA-256  e8ceacd8af5b615cdfcce000e9f7ce80a3afa7f3e354f5a7b5a238f7b833fdff
+script SHA-256     aec4717ee855f72a9462c99f51e1de5807c48268509ad15a10825da065b5b812
+runtime            85.856 s
 peak RSS           1,032,652 KiB
 ```
 
 The complete `L=8` contact matrix has `5995 x 4764` entries and exact rank
-`4719`; appending the four boundary rows raises rank to `4723`. The head
+`4719`; appending the four boundary rows raises rank to `4722`. The head
 matrix has `4455 x 4764` entries and ranks `3663/3667` before/after the same
 boundary rows.
 
@@ -117,18 +116,18 @@ The corrected finite architecture is now:
 head boundary directions exist before the first full kernel
   -> terminal orders prevent those relations from lifting at L=7
   -> the first positive complete cap L=8 has a 45-dimensional kernel
-  -> its complete boundary image is already rank four.
+  -> its complete boundary image still has rank only three.
 ```
 
-The old `L+1` passive connecting-map producer is therefore not supported by
-this control. The useful surviving questions are:
+The old complete-map rank-three obstruction survives this control. The useful
+questions are now sharper:
 
 1. whether the corrected literal result is robust across all prior data
    families and target-ratio controls;
-2. which small raw family produces the head Y direction;
-3. which terminal lifting recurrence converts it into the first complete
-   kernel; and
-4. whether those two mechanisms admit a target-uniform proof at the first
+2. which small raw family produces the fourth head direction;
+3. exactly which terminal row kills it, and whether another legal source
+   layer can repair that connecting obstruction; and
+4. whether such a mechanism admits a target-uniform proof at the first
    positive cap `L=3757` (or the conservative `L=3758` profile).
 
 Until those are proved, this replay is evidence and a process correction,

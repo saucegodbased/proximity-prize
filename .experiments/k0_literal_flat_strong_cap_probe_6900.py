@@ -50,6 +50,28 @@ def column(profile, receipt, monomial, head_only):
     return answer
 
 
+def formal_gradient_vector(monomial, receipt, x):
+    """Boundary gradient at (Y,R,S,Z)=(P,P',Hasse2(P),gamma)."""
+    xp, yp, rp, sp, zp = monomial
+    point = (
+        Old.evaluate(receipt.polynomial, x, P, 0),
+        Old.evaluate(receipt.polynomial, x, P, 1),
+        Old.evaluate(receipt.polynomial, x, P, 2) * pow(2, -1, P) % P,
+        receipt.seed % P,
+    )
+    exponents = (yp, rp, sp, zp)
+    answer = []
+    for coordinate in range(4):
+        if exponents[coordinate] == 0:
+            answer.append(0)
+            continue
+        value = pow(x, xp, P) * exponents[coordinate] % P
+        for j, (base, exponent) in enumerate(zip(point, exponents)):
+            value = value * pow(base, exponent - (j == coordinate), P) % P
+        answer.append(value)
+    return tuple(answer)
+
+
 def run(profile, receipt, head_only):
     monomials = Old.K0.support(profile)
     columns = []
@@ -73,8 +95,8 @@ def run(profile, receipt, head_only):
             for row, coefficient in contact.items():
                 matrix[row_index[row], j] = coefficient
             if augmented:
-                gradient = Old.gradient_vector(
-                    monomials[j], receipt, profile.n, P)
+                gradient = formal_gradient_vector(
+                    monomials[j], receipt, profile.n)
                 for coordinate, coefficient in enumerate(gradient):
                     matrix[len(rows) + coordinate, j] = coefficient
         print(
@@ -132,6 +154,8 @@ def main():
         "contact_semantics": (
             "rows (eps,S,T,R,Z), no E; "
             "Y=u0+u1Z+epsR-eps^2S+eps^3T mod eps^m"),
+        "boundary_semantics": (
+            "formal graph point (Y,R,S,Z)=(P,P',Hasse2(P),gamma)"),
         "results": results,
         "scope_guard": "finite exact discriminator; not a target-uniform theorem",
     }

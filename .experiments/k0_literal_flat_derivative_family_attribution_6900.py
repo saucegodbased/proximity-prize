@@ -7,8 +7,9 @@ On the corrected F_101 m6, L8 receipt, order the exact formal raw source as
 
 One contact RREF and one contact-plus-boundary RREF give every nested prefix
 rank by counting pivot columns.  This identifies the first derivative family
-needed for the rank-four kernel without extracting a basis-dependent dense
-relation.  It is a finite discriminator, not a target theorem.
+needed for any complete-map kernel and measures its boundary image without
+extracting a basis-dependent dense relation.  It is a finite discriminator,
+not a target theorem.
 """
 
 from __future__ import annotations
@@ -27,6 +28,9 @@ from flint import nmod_mat
 sys.path.insert(0, ".experiments")
 import k0_capacity_positive_layer_attribution_6900 as Layer  # noqa: E402
 import k0_first_positive_passive_universal_falsifier_6900 as Old  # noqa: E402
+from k0_literal_flat_strong_cap_probe_6900 import (  # noqa: E402
+    formal_gradient_vector,
+)
 from k0_centered_head_y_correction_gate_6900 import (  # noqa: E402
     P, flattened_raw_column,
 )
@@ -56,8 +60,7 @@ def rank_and_pivots(columns, rows, monomials, receipt, boundary):
         for row, coefficient in contact.items():
             matrix[row_index[row], j] = coefficient
         if boundary:
-            gradient = Old.gradient_vector(
-                monomials[j], receipt, 11, P)
+            gradient = formal_gradient_vector(monomials[j], receipt, 11)
             for coordinate, coefficient in enumerate(gradient):
                 matrix[len(rows) + coordinate, j] = coefficient
     print(
@@ -120,7 +123,7 @@ def main():
             "columns_contact_rank_nullity_augmented_rank_boundary_gain": (
                 end, c_rank, end - c_rank, a_rank, a_rank - c_rank),
         })
-    assert (contact_rank, augmented_rank) == (4719, 4723)
+    assert (contact_rank, augmented_rank) == (4719, 4722)
     stable = {
         "scope": "literal flattened complete-contact derivative-family attribution",
         "field": P,
@@ -132,6 +135,8 @@ def main():
         "contact_semantics": (
             "formal rows (eps,S,T,R,Z); "
             "Y=u0+u1Z+epsR-eps^2S+eps^3T mod eps^m"),
+        "boundary_semantics": (
+            "formal graph point (Y,R,S,Z)=(P,P',Hasse2(P),gamma)"),
         "group_order": tuple(group_specs),
         "full_rows_columns_contact_augmented_ranks": (
             len(rows), len(monomials), contact_rank, augmented_rank),
