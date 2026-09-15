@@ -226,7 +226,45 @@ runtime            31.355 seconds
 peak RSS           1,009,316 KiB
 ```
 
-## 8. Process correction
+## 8. Below-Hermite-cap counterexample
+
+The raw-face `7/7` pattern is not universal.  A bounded search found the
+exact F101 profile
+
+```text
+(n,w,g,m,B,s,U,L,k,n0) = (10,2,7,3,2,1,5,2,0,1)
+```
+
+with prefix agreement, maximal candidate, minimal bad tangent, globally
+polynomial received direction, and equal nonzero errors.  Its next raw face
+has 57 columns, strictly below the associated bivariate-Hermite cap 60.
+
+```text
+base L2:                    256 cols / rank 246 / nullity 10 / gain 3
+base + one raw L3 face:     313 cols / rank 303 / nullity 10 / gain 3
+base + all positive-Z L3:   410 cols / rank 386 / nullity 24 / gain 4
+complete L3:                475 cols / rank 422 / nullity 53 / gain 4
+base + raw faces through L4 385 cols / rank 364 / nullity 21 / gain 4
+```
+
+The one raw face raises contact rank by exactly all 57 new columns.  It is
+injective modulo the base, creates no new kernel vector, and cannot supply the
+missing boundary axis.  This directly falsifies “one raw positive face always
+repairs.”  In this fixed case either derivative-bearing positive shapes at
+the same layer or a second raw passive face repairs.  The target proof must
+therefore establish target-specific strictness/liftability; raw-face dimension
+alone cannot do it.
+
+Receipt: `.experiments/k0_below_hermite_raw_face_counterexample_6900.py`.
+
+```text
+canonical SHA-256  8e96177ae10de6f0ed75c517f19e5b7b9be2ef5388e65e391d32f0b42cb9ef7b
+script SHA-256     c1e5331e5d095390e92030f04702d8fdbd4aca83d360dc377d6c28c721817688
+runtime            0.293 seconds
+peak RSS           38,516 KiB
+```
+
+## 9. Process correction
 
 The failure was semantic, not computational.  A row count from a convenient
 oracle was accepted before writing the explicit isomorphism to the formal
