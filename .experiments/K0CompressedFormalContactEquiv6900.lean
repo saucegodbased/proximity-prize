@@ -166,6 +166,28 @@ theorem compressed_curvature_column_scale_ne_zero
     (2 : K) ^ s ≠ 0 := by
   exact pow_ne_zero s htwo
 
+/-- Correct boundary conjugacy.  The accepted formal raw curvature coordinate
+is the second Hasse derivative, while the compressed `V2` coordinate is the
+ordinary second derivative, hence `V2 = 2*S`.  After the source-column factor
+`2^s`, the `Y,R,Z` rows coincide and the curvature covector is rescaled by
+the single invertible factor two. -/
+theorem compressed_boundary_conjugacy
+    (S0 Y0 R0 Z0 lambdaS lambdaY lambdaR lambdaZ : K)
+    (s y r z : Nat) :
+    rawBoundaryScalar
+        (2 * S0) Y0 R0 Z0
+        (2 * lambdaS) lambdaY lambdaR lambdaZ s y r z =
+      (2 : K) ^ s * rawBoundaryScalar
+        S0 Y0 R0 Z0
+        lambdaS lambdaY lambdaR lambdaZ s y r z := by
+  cases s with
+  | zero =>
+      simp [rawBoundaryScalar]
+  | succ s =>
+      simp only [rawBoundaryScalar, Nat.cast_add, Nat.cast_one,
+        Nat.succ_sub_one, mul_pow, pow_succ]
+      ring
+
 /-- The corrected selector for the formal high head. -/
 theorem compressed_row_is_in_formal_head
     (q b : Nat) :
@@ -178,6 +200,7 @@ theorem compressed_row_is_in_formal_head
 #print axioms compressedIndexMap_injective
 #print axioms compressed_truncation_is_formal_truncation
 #print axioms compressed_curvature_column_scale_ne_zero
+#print axioms compressed_boundary_conjugacy
 #print axioms compressed_row_is_in_formal_head
 
 end
