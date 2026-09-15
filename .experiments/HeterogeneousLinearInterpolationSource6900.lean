@@ -405,6 +405,59 @@ theorem target_safe_uniform_cap_deficit :
     4980736 - 4692294 = 288442 := by
   norm_num
 
+/-- Increasing seed width rescues every scalar cap through `148023`.  At the
+last such cap the minimal convenient width is `262145`, and the gap is
+exactly one; this is still a symbolic finite-dimensional argument and does
+not materialize the enormous matrix. -/
+theorem target_adaptive_last_positive_dimensions :
+    262145 *
+        (180413 + (180413 - 131071) + (180413 - 148023)) =
+      68720001025 ∧
+    262144 * 262146 = 68720001024 ∧
+    68720001025 - 68720001024 = 1 := by
+  norm_num
+
+theorem target_adaptive_last_positive_gap :
+    262144 * (262145 + 1) <
+      262145 *
+        (180413 + (180413 - 131071) + (180413 - 148023)) := by
+  norm_num
+
+/-- At `W=148024`, adding more seed coefficients can never create a raw
+dimension gap: each extra source layer and target layer both cost 262144,
+while the target retains its initial 262144 equations. -/
+theorem target_adaptive_first_impossible_gap (r : Nat) :
+    ¬ 262144 * (r + 1) <
+      r * (180413 + (180413 - 131071) + (180413 - 148024)) := by
+  omega
+
+/-- Numerical quotient threshold.  If the scalar cap is in the adaptive
+range and `W ≤ 131071 + e`, then 32390 nonidentity nodes consume strictly
+more than the worst fixed-relation multiplier width. -/
+theorem target_mask_width_lt_adaptive_slope
+    (W e t : Nat) (hW : W ≤ 148023)
+    (hWe : W ≤ 131071 + e) (ht : 32390 ≤ t) :
+    49342 - e - t < 148024 - W := by
+  omega
+
+/-- With the smallest uniform adaptive width, the raw kernel lower bound
+then strictly exceeds the conservative masked-multiple upper bound. -/
+theorem target_adaptive_kernel_beats_masked_bound
+    (W e t : Nat) (hW : W ≤ 148023)
+    (hWe : W ≤ 131071 + e) (ht : 32390 ≤ t) :
+    262145 * (49342 - e - t) <
+      262145 * (148024 - W) - 262144 := by
+  have hslope := target_mask_width_lt_adaptive_slope W e t hW hWe ht
+  omega
+
+/-- In the opposite 292-exception branch, even the smallest possible
+multiplier window leaves over half a million width-18 tautological
+directions, far beyond the 4,238 raw surplus. -/
+theorem target_large_identity_mask_capacity :
+    17 * (49342 - 18414 - 292) = 520812 ∧
+      4238 < 520812 := by
+  norm_num
+
 /-- Literal target-sized kernel source.  Width `18` means seed degree at most
 `17`; the target contains `4,238` more source coefficients than equations. -/
 theorem target_exists_nonzero_nodal_kernel
@@ -419,6 +472,20 @@ theorem target_exists_nonzero_nodal_kernel
   rw [hcard]
   exact target_raw_gap
 
+/-- The one-dimensional adaptive kernel at the last potentially reachable
+scalar cap.  Its seed degree is at most `262144`. -/
+theorem target_exists_nonzero_adaptive_nodal_kernel
+    {I : Type*} [Fintype I]
+    (node u0 u1 centre : I → K)
+    (hcard : Fintype.card I = 262144) :
+    ∃ source : SourceSpace K 180413 131071 148023 262145,
+      source ≠ 0 ∧
+      nodalConstraintMap K node u0 u1 centre
+        180413 131071 148023 262145 source = 0 := by
+  apply exists_nonzero_nodal_kernel_of_gap K
+  rw [hcard]
+  exact target_adaptive_last_positive_gap
+
 #print axioms coefficientFamily_finrank
 #print axioms sourceSpace_finrank
 #print axioms constraintSpace_finrank
@@ -429,10 +496,17 @@ theorem target_exists_nonzero_nodal_kernel
 #print axioms target_last_positive_gap_dimensions
 #print axioms target_first_negative_gap_dimensions
 #print axioms target_safe_uniform_cap_deficit
+#print axioms target_adaptive_last_positive_dimensions
+#print axioms target_adaptive_last_positive_gap
+#print axioms target_adaptive_first_impossible_gap
+#print axioms target_mask_width_lt_adaptive_slope
+#print axioms target_adaptive_kernel_beats_masked_bound
+#print axioms target_large_identity_mask_capacity
 #print axioms specializeFamily_natDegree_lt
 #print axioms kernel_all_seed_node_identity
 #print axioms kernel_global_syzygy
 #print axioms target_exists_nonzero_nodal_kernel
+#print axioms target_exists_nonzero_adaptive_nodal_kernel
 
 end
 end ProximityPrize.SubmissionLower.HeterogeneousLinearInterpolationSource6900
