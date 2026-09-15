@@ -26,6 +26,10 @@ def coreFloor : Nat := 263611557201785349
 
 def primaryFlag : FlagDegree := ⟨496,122,122⟩
 def maxHelperFlag : FlagDegree := ⟨10228,2480,2480⟩
+/-- One source profile `(k,m,M,D,T)=(1312,11810,15993,5248,2624)`
+handles both outer arms and the joint corner.  This slightly larger envelope
+avoids all heterogeneous-helper bookkeeping. -/
+def jointHelperFlag : FlagDegree := ⟨10745,2624,2624⟩
 def primaryAgreement : FlagDegree := ⟨132025976,32640125,32240450⟩
 
 def armAFlag : FlagDegree := ⟨156,28,27⟩
@@ -46,6 +50,13 @@ def ceilQuotient (num den : Nat) : Nat := (num+den-1)/den
 
 def commonCap (rest exit agreement : FlagDegree) : Nat :=
   ceilQuotient (commonNumerator rest exit agreement) ((a-v)^2)
+
+def jointCommonNumerator (rest exit agreement : FlagDegree) : Nat :=
+  (n-v)^2 * flagMixed rest agreement agreement +
+    (n-v)*(a-v) * flagMixed exit jointHelperFlag primaryAgreement
+
+def jointCommonCap (rest exit agreement : FlagDegree) : Nat :=
+  ceilQuotient (jointCommonNumerator rest exit agreement) ((a-v)^2)
 
 def unitZ : FlagDegree := ⟨1,0,0⟩
 def unitYZ : FlagDegree := ⟨0,1,0⟩
@@ -87,12 +98,45 @@ theorem armB_rest_resource_dominates_exit :
     norm_num [n,a,v,cumulativeCosts,unitZ,unitYZ,unitAll,maxHelperFlag,
       primaryAgreement,armBAgreement,flagMixed]
 
+theorem armA_rest_resource_dominates_joint_exit :
+    ∀ i : Fin 3,
+      (n-v)*(a-v)*cumulativeCosts jointHelperFlag primaryAgreement i ≤
+        (n-v)^2*cumulativeCosts armAAgreement armAAgreement i := by
+  intro i
+  fin_cases i <;>
+    norm_num [n,a,v,cumulativeCosts,unitZ,unitYZ,unitAll,jointHelperFlag,
+      primaryAgreement,armAAgreement,flagMixed]
+
+theorem armB_rest_resource_dominates_joint_exit :
+    ∀ i : Fin 3,
+      (n-v)*(a-v)*cumulativeCosts jointHelperFlag primaryAgreement i ≤
+        (n-v)^2*cumulativeCosts armBAgreement armBAgreement i := by
+  intro i
+  fin_cases i <;>
+    norm_num [n,a,v,cumulativeCosts,unitZ,unitYZ,unitAll,jointHelperFlag,
+      primaryAgreement,armBAgreement,flagMixed]
+
 theorem coupled_caps_exact :
     commonCap armAFlag armAExitFlag armAAgreement=247893461599917381 ∧
     commonCap armBFlag armBExitFlag armBAgreement=244001988473045789 := by
   norm_num [commonCap,commonNumerator,ceilQuotient,n,a,v,armAFlag,
     armAExitFlag,armAAgreement,armBFlag,armBExitFlag,armBAgreement,
     maxHelperFlag,primaryAgreement,flagMixed]
+
+theorem joint_coupled_caps_exact :
+    jointCommonCap armAFlag armAExitFlag armAAgreement=247924633751427236 ∧
+    jointCommonCap armBFlag armBExitFlag armBAgreement=244033198200074653 := by
+  norm_num [jointCommonCap,jointCommonNumerator,ceilQuotient,n,a,v,armAFlag,
+    armAExitFlag,armAAgreement,armBFlag,armBExitFlag,armBAgreement,
+    jointHelperFlag,primaryAgreement,flagMixed]
+
+theorem joint_armA_complete_headroom_exact :
+    jointCommonCap armAFlag armAExitFlag armAAgreement +
+        15522723255702274 = 263447357007129510 ∧
+    coreFloor - 263447357007129510 = 164200194655839 ∧
+    263447357007129510 < coreFloor := by
+  rw [joint_coupled_caps_exact.1]
+  norm_num [coreFloor]
 
 theorem armA_complete_headroom_exact :
     commonCap armAFlag armAExitFlag armAAgreement +
@@ -113,6 +157,8 @@ theorem armB_complete_headroom_exact :
 #print axioms armA_rest_resource_dominates_exit
 #print axioms armB_rest_resource_dominates_exit
 #print axioms coupled_caps_exact
+#print axioms joint_coupled_caps_exact
+#print axioms joint_armA_complete_headroom_exact
 #print axioms armA_complete_headroom_exact
 #print axioms armB_complete_headroom_exact
 
