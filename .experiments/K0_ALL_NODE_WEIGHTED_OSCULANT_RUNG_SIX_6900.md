@@ -1,4 +1,4 @@
-# K0 all-node weighted osculants: rung six GREEN, rung seven RED
+# K0 all-node weighted osculants: contact/caps GREEN, advertised boundary RED
 
 Date: 2026-09-15 UTC. Scope: lower 6900, corrected low-head recurrence.
 This is a source/contact breakthrough receipt, not a completed 6900 theorem,
@@ -6,9 +6,9 @@ candidate, build, or submission.
 
 ## Verdict
 
-There is a genuine cap-legal rank-four packet at error contact order six.
-It removes the first `Y/R/S` multiplier cliff in the common-`J` recurrence.
-The packet is
+There is a genuine cap-legal contact-order-six packet, but its originally
+advertised rank-four interpretation is false at the actual compatible
+boundary. The packet is
 
 ```text
 H^38 J^6,
@@ -32,16 +32,17 @@ C2 = N^2 (2 S - U0''(X) - U1''(X) Z)
 ```
 
 `C1` has contact order at least two and `C2` contact order at least
-three at **every** old node.  The four displayed sources have agreement
-contact at least 44 and error contact at least six.  They have a rank-four
-fresh-boundary symbol and all fit the literal target K0 box.
+three at **every** old node. The four displayed sources have agreement
+contact at least 44 and error contact at least six, and they fit the literal
+target K0 box. Compatibility forces `J=Y-U0-U1*Z=0` at the fresh probe, where
+every first gradient of these four powers vanishes. The determinant below is
+an identity on the wrong `J!=0` stratum, not target rank evidence.
 
 This does **not** continue as a monomial semigroup recurrence.  Every
 individual order-seven monomial in `J,C1,C2` already exceeds the strict X
-cutoff by 30,871 before charging an active-variable weight.  Its boundary
-gradients do not collapse; the obstruction is source cost.  Thus this result
-advances the structural recurrence exactly one rung, from five to six, but
-does not close orders 7 through 43.
+cutoff by 30,871 before charging an active-variable weight. The compatible
+boundary also collapses the proposed packets. Thus this receipt proves
+contact and caps, but does not advance a four-boundary recurrence.
 
 ## 1. Exact all-node contact algebra
 
@@ -97,7 +98,7 @@ These identities are node-independent.  Translating each old node to
 epsilon zero proves the claimed orders at every node; no generic-rank or
 finite-field experiment is being substituted for the contact proof.
 
-## 2. Why the four sources carry the boundary themselves
+## 2. Compatible-boundary correction
 
 At the fresh compatible boundary, use coordinate order `(S,Y,R,Z)`.  Ignore
 the data-dependent last coordinate temporarily.  The gradients of
@@ -119,23 +120,30 @@ d(J^3 C2)    = 3 J^2 C2 dJ + J^3 dC2,
 d(Z J^6)     = 6 Z J^5 dJ + J^6 dZ.
 ```
 
-Elementary row operations therefore give determinant
+On the open formal stratum `J!=0`, elementary row operations give determinant
 
 ```text
 -12 * N^3 * J^18.
 ```
 
-Multiplication by the common `H^38` contributes the harmless nonzero factor
-`H^152`.  Over the generic fresh-point coefficient field, `N` is nonzero.
-For a genuine non-perfect candidate, `J` is also nonzero.  Characteristic
-`2130706433` kills neither 2 nor 3.  Hence the packet has rank four.  The
-perfect-fit branch (`J=0`) is separate and does not represent an
-81731-error candidate.
+Multiplication by the common `H^38` contributes a power of `H`, and `N` is
+nonzero at a fresh point. However the literal compatible readout evaluates at
+`Y=U0+U1*Z`, so `J=0` regardless of whether the candidate is perfect. The
+four gradients above are all zero there. The claim that non-perfectness made
+`J` nonzero conflated candidate mismatch with this received-line contact
+coordinate and is retracted.
 
-This is the key saving: the old packet used a scalar order-six carrier and
-then multiplied it by `Y`, `R`, or `S`, costing about 131071 weighted
-degrees.  `C1` and `C2` already contain the slope and curvature boundary
-directions, while `Z*J^6` supplies the fourth direction at weight zero.
+There is a stratified alternative among the other weight-six profiles:
+
+```text
+J*C1*C2, C1^3, C2^2, Z*C1^3.
+```
+
+At `J=0` their covariant-coordinate pivots have product
+`6*C1^6*C2^2`; after the raw coordinate change the product is
+`-12*N^3*C1^6*C2^2`. Thus this alternative can have rank four only when both
+`C1` and `C2` are nonzero. The benchmark interface supplies no such uniform
+nonvanishing premise, and its global error-head correction remains unproved.
 
 ## 3. Exact target cap ledger
 
@@ -215,7 +223,7 @@ After the necessary `H^(44-t)` factor, its degree is
 rungX(t)=(44-t)g+t(n-1)=44g+t(e-1).
 ```
 
-At `t=6`, this is the green 8428552 above.  At `t=7`, every individual
+At `t=6`, this is the cap-green 8428552 above. At `t=7`, every individual
 semigroup monomial has
 
 ```text
@@ -229,15 +237,16 @@ suggested packet
 J^5 C1, J^4 C2, J^3 C1^2, J^2 C1 C2.
 ```
 
-The standard rank-four choice
+The formerly advertised formal choice
 
 ```text
 J^7, J^5 C1, J^4 C2, ZJ^7
 ```
 
-still has boundary pivot product `-14*N^3*J^22`, so the leading gradients
-do **not** collapse.  Every individual source is simply too wide.  The Lean
-theorem proves the same strict failure for every `7<=t<=44`.
+has boundary pivot product `-14*N^3*J^22`, which is zero on the actual
+compatible boundary. Every individual source is also too wide. The Lean
+theorem proves the same strict source failure for every `7<=t<=44`; it does
+not prove a target boundary rank statement.
 
 There is one honest caveat.  Carefully chosen linear combinations of
 same-order semigroup monomials can cancel finitely many leading
@@ -249,7 +258,8 @@ retaining four boundary gradients.  The elementary transvectant identities
 save only derivative-scale degrees, but a full Popov/syzygy lower bound is a
 separate obligation.  Therefore the exact classification is:
 
-- **GREEN:** literal global contact, source caps, and rank four at rung six;
+- **GREEN:** literal global contact and source caps at rung six;
+- **RED:** the advertised four gradients at the compatible `J=0` boundary;
 - **RED:** every individual `J,C1,C2` semigroup monomial from rung seven on;
 - **OPEN:** a large, boundary-rank-preserving cancellation among many
   order-seven covariants.
@@ -279,4 +289,3 @@ K0AllNodeWeightedOsculantRungSix6900.lean
 The replay is under five seconds with the capped runner.  Printed axioms are
 only `propext`, `Classical.choice`, and `Quot.sound`.  There is no `sorry`,
 `admit`, `decide`, `native_decide`, explicit axiom, or unsafe declaration.
-

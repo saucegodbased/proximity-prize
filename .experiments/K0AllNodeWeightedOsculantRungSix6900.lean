@@ -29,16 +29,16 @@ the contacted raw `R` is constant whereas the epsilon derivative of contacted
 truncation assumption, that `C1` has order at least two and `C2` order at
 least three at every zero of `N`.
 
-At the target, the four order-six shapes
+On the open formal stratum `J != 0`, the four order-six shapes
 
 `J^6, J^4 C1, J^3 C2, Z J^6`
 
-have a rank-four fresh-boundary symbol.  After multiplication by `H^38`, all
-four fit the literal K0 source.  This removes the former need to multiply a
-rung-six scalar carrier by the expensive active boundary variables.  It is a
-real one-rung improvement.  It does not iterate: the identical family at
-order seven exceeds the strict X cutoff by 30,871 even before an active
-boundary weight is charged.
+have a rank-four formal boundary symbol.  The actual compatible probe instead
+has `J=0`, where all four of these gradients vanish.  Thus the cap/contact
+receipt below remains valid, but the advertised packet is not a target
+rank-four rung.  A different order-six packet can have four axes only on the
+smaller stratum `C1*C2 != 0`; no uniform compatible-boundary theorem or global
+old-head correction follows here.
 -/
 
 namespace ProximityPrize.SubmissionLower.K0AllNodeWeightedOsculantRungSix6900
@@ -203,19 +203,44 @@ theorem osculatingSymbol_injective
   · exact hc3
 
 /-- After taking the powers `J^6,J^4*C1,J^3*C2,Z*J^6`, elementary row
-operations leave these four pivots. -/
+operations leave these four pivots.  This identity is useful only when
+`J != 0`; compatibility forces `J=0`. -/
 theorem rungSix_boundary_pivot_product (n j : K) :
     (6 * j ^ 5) * (j ^ 4) * (j ^ 3) * (j ^ 6) * (-2 * n ^ 3) =
       -12 * n ^ 3 * j ^ 18 := by
   ring
 
-/-- At contact order seven the same three-gradient-plus-seed packet is still
-geometrically rank four: its pivot product is nonzero whenever `n`, `j`, and
-`14` are nonzero.  Thus the next failure below is a source-cost failure, not
-a collapse of leading gradients. -/
+/-- At contact order seven the same formal packet has this pivot product on
+the open stratum `J != 0`.  The actual compatible probe has `J=0`, so the
+identity does not supply target boundary rank. -/
 theorem rungSeven_boundary_pivot_product (n j : K) :
     (7 * j ^ 6) * (j ^ 5) * (j ^ 4) * (j ^ 7) * (-2 * n ^ 3) =
       -14 * n ^ 3 * j ^ 22 := by
+  ring
+
+/-- The nontrivial entries of the four formerly advertised order-six
+gradients all vanish on the actual compatible stratum `J=0`.  The omitted
+entries are identically zero. -/
+theorem advertisedRungSixGradient_at_compatible_eq_zero
+    (c1v c2v z : K) :
+    6 * (0 : K) ^ 5 = 0 /\
+      4 * (0 : K) ^ 3 * c1v = 0 /\
+      (0 : K) ^ 4 = 0 /\
+      3 * (0 : K) ^ 2 * c2v = 0 /\
+      (0 : K) ^ 3 = 0 /\
+      6 * z * (0 : K) ^ 5 = 0 /\
+      (0 : K) ^ 6 = 0 := by
+  simp
+
+/-- A correctly stratified order-six formal packet is
+`J*C1*C2,C1^3,C2^2,Z*C1^3`.  At `J=0` its four covariant-coordinate pivots
+have product `6*C1^6*C2^2`; composing with the raw osculating change of
+variables gives `-12*N^3*C1^6*C2^2`.  This is nonzero only when both C1 and
+C2 are nonzero. -/
+theorem compatibleRungSix_alternative_pivot_product
+    (n c1v c2v : K) :
+    (c1v * c2v) * (3 * c1v ^ 2) * (2 * c2v) * c1v ^ 3 *
+        (-2 * n ^ 3) = -12 * n ^ 3 * c1v ^ 6 * c2v ^ 2 := by
   ring
 
 /-! ## Exact target cap ledger -/
@@ -335,6 +360,8 @@ theorem extremal_top_coefficients :
 #print axioms osculatingSymbol_injective
 #print axioms rungSix_boundary_pivot_product
 #print axioms rungSeven_boundary_pivot_product
+#print axioms advertisedRungSixGradient_at_compatible_eq_zero
+#print axioms compatibleRungSix_alternative_pivot_product
 #print axioms target_rung_six_weighted_green
 #print axioms target_rung_six_rawShapeLegal
 #print axioms target_rung_seven_unweighted_stop
