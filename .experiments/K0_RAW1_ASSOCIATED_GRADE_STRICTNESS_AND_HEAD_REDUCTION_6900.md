@@ -132,7 +132,7 @@ dimension proof of a top-grade relation. The other raw derivative shapes or
 special structure of `(x_i,u1_i)` are load-bearing. The positive 23,088,879
 margin belongs to the **complete** new face, not raw-1.
 
-## 3. Exact finite associated and relative controls
+## 3. Exact finite associated controls
 
 `.experiments/k0_raw1_associated_face_gate_6900.py` builds the formula above
 directly over `F_101`. Exact ranks are:
@@ -144,30 +144,29 @@ target-ratio m5 L8                180             165                   15
 target-ratio m6 L8                252             231                   21
 ```
 
-The target-ratio cases then quotient by the contact image of the **complete**
-cap-L-1 source:
+The script computes the projection omitting `T`, using the older
+divided-power `S` normalization.  In every row above its rank already equals
+the universal bivariate-Hermite cap (`n*m*(m+1)/2`).  The full formal map
+with `+epsilon^3*T` contains this projection, and the Lean factorization
+bounds its rank by the same cap, so the printed ranks are also the exact
+full-formal associated ranks.
 
-```text
-case       old C/A/gain    combined C/A/gain   relative rank/kernel
-m5         2901/2905/4       3070/3074/4              169/11
-m6         3867/3871/4       4115/4119/4              248/4
-```
-
-Thus four of the fifteen m5 associated relations and seventeen of the
-twenty-one m6 associated relations do not lift through the preceding cap.
-The lower-grade remainder is a real obstruction, not bookkeeping. In these
-two controls the old normal is already rank four, so they test strictness,
-not a 3-to-4 transition.
+An earlier version additionally printed old-cap quotient ranks using
+`higher_jet_literal_matrix`.  Those numbers are withdrawn: that oracle has
+an `E` coordinate, uses `-epsilon^2*S/2`, and omits the formal `T` channel,
+so it is not the complete K0 contact map needed for filtered liftability.
+The abstract strictness obstruction in the next section remains valid, but
+these finite controls make no claim about the size of its failure.
 
 Final receipt:
 
 ```text
-canonical SHA-256  88ab536e047246809af6919bc5db890a602d953cf399ef897b357044f78e50ba
-script SHA-256     e0790e0adc0444b4814ab2e4e0e69eb43c04fd7c4f61a3535b43f5a3c00841aa
-runtime / peak RSS 116.287 s / 837,416 KiB
+canonical SHA-256  e3ef953a363ba7647ac9f1792ae59a4f26746931cc2ea430b187c4d4c1bf21ae
+script SHA-256     d611b2554ad7c9f0cdde8305b06b44b8d5985909ba9f5f0d8e9f7f5e52e81145
+runtime / peak RSS 8.642 s / 53,252 KiB
 ```
 
-The finite literal matrix uses the divided-power coordinate
+The finite projected matrix uses the divided-power coordinate
 `-eps^2 S / 2`, while the Lean identity below uses the invertibly rescaled
 coordinate `-eps^2 S`.  The script now matches the literal convention
 exactly.  Rescaling the `S` rows is invertible over `F_101`, so the ranks and
