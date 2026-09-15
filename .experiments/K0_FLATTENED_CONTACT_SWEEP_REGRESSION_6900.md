@@ -210,11 +210,11 @@ bounded-degree Hermite/connecting statement showing that this raw face kills
 the terminal compatible boundary-dual class at all target errors.
 
 There is a serious selection-bias caveat: these small profiles may put the
-raw face beyond the associated bivariate-Hermite row cap.  At the target, the
-raw face has only `17,164,397` coordinates and lies **below** the universal
-Hermite cap because `2g-w<n`.  Therefore the finite `7/7` result supplies no
-dimension forcing at target size.  A deliberately below-cap finite control
-is the next required discriminator.
+raw face beyond the associated bivariate-Hermite row cap. At the target, the
+raw face has `278,534,035` coordinates, which is **17,164,397 below** the
+universal `295,698,432`-row Hermite cap because `2g-w<n`. Therefore the
+finite `7/7` result supplies no dimension forcing at target size. A
+deliberately below-cap finite control is the next required discriminator.
 
 The deterministic strengthening receipt is
 `.experiments/k0_raw_positive_face_repair_robustness_6900.py`.
