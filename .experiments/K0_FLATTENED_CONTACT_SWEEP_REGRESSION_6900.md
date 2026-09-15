@@ -180,7 +180,53 @@ of at most nine are not a proof for target gap 3693.  The experiment also
 checks only the deterministic boundary point `X=n`; it is a falsifier and
 mechanism discriminator, not a universal nonvanishing argument.
 
-## 7. Process correction
+## 7. Minimal raw-face strengthening
+
+A follow-up removes every new derivative-bearing column.  It adjoins only
+the new positive-Z successor monomials with raw `(R,S)=(0,0)`, namely the
+finite analogue of
+
+```text
+{ X^a Y^y Z^(L+1-y) : a < mg-wy }.
+```
+
+This much smaller face still repairs **all 7/7** defects:
+
+```text
+case                 new raw columns   combined cols/rank/nullity/gain
+m3 n9 spike                60              460 / 441 / 19 / 4
+m3 n10 spike               66              504 / 488 / 16 / 4
+m3 n11 spike               72              548 / 534 / 14 / 4
+m4 n8 minimal              90             1105 /1064 / 41 / 4
+m4 n9 minimal              99             1223 /1197 / 26 / 4
+m4 n10 minimal            108             1341 /1330 / 11 / 4
+m6 target-ratio           252             5016 /4950 / 66 / 4
+```
+
+Thus literal derivative companions are not needed for the observed finite
+repair.  The weakest promising target producer is the raw positive-Z face
+modulo the base contact image.  What remains unproved is the uniform
+bounded-degree Hermite/connecting statement showing that this raw face kills
+the terminal compatible boundary-dual class at all target errors.
+
+There is a serious selection-bias caveat: these small profiles may put the
+raw face beyond the associated bivariate-Hermite row cap.  At the target, the
+raw face has only `17,164,397` coordinates and lies **below** the universal
+Hermite cap because `2g-w<n`.  Therefore the finite `7/7` result supplies no
+dimension forcing at target size.  A deliberately below-cap finite control
+is the next required discriminator.
+
+The deterministic strengthening receipt is
+`.experiments/k0_raw_positive_face_repair_robustness_6900.py`.
+
+```text
+canonical SHA-256  4230c030f95739a6934070c38fd94f7aff9aae81d4109da3463a223507190e5e
+script SHA-256     46ace7f03994f850c8cf17799e67abaa5788bd106eddce476f371069f4ecd4f1
+runtime            31.355 seconds
+peak RSS           1,009,316 KiB
+```
+
+## 8. Process correction
 
 The failure was semantic, not computational.  A row count from a convenient
 oracle was accepted before writing the explicit isomorphism to the formal
