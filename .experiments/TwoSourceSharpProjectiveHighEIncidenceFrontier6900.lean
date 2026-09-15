@@ -71,6 +71,17 @@ structure HighESharpProjectiveResidualPackage
     ((131071 + toSharpProjectiveResidualPackage.E0.natDegree) -
       max R.c.natDegree R.d.natDegree) -
         toSharpProjectiveResidualPackage.Q.natDegree ≤ 149485
+  E0_root_free : ∀ i,
+    toSharpProjectiveResidualPackage.E0.eval (IRSProfile.domain i) ≠ 0
+  E0_adjacent_coprime : IsCoprime
+    toSharpProjectiveResidualPackage.E0
+    (toSharpProjectiveResidualPackage.E0.map sigma)
+  E0_mixed_coprime :
+    IsCoprime toSharpProjectiveResidualPackage.E0
+        (toSharpProjectiveResidualPackage.E0.map (sigma.comp sigma)) ∨
+      IsCoprime toSharpProjectiveResidualPackage.E0
+        (toSharpProjectiveResidualPackage.E0.map
+          (sigma.comp (sigma.comp sigma)))
 
 /-- Refilter the literal high-E witness.  Unlike an existential join of the
 old sharp and high-E theorems, this construction shares `B/E0/N0/Q`, so the
@@ -195,7 +206,7 @@ theorem exists_highE_sharp_projective_residual_package
       scalar_allowance_ge := hWlo
       scalar_allowance_le := hWhi.trans (by norm_num)
       agreement_residual := hresidual }
-  exact ⟨⟨sharp, hEsmall, hWhi⟩⟩
+  exact ⟨⟨sharp, hEsmall, hWhi, hroot, hcopadj, hmixed⟩⟩
 
 /-- The benchmark-facing enriched leaf.  Its first five fields are precisely
 the old projective-high/high-E/incidence leaf data, while `sharpPackage` keeps
