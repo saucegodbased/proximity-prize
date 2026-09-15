@@ -29,14 +29,21 @@ coefficients pay for the coefficient-polynomial X degree itself. After the
 cancellation, the data face lands at global X degree `D-1`, while every term
 containing `Y`, `R`, or `S` has 90751 degrees of additional slack.
 
-This is a real breakthrough: there are at least 34 independent coefficient
-packets for **every** actual received pair `U0,U1`; no generic rank assumption
-enters the kernel count. The exact remaining theorem is narrower: prove that
-the four fresh-boundary rows are independent modulo this top-cancellation
-map at the target-specific fresh node. Small exact finite-field models give
-boundary rank four in every tested specialization, but this pointwise
-surjectivity is not yet formalized and must not be silently inferred from
-dimension.
+This is a real breakthrough: the top-cancellation kernel has dimension at
+least 34 for **every** actual received pair `U0,U1`; no generic rank assumption
+enters that count. This is enough to certify nonzero next-rung carriers once
+the substituted packet is shown faithful. It is not enough to prescribe a
+full error layer. Small exact finite-field models give fresh-boundary rank
+four in every tested specialization, but neither that pointwise statement nor
+the error-layer readout may be silently inferred from dimension.
+
+There is also a separate global warning: this packet is **not** a complete
+old-low-head kernel element. `H^37` supplies 37 extra orders only at agreement
+roots. At error roots `H` is a unit, so the packet has error contact seven,
+not 44. The result crosses rung seven of a layerwise error recurrence; later
+error rungs remain. An earlier version of this note incorrectly said that the
+packet had contact 44 at both kinds of old node. That statement was removed
+after the explicit contact audit.
 
 ## 1. The eight covariants
 
@@ -70,7 +77,9 @@ multiple of `epsilon^7` remains a multiple of `epsilon^7`. Therefore
 H^37 * sum_i p_i(X,Z) G_i
 ```
 
-has low-head contact at least 44 at agreement and error nodes.
+has contact at least 44 at agreement nodes and at least seven at error nodes.
+It is a legal seventh error-rung actuator, not a one-shot low-head
+annihilator.
 
 ## 2. Why the cancellation map has a 34-dimensional kernel
 
@@ -133,6 +142,42 @@ against `D=8479411`, leaving 90751 degrees. The ordinary caps are also loose:
 coefficient Z degree plus covariant Z degree is at most 14, active total
 degree is at most seven, and the worst `2s+r` is at most four.
 
+### Stage-sized boxes (dimension receipts only)
+
+If the next recurrence needs one scalar at each of the 81731 error nodes,
+the smallest useful order-seven box found so far is `M=11119`, `K=7`:
+
+```text
+unknowns                         = 8 * 11120 * 8 = 711680
+top-face equations              = (11119+30872) * 15 = 629865
+guaranteed kernel dimension     >= 81815
+one error scalar + four boundary rows = 81735
+dimension margin                = 80
+active weighted-degree slack    = 89082
+```
+
+This is an exact budget but **not** a surjectivity theorem. In fact it cannot
+control an arbitrary full local jet: the highest ordinary-active channel
+`Y^7` is contributed only by `J^7`. At each fixed passive-Z coefficient its
+81731-node value vector factors through just 11120 X coefficients. Therefore
+that channel alone has codimension at least 70611. Any successful recurrence
+must prove that the residual being corrected lives in a much smaller quotient
+and that the joint top-cancellation/error/boundary map is onto that quotient.
+
+For comparison, order eight has ten weighted partitions. The cap-legal box
+`M=13712`, `K=100` has:
+
+```text
+unknowns                     = 13850130
+top-face equations           = 13768226
+guaranteed kernel dimension >= 81904
+error+boundary margin        = 169
+active weighted-degree slack = 4759
+```
+
+Again this is only a dimension budget; it does not defeat the same
+high-active-channel obstruction by itself.
+
 ## 4. Translation to the actual NTT locator
 
 The domain is the full size-`2^18` multiplicative NTT subgroup, so its monic
@@ -177,11 +222,14 @@ J*d_J P + 2*C1*d_C1 P + 3*C2*d_C2 P = 7 P.
 ```
 
 Since the target characteristic does not divide seven, the formal
-three-gradient map is injective on this packet space. The raw change of
-variables from `(Y,R,S)` to `(J,C1,C2)` has triangular determinant
-`-2*N^3`, nonzero at the generic fresh point. Thus any four independent
-kernel packets have four independent **symbolic** gradients over the fresh
-function field.
+three-gradient map is injective on the abstract weighted-order-seven space.
+The raw change of variables from `(Y,R,S)` to `(J,C1,C2)` is triangular with
+diagonal `(1,-N,2*N^2)` and determinant `-2*N^3`. Over the fraction field of
+`K[X,Z]`, this proves faithfulness when `N` is the nonzero locator and the
+characteristic is not two. It does **not** say that evaluation of four
+gradients at one fresh point is independent: on the stratum
+`J=C1=C2=0`, all order-seven first gradients vanish, and other `J=0` strata
+require separate rank analysis.
 
 The Lean receipt proves the weighted Euler identity for all eight
 covariants and the resulting zero-gradient implication.
@@ -204,30 +252,33 @@ These are exact modular ranks, not floating-point ranks. They prove that the
 desired augmented minor is not formally identically zero, but they do not
 prove it nonzero for every received word/fresh point.
 
-## 6. The remaining exact OPEN
+## 6. The remaining exact OPEN for rung seven
 
 The next theorem is now sharply isolated:
 
 ```text
-For every actual U0,U1 and every admissible fresh point with N != 0 and
-the relevant mismatch nonzero, the four boundary rows have rank four after
-restriction to the 34+-dimensional top-cancellation kernel.
+Identify the exact scalar residual quotient produced by the completed first
+six recurrence rungs. Then prove that, for every actual U0,U1 and every
+admissible fresh point on the required nonvanishing stratum, the joint
+top-cancellation/error-quotient/four-boundary map has full target rank.
 ```
 
-Equivalently, no nonzero boundary dual lies in the row span of the 604830
-top-coefficient equations. The right attack is the transpose Toeplitz
-recurrence: a hypothetical row-span relation forces eight simultaneous
-finite recurrences against
+The boundary-only subproblem says no nonzero boundary dual lies in the row
+span of the top-coefficient equations. The right attack is the transpose
+Toeplitz recurrence: a hypothetical row-span relation forces eight
+simultaneous finite recurrences against
 
 ```text
 g^7, g^5 Dg, g^3(Dg)^2, g(Dg)^3,
 g^4 D2g, g^2(Dg)(D2g), (Dg)^2(D2g), g(D2g)^2.
 ```
 
-One should use the fresh-point evaluation sequence and the triangular
-`(J,C1,C2,Z)` boundary symbol to show the dual coefficients vanish. This is
-a much smaller and better-defined obligation than inventing another contact
-generator or tuning a locator.
+One should use the actual fresh-point evaluation sequence and stratify the
+triangular `(J,C1,C2,Z)` boundary symbol rather than assuming `J != 0`.
+Separately, the recurrence residual must be shown to avoid the enormous
+unreachable part of the `Y^7` channel. Even after those theorems, the
+layerwise recurrence still needs legal actuators for error orders eight
+through 43 (or a separate jump that closes those layers).
 
 ## Replay
 
@@ -242,4 +293,3 @@ python3 .experiments/k0_order7_bivariate_approximant_probe_6900.py \
 
 The Lean file is axiom-clean (`propext`, `Classical.choice`, `Quot.sound`
 only), uses no `decide`/`native_decide`, and checks below the 4 GiB cap.
-
