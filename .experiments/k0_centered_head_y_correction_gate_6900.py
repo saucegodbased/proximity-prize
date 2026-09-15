@@ -22,7 +22,7 @@ contact on the agreement set.  We compare the old pure family
 with graph-centered R/S companions obtained by multiplying by
 
     RG = R - P' - (Z-gamma)Q',
-    SG = S - P'' - (Z-gamma)Q''.
+    SG = 2*S - P'' - (Z-gamma)Q''.
 
 The calculation is a finite exact discriminator.  It does not promote a
 small-field solve to a target-uniform CRT/source theorem.
@@ -230,13 +230,42 @@ def raw_contact(poly: Raw, receipt, multiplicity: int,
     return answer
 
 
+def raw_scale_coefficients(poly: tuple[int, ...], scalar: int) -> tuple[int, ...]:
+    return tuple(scalar * coefficient % P for coefficient in poly)
+
+
+def raw_monomial_boundary(monomial: Monomial, receipt,
+                          boundary_x: int) -> tuple[int, ...]:
+    """Formal boundary gradient in (Y,R,S,Z), with S=Hasse_2(P)."""
+    xp, yp, rp, sp, zp = monomial
+    candidate = tuple(receipt.polynomial)
+    point = (
+        poly_eval(candidate, boundary_x),
+        poly_eval(poly_derivative(candidate), boundary_x),
+        poly_eval(raw_scale_coefficients(
+            poly_derivative(candidate, 2), pow(2, -1, P)), boundary_x),
+        receipt.seed % P,
+    )
+    exponents = (yp, rp, sp, zp)
+    answer = []
+    for coordinate in range(4):
+        if exponents[coordinate] == 0:
+            answer.append(0)
+            continue
+        value = pow(boundary_x, xp, P) * exponents[coordinate] % P
+        for j, (base, exponent) in enumerate(zip(point, exponents)):
+            value = value * pow(base, exponent - (j == coordinate), P) % P
+        answer.append(value)
+    return tuple(answer)
+
+
 def raw_boundary(poly: Raw, receipt, boundary_x: int) -> tuple[int, ...]:
     answer = [0, 0, 0, 0]
     for monomial, coefficient in poly.items():
-        gradients = Degree.K0.monomial_gradient_polys(monomial, receipt)
+        gradients = raw_monomial_boundary(monomial, receipt, boundary_x)
         for coordinate, gradient in enumerate(gradients):
             answer[coordinate] = (
-                answer[coordinate] + coefficient * int(gradient(boundary_x))) % P
+                answer[coordinate] + coefficient * gradient) % P
     return tuple(answer)
 
 
@@ -316,6 +345,30 @@ def main():
     errors = tuple(node for node in receipt.nodes if node not in agreement_set)
     boundary_x = profile.n
 
+    # Primitive semantic guard.  This prevents accidentally substituting the
+    # compressed `(q,E,R,S,Z)` oracle while calling q an ordinary epsilon
+    # order.  Boundary gradients below use the script order `(Y,R,S,Z)`.
+    sanity_node = receipt.nodes[0]
+    zero_local = (0, 0, 0, 0, 0)
+    primitive_y = raw_contact(
+        RAW_Y, receipt, profile.m, (sanity_node,))
+    expected_y = {
+        (sanity_node, zero_local): receipt.u0[sanity_node] % P,
+        (sanity_node, (0, 0, 0, 0, 1)): receipt.u1[sanity_node] % P,
+        (sanity_node, (1, 0, 0, 1, 0)): 1,
+        (sanity_node, (2, 1, 0, 0, 0)): -1 % P,
+        (sanity_node, (3, 0, 1, 0, 0)): 1,
+    }
+    expected_y = {row: value for row, value in expected_y.items() if value}
+    assert primitive_y == expected_y
+    assert raw_contact(RAW_R, receipt, profile.m, (sanity_node,)) == {
+        (sanity_node, (0, 0, 0, 1, 0)): 1}
+    assert raw_contact(RAW_S, receipt, profile.m, (sanity_node,)) == {
+        (sanity_node, (0, 1, 0, 0, 0)): 1}
+    assert raw_contact(RAW_Z, receipt, profile.m, (sanity_node,)) == {
+        (sanity_node, (0, 0, 0, 0, 1)): 1}
+    assert all(local[0] < profile.m for _node, local in primitive_y)
+
     lam_coefficients = locator(agreement)
     lam = raw_xpoly(lam_coefficients)
     p_raw = raw_xpoly(tuple(receipt.polynomial))
@@ -326,7 +379,8 @@ def main():
         raw_add(RAW_R, raw_xpoly(poly_derivative(tuple(receipt.polynomial))), -1),
         raw_mul(w_raw, raw_xpoly(poly_derivative(tuple(receipt.tangent)))), -1)
     sg_raw = raw_add(
-        raw_add(RAW_S, raw_xpoly(poly_derivative(tuple(receipt.polynomial), 2)), -1),
+        raw_add(raw_scale(RAW_S, 2),
+                raw_xpoly(poly_derivative(tuple(receipt.polynomial), 2)), -1),
         raw_mul(w_raw, raw_xpoly(poly_derivative(tuple(receipt.tangent), 2))), -1)
 
     carriers = {
@@ -551,6 +605,9 @@ def main():
             "Y=u0+u1*Z+eps*R-eps^2*S+eps^3*T modulo eps^8; "
             "head means literal eps exponent >=3"
         ),
+        "primitive_contact_sanity_Y_R_S_Z": True,
+        "local_row_order": "(eps,S,T,R,Z)",
+        "boundary_gradient_order": "(Y,R,S,Z)",
         "C1_source_terms_boundary_Y_R_S_Z_head_rows": (
             len(c1), c1_boundary, len(target_head_by_scope["all_errors"])),
         "local_eps3_T_identities": tuple(local_t_identities),

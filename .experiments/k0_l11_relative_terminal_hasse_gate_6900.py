@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Exact terminal reverse-Hasse gate for the causal L10 -> L11 repair.
+"""WITHDRAWN numerical receipt.
+
+This historical script selects compressed outer q rather than formal epsilon
+order q+3*b and uses the ordinary-S boundary convention.  Its numerical
+terminal detector is invalid for the accepted formal map.  It is retained only
+for reproducibility of commit 11e1c94; do not treat its verdict as GREEN.
+
+Historical purpose: exact terminal reverse-Hasse gate for the causal L10 ->
+L11 repair.
 
 The frozen F_101, m=8 receipt has boundary-normal gain three on the complete
 L10 source and gain four after adjoining only the 1860 newly legal passive

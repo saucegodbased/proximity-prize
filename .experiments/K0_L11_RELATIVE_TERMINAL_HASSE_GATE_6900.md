@@ -1,5 +1,16 @@
 # K0 relative passive layer: exact terminal reverse-Hasse detector
 
+> **WITHDRAWN NUMERICAL RECEIPT (2026-09-15).** Commit `11e1c94` used the
+> compressed oracle's outer exponent `q` as the formal epsilon order, whereas
+> the formal row correspondence has epsilon order `q + 3*b` for compressed
+> `E^b`.  It also paired the formal contact map with an ordinary-derivative
+> boundary point `S=P''`; the accepted specialization uses
+> `S=Hasse_2(P)=P''/2`.  Thus the tail selection and paired boundary ranks
+> below do not certify the stated detector.  They must not be cited as GREEN.
+> The abstract, axiom-clean Lean implications in
+> `K0TerminalDualDetection6900.lean` remain valid because they assume the
+> relevant head-kernel surjectivity rather than deriving it numerically.
+
 Date: 2026-09-14 UTC. Scope: lower-6900, one frozen exact `F_101`, `m=8`
 mechanism chamber. This is not a target theorem, candidate, build, or
 submission.
