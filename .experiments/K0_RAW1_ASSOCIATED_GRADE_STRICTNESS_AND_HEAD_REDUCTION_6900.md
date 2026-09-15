@@ -151,26 +151,54 @@ with `+epsilon^3*T` contains this projection, and the Lean factorization
 bounds its rank by the same cap, so the printed ranks are also the exact
 full-formal associated ranks.
 
-An earlier version additionally printed old-cap quotient ranks using
-`higher_jet_literal_matrix`.  Those numbers are withdrawn: that oracle has
-an `E` coordinate, uses `-epsilon^2*S/2`, and omits the formal `T` channel,
-so it is not the complete K0 contact map needed for filtered liftability.
-The abstract strictness obstruction in the next section remains valid, but
-these finite controls make no claim about the size of its failure.
+The compressed `higher_jet_literal_matrix` complete-contact oracle is now
+formally audited.  Its substitution
+
+```text
+E -> epsilon^3*T,       V2 -> 2*S
+```
+
+sends a row `(q,b,r,s,z)` injectively to
+`(q+3b,s,b,r,z)` and sends a raw source column with curvature exponent `j`
+to `2^j` times the literal formal column.  The factor is nonzero in
+`F_101`.  Consequently complete contact ranks, old-contact spans, and the
+relative contact kernels are preserved.  The two target-ratio quotient
+controls are therefore exact for formal contact:
+
+```text
+case       old rank   combined rank   relative rank/kernel   strictness gap
+m5             2901            3070                 169/11                4
+m6             3867            4115                  248/4               17
+```
+
+Thus the associated kernels really do contain 4 and 17 dimensions,
+respectively, which are not correctable by the complete preceding cap.
+`.experiments/K0CompressedFormalContactEquiv6900.lean` proves the row map,
+column scaling, injectivity, truncation equivalence, and the corrected head
+selector `q+3b >= 3`.
+
+This equivalence deliberately does **not** justify the old augmented-boundary
+gains.  The compressed raw curvature boundary evaluates `V2`, while the
+formal boundary evaluates raw `S`; the `V2 -> 2*S` row change and per-column
+scaling do not intertwine those boundary functionals.  Indeed an exact L8
+control has the same complete contact rank `4719` in both models but gains
+`3` versus `4` after boundary augmentation.  All earlier compressed-oracle
+boundary-gain numbers are withdrawn.
 
 Final receipt:
 
 ```text
-canonical SHA-256  e3ef953a363ba7647ac9f1792ae59a4f26746931cc2ea430b187c4d4c1bf21ae
-script SHA-256     d611b2554ad7c9f0cdde8305b06b44b8d5985909ba9f5f0d8e9f7f5e52e81145
-runtime / peak RSS 8.642 s / 53,252 KiB
+canonical SHA-256  610cb78121ef6ea4467631d5ea2beadb03086aea4357ce47feaa582ad083072e
+script SHA-256     4eba4223039683196329a935ccb03a88c0a01ef328578883c247e4dbdf6c0ea0
+runtime / peak RSS 69.436 s / 830,472 KiB
 ```
 
-The finite projected matrix uses the divided-power coordinate
-`-eps^2 S / 2`, while the Lean identity below uses the invertibly rescaled
-coordinate `-eps^2 S`.  The script now matches the literal convention
-exactly.  Rescaling the `S` rows is invertible over `F_101`, so the ranks and
-the canonical mathematical receipt are unchanged.
+The finite associated projection uses the divided-power coordinate
+`-eps^2 S / 2`; its no-`T` rank already saturates the universal cap, so the
+full-formal associated rank follows by squeezing.  The complete relative
+calculation uses the compressed `(epsilon,E,R,V2,Z)` model and is justified
+by the stronger formal row/column equivalence above.  Neither argument is
+used for boundary augmentation.
 
 ## 4. Exact strictness condition
 

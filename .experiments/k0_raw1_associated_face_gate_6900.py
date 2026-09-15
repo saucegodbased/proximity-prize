@@ -21,6 +21,7 @@ correctability has additional lower-grade/global interpolation obligations.
 from __future__ import annotations
 
 from dataclasses import asdict, replace
+import gc
 from math import comb, factorial
 import hashlib
 import json
@@ -30,7 +31,8 @@ import sys
 import time
 
 sys.path.insert(0, ".experiments")
-from higher_jet_literal_matrix import modular_rank  # noqa: E402
+from flint import nmod_mat  # noqa: E402
+from higher_jet_literal_matrix import modular_rank, translated_column  # noqa: E402
 import k0_degree4_degree5_full_sr_attribution_6900 as M8  # noqa: E402
 import k0_target_ratio_constant_t_gate_6900 as Ratio  # noqa: E402
 
@@ -90,6 +92,66 @@ def associated_column(profile, receipt, monomial):
     return {row: value for row, value in answer.items() if value}
 
 
+def compressed_complete_column(profile, receipt, monomial):
+    """Complete contact in the row-isomorphic compressed k=2 model.
+
+    The formal proof ``K0CompressedFormalContactEquiv6900`` maps these rows
+    injectively by E -> eps^3*T and V2 -> 2*S and rescales a source column
+    with raw-S exponent ``s`` by the nonzero factor ``2^s``.  Thus ranks and
+    relative contact kernels agree with the literal flattened formal model.
+    Boundary augmentation is intentionally absent: that scaling is not
+    compatible with the formal raw-S boundary evaluation.
+    """
+    xp, yp, rp, sp, zp = monomial
+    answer = {}
+    for node in receipt.nodes:
+        for term, value in translated_column(
+                xp, (yp, rp, sp), zp, node, receipt.u0[node],
+                receipt.u1[node], profile.m, 2, P).items():
+            if value:
+                answer[(node, term)] = value
+    return answer
+
+
+def dense_rank(columns):
+    rows = tuple(sorted(set().union(*(set(c) for c in columns)), key=repr))
+    matrix = nmod_mat(
+        len(rows), len(columns),
+        [columns[j].get(row, 0)
+         for row in rows for j in range(len(columns))],
+        P)
+    _, rank = matrix.rref(inplace=True)
+    del matrix
+    gc.collect()
+    return rank
+
+
+def full_relative_contact_control(profile, receipt, face):
+    """Raw-1 face modulo complete cap-(L-1), contact rows only."""
+    old_profile = replace(profile, L=profile.L - 1)
+    old = tuple(Ratio.K0.support(old_profile))
+    face_full = tuple((a, y, 0, 0, z) for a, y, z in face)
+    old_sparse = tuple(compressed_complete_column(
+        profile, receipt, monomial) for monomial in old)
+    face_sparse = tuple(compressed_complete_column(
+        profile, receipt, monomial) for monomial in face_full)
+    old_contact_rank = dense_rank(old_sparse)
+    combined_contact_rank = dense_rank(old_sparse + face_sparse)
+    relative_rank = combined_contact_rank - old_contact_rank
+    return {
+        "old_complete_columns": len(old),
+        "adjoined_raw1_face_columns": len(face),
+        "old_contact_rank": old_contact_rank,
+        "combined_contact_rank": combined_contact_rank,
+        "relative_contact_rank": relative_rank,
+        "relative_contact_kernel": len(face) - relative_rank,
+        "boundary_gain_scope": (
+            "WITHDRAWN: compressed/formal contact row equivalence does not "
+            "intertwine the raw-S boundary functional"
+        ),
+    }
+
+
 def run_case(name, profile, receipt):
     columns = raw1_last_face(profile)
     sparse = [associated_column(profile, receipt, monomial)
@@ -113,6 +175,13 @@ def run_case(name, profile, receipt):
         "full_formal_with_T_rank": rank,
     }
     assert answer["no_T_projection_saturates_bivariate_cap"]
+    if name.startswith("target_ratio"):
+        answer["modulo_complete_previous_cap_contact"] = (
+            full_relative_contact_control(profile, receipt, columns))
+        relative_kernel = answer["modulo_complete_previous_cap_contact"][
+            "relative_contact_kernel"]
+        answer["associated_kernel_minus_liftable_relative_kernel"] = (
+            answer["nullity"] - relative_kernel)
     return answer
 
 
@@ -155,6 +224,30 @@ def main():
         (180, 165, 15),
         (252, 231, 21),
     )
+    assert cases[1]["modulo_complete_previous_cap_contact"] == {
+        "old_complete_columns": 3001,
+        "adjoined_raw1_face_columns": 180,
+        "old_contact_rank": 2901,
+        "combined_contact_rank": 3070,
+        "relative_contact_rank": 169,
+        "relative_contact_kernel": 11,
+        "boundary_gain_scope": (
+            "WITHDRAWN: compressed/formal contact row equivalence does not "
+            "intertwine the raw-S boundary functional"
+        ),
+    }
+    assert cases[2]["modulo_complete_previous_cap_contact"] == {
+        "old_complete_columns": 3905,
+        "adjoined_raw1_face_columns": 252,
+        "old_contact_rank": 3867,
+        "combined_contact_rank": 4115,
+        "relative_contact_rank": 248,
+        "relative_contact_kernel": 4,
+        "boundary_gain_scope": (
+            "WITHDRAWN: compressed/formal contact row equivalence does not "
+            "intertwine the raw-S boundary functional"
+        ),
+    }
     payload = {
         "scope": "exact raw-1 associated-last-face Hermite factor gate",
         "field": "F_101",
@@ -163,8 +256,9 @@ def main():
         "verdict": (
             "GREEN factorization; RED for a dimension-only raw-1 target "
             "argument: the target raw-1 domain is 17,164,397 below its "
-            "universal bivariate-Hermite row cap.  Associated kernels still "
-            "need a separately proved complete-old-cap liftability theorem"
+            "universal bivariate-Hermite row cap.  Exact target-ratio "
+            "controls exhibit strictness gaps 4 and 17 after quotienting by "
+            "the complete old contact.  No boundary-rank claim is made"
         ),
     }
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
