@@ -19,14 +19,14 @@ Consequently the approximant kernel has dimension at least 34.  Cancellation
 leaves X degree exactly at most the strict target cutoff, while every term
 containing Y/R/S has 90751 degrees of spare weighted-X room.
 
-The final section records the weighted Euler identity that makes the
-four-gradient symbol faithful on the order-seven covariant space.  This is
-an error-order-seven rung: `H^37` supplies total order 44 at agreement roots,
-but it is a unit at error roots, where the packet has only order seven.  It
-therefore advances a layerwise recurrence and is not itself in the complete
-old-low-head kernel.  Further obligations are the error-layer correction,
-pointwise boundary rank, and all later rungs; the dimension receipt must not
-be reported as any of those theorems.
+The final section records both the abstract weighted Euler identity and the
+decisive compatible-boundary obstruction.  The actual probe evaluates at
+`Y=U0+U1*Z`, hence at `J=0`.  On that locus the entire order-seven packet has
+a nonzero annihilating covector and boundary rank at most three.  Thus the
+degree-cancellation space is real, but it is RED as the required four-signal
+rung.  Also, `H^37` supplies total order 44 only at agreement roots; at error
+roots the packet has order seven.  Nothing below is an old-low-head kernel or
+an endpoint theorem.
 -/
 
 namespace ProximityPrize.SubmissionLower.K0OrderSevenBivariateApproximantDimension6900
@@ -119,8 +119,9 @@ theorem actual_ntt_locator_top_window_exact_arithmetic :
 
 /-! ## Honest stage budgets
 
-The 34-dimensional box above certifies a nonzero next-rung carrier.  It is
-not large enough to prescribe one scalar independently at all 81731 errors.
+The 34-dimensional box above certifies a nonzero coefficient packet in the
+top-cancellation kernel.  It is not large enough to prescribe one scalar
+independently at all 81731 errors, and it cannot supply four boundary signals.
 Increasing only the X coefficient cap to 11119 leaves 81815 dimensions after
 the same top-face cancellation: enough in dimension for one scalar error
 layer and four boundary rows, with a margin of 80.  Surjectivity of that
@@ -178,7 +179,7 @@ theorem no_surjective_single_high_active_channel
   simp only [Module.finrank_fintype_fun_eq_card, Fintype.card_fin] at hdim
   omega
 
-/-! ## Faithfulness of the four-gradient symbol -/
+/-! ## Abstract faithfulness versus the actual compatible boundary -/
 
 variable {R : Type*} [CommRing R]
 
@@ -233,6 +234,119 @@ theorem eq_zero_of_weightedOrderSeven_gradient_zero
       (MvPolynomial.C_ne_zero (σ := Fin 3) (a := (7 : R))).mpr hseven
   exact (mul_eq_zero.mp hmul).resolve_left hseven'
 
+/-! The preceding formal-gradient injectivity is a polynomial identity.  It
+does not imply rank four after evaluating at one point.  The literal probe
+evaluates at `J=0`, where order seven has a uniform codimension-one
+obstruction.  Coordinates below are `(dJ,dC1,dC2,dZ)`; the fourth entry stores
+the contribution from differentiating a passive-Z coefficient. -/
+
+abbrev Boundary4 (R : Type*) := Fin 4 -> R
+
+def evalJZero (a b : R) (P : Cov (R := R)) : R :=
+  MvPolynomial.eval ![0, a, b] P
+
+def jZeroBasisJet
+    (a b scale passiveSlope : R) (P : Cov (R := R)) : Boundary4 R := ![
+  scale * evalJZero a b (MvPolynomial.pderiv 0 P),
+  scale * evalJZero a b (MvPolynomial.pderiv 1 P),
+  scale * evalJZero a b (MvPolynomial.pderiv 2 P),
+  passiveSlope * evalJZero a b P]
+
+/-- In covariant coordinates the row `(0,C1,-2*C2,0)` annihilates every
+evaluated order-seven basis gradient at `J=0`, including the extra `dZ`
+contribution from a passive coefficient. -/
+def jZeroObstruction (a b : R) (v : Boundary4 R) : R :=
+  a * v 1 - 2 * b * v 2
+
+theorem jZeroObstruction_orderSevenCovariant
+    (a b scale passiveSlope : R) (i : Fin 8) :
+    jZeroObstruction a b
+      (jZeroBasisJet a b scale passiveSlope
+        (orderSevenCovariant (R := R) i)) = 0 := by
+  fin_cases i <;>
+    simp [jZeroObstruction, jZeroBasisJet, evalJZero,
+      orderSevenCovariant, j, c1, c2] <;>
+    ring
+
+/-- Closed form of the entire evaluated packet.  `valueCoeff` is the value
+of each coefficient polynomial at the fresh point and `zSlope` its passive-Z
+derivative there.  Only three directions survive: one `dJ` axis, one fixed
+`(dC1,dC2)` axis, and `dZ`. -/
+def orderSevenJZeroBoundarySymbol
+    (a b : R) (valueCoeff zSlope : Fin 8 -> R) : Boundary4 R := ![
+  valueCoeff 3 * a ^ 3 + valueCoeff 7 * b ^ 2,
+  2 * valueCoeff 6 * a * b,
+  valueCoeff 6 * a ^ 2,
+  zSlope 6 * a ^ 2 * b]
+
+theorem jZeroObstruction_orderSevenJZeroBoundarySymbol
+    (a b : R) (valueCoeff zSlope : Fin 8 -> R) :
+    jZeroObstruction a b
+      (orderSevenJZeroBoundarySymbol a b valueCoeff zSlope) = 0 := by
+  simp [jZeroObstruction, orderSevenJZeroBoundarySymbol]
+  ring
+
+def orderSevenJZeroBoundaryMap
+    {K : Type*} [Field K] (a b : K) :
+    ((Fin 8 -> K) × (Fin 8 -> K)) →ₗ[K] Boundary4 K where
+  toFun c := orderSevenJZeroBoundarySymbol a b c.1 c.2
+  map_add' c d := by
+    funext i
+    fin_cases i <;> simp [orderSevenJZeroBoundarySymbol] <;> ring
+  map_smul' q c := by
+    funext i
+    fin_cases i <;> simp [orderSevenJZeroBoundarySymbol] <;> ring
+
+theorem jZeroObstruction_has_nonzero_value
+    {K : Type*} [Field K]
+    (a b : K) (h2 : (2 : K) ≠ 0) (hab : a ≠ 0 \/ b ≠ 0) :
+    exists v : Boundary4 K, jZeroObstruction a b v ≠ 0 := by
+  rcases hab with ha | hb
+  · refine ⟨![0, 1, 0, 0], ?_⟩
+    simpa [jZeroObstruction] using ha
+  · refine ⟨![0, 0, 1, 0], ?_⟩
+    have hneg2 : (-2 : K) ≠ 0 := neg_ne_zero.mpr h2
+    simpa [jZeroObstruction] using mul_ne_zero hneg2 hb
+
+/-- Consequently no linear map whose image obeys the actual order-seven
+`J=0` obstruction can be onto the four boundary coordinates.  This STOP is
+independent of the top-coefficient cancellation rank. -/
+theorem not_surjective_of_orderSeven_JZero_obstruction
+    {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+    (a b : K) (h2 : (2 : K) ≠ 0) (hab : a ≠ 0 \/ b ≠ 0)
+    (f : V →ₗ[K] Boundary4 K)
+    (himage : ∀ v, jZeroObstruction a b (f v) = 0) :
+    Not (Function.Surjective f) := by
+  intro hsurj
+  obtain ⟨target, htarget⟩ :=
+    jZeroObstruction_has_nonzero_value a b h2 hab
+  obtain ⟨v, hv⟩ := hsurj target
+  apply htarget
+  rw [← hv]
+  exact himage v
+
+/-- Full-stratum statement for the evaluated order-seven packet.  If at least
+one of `C1,C2` is nonzero, the displayed covector obstructs surjectivity; if
+both vanish, the entire symbol is zero. -/
+theorem orderSevenJZeroBoundaryMap_not_surjective
+    {K : Type*} [Field K] (a b : K) (h2 : (2 : K) ≠ 0) :
+    Not (Function.Surjective (orderSevenJZeroBoundaryMap a b)) := by
+  by_cases hab : a = 0 ∧ b = 0
+  · intro hsurj
+    obtain ⟨c, hc⟩ := hsurj ![1, 0, 0, 0]
+    have hzero : orderSevenJZeroBoundaryMap a b c = 0 := by
+      rcases hab with ⟨rfl, rfl⟩
+      funext i
+      fin_cases i <;> simp [orderSevenJZeroBoundaryMap,
+        orderSevenJZeroBoundarySymbol]
+    rw [hzero] at hc
+    have := congrFun hc 0
+    simpa using this
+  · apply not_surjective_of_orderSeven_JZero_obstruction
+      a b h2 (not_and_or.mp hab) (orderSevenJZeroBoundaryMap a b)
+    intro c
+    exact jZeroObstruction_orderSevenJZeroBoundarySymbol a b c.1 c.2
+
 #print axioms finrank_ker_topCancellation_ge_34
 #print axioms target_data_face_after_cancellation_green
 #print axioms target_active_terms_have_90751_slack
@@ -242,6 +356,10 @@ theorem eq_zero_of_weightedOrderSeven_gradient_zero
 #print axioms no_surjective_single_high_active_channel
 #print axioms weightedEuler_orderSevenCovariant
 #print axioms eq_zero_of_weightedOrderSeven_gradient_zero
+#print axioms jZeroObstruction_orderSevenCovariant
+#print axioms jZeroObstruction_orderSevenJZeroBoundarySymbol
+#print axioms not_surjective_of_orderSeven_JZero_obstruction
+#print axioms orderSevenJZeroBoundaryMap_not_surjective
 
 end
 

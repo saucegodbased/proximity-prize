@@ -16,8 +16,12 @@ The eight order-seven covariants are j^a c1^b c2^c with
 a+2b+3c=7.  Coefficients have q degree <= m (equivalently X degree
 <= m) and Z degree <= k.  The script computes the rank of cancellation
 through q^(m+gap-1), then the extra rank contributed by four literal
-fresh-boundary gradient rows.  An increment of four means the tested
-approximant kernel still maps onto all four boundary directions.
+fresh-boundary gradient rows.
+
+The compatible probe satisfies J=Y-U0-U1*Z=0.  An earlier version sampled
+J nonzero and incorrectly reported rank-four target evidence.  This repaired
+regression probe fixes J=0.  The order-seven boundary block must have rank at
+most three, independently of the top-cancellation matrix.
 
 The model is exact over a prime field, but random specialization is only a
 discriminator; a positive result still needs a uniform proof for the actual
@@ -157,7 +161,10 @@ def build_matrix(seed, gap, m, k, include_boundary):
         n1 = rng.randrange(P)
         pp = rng.randrange(P)
         b0, b1, b2 = (rng.randrange(P) for _ in range(3))
-        j0, c10, c20 = (rng.randrange(1, P) for _ in range(3))
+        # Literal compatible boundary: J is identically zero.  Keep C1,C2
+        # nonzero to test the largest stratum; special strata only lose rank.
+        j0 = 0
+        c10, c20 = (rng.randrange(1, P) for _ in range(2))
         dj = [0, 1, 0, -b0]
         dc1 = [0, n1, -n0, b1]
         dc2 = [2 * n0 * n0 % P, pp, -2 * n0 * n1 % P, b2]
@@ -177,7 +184,8 @@ def build_matrix(seed, gap, m, k, include_boundary):
                         if h == 3:
                             v += dpz * gv
                         entries[a_rows + h][cc] = v % P
-    return nmod_mat(entries, P), a_rows, cols
+    boundary_rank = nmod_mat(entries[a_rows:], P).rank() if include_boundary else 0
+    return nmod_mat(entries, P), a_rows, cols, boundary_rank
 
 
 def main():
@@ -188,13 +196,17 @@ def main():
     ap.add_argument('--seeds', type=int, default=3)
     args = ap.parse_args()
     for seed in range(args.seeds):
-        a, rows, cols = build_matrix(seed, args.gap, args.m, args.k, False)
+        a, rows, cols, _ = build_matrix(seed, args.gap, args.m, args.k, False)
         rank_a = a.rank()
-        ab, _, _ = build_matrix(seed, args.gap, args.m, args.k, True)
+        ab, _, _, boundary_rank = build_matrix(
+            seed, args.gap, args.m, args.k, True)
         rank_ab = ab.rank()
+        assert boundary_rank <= 3
+        assert rank_ab - rank_a <= 3
         print(dict(seed=seed, gap=args.gap, m=args.m, k=args.k,
                    rows=rows, cols=cols, rank=rank_a,
-                   nullity=cols-rank_a, boundary_increment=rank_ab-rank_a))
+                   nullity=cols-rank_a, boundary_rank=boundary_rank,
+                   boundary_increment=rank_ab-rank_a))
 
 
 if __name__ == '__main__':

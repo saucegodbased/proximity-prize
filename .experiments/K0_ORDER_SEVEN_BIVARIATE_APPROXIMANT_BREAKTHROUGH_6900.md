@@ -1,4 +1,4 @@
-# K0 order-seven bivariate approximant: cap window GREEN, pointwise readout OPEN
+# K0 order-seven bivariate approximant: cap window GREEN, four-boundary STOP
 
 Date: 2026-09-15 UTC. Scope: lower target 6900 only. This is a new source
 architecture and an exact uncertainty reduction. It is not yet a completed
@@ -29,21 +29,27 @@ coefficients pay for the coefficient-polynomial X degree itself. After the
 cancellation, the data face lands at global X degree `D-1`, while every term
 containing `Y`, `R`, or `S` has 90751 degrees of additional slack.
 
-This is a real breakthrough: the top-cancellation kernel has dimension at
-least 34 for **every** actual received pair `U0,U1`; no generic rank assumption
-enters that count. This is enough to certify nonzero next-rung carriers once
-the substituted packet is shown faithful. It is not enough to prescribe a
-full error layer. Small exact finite-field models give fresh-boundary rank
-four in every tested specialization, but neither that pointwise statement nor
-the error-layer readout may be silently inferred from dimension.
+The top-cancellation kernel has dimension at least 34 for **every** actual
+received pair `U0,U1`; no generic rank assumption enters that count. This is
+a genuine degree/cap result, but it does not produce the required four-signal
+rung. The actual compatible fresh boundary has
+
+```text
+J = Y-U0-U1*Z = 0.
+```
+
+On that locus the whole order-seven packet has boundary rank at most three,
+before top cancellation is imposed. The earlier finite-field probe sampled
+`J != 0`; its rank-four outputs were therefore on the wrong stratum and are
+retracted as target evidence.
 
 There is also a separate global warning: this packet is **not** a complete
 old-low-head kernel element. `H^37` supplies 37 extra orders only at agreement
 roots. At error roots `H` is a unit, so the packet has error contact seven,
-not 44. The result crosses rung seven of a layerwise error recurrence; later
-error rungs remain. An earlier version of this note incorrectly said that the
-packet had contact 44 at both kinds of old node. That statement was removed
-after the explicit contact audit.
+not 44. It is an order-seven contact space, not a complete old-low-head
+kernel. An earlier version of this note incorrectly said that the packet had
+contact 44 at both kinds of old node; a second correction retracts the
+rank-four boundary claim.
 
 ## 1. The eight covariants
 
@@ -78,8 +84,8 @@ H^37 * sum_i p_i(X,Z) G_i
 ```
 
 has contact at least 44 at agreement nodes and at least seven at error nodes.
-It is a legal seventh error-rung actuator, not a one-shot low-head
-annihilator.
+It is a legal order-seven error-contact source space, not a one-shot
+low-head annihilator and not the required four-signal actuator.
 
 ## 2. Why the cancellation map has a 34-dimensional kernel
 
@@ -212,7 +218,7 @@ through the whole 40322-term window. This is the symbolic model used by the
 rank probe. It retains arbitrary top coefficients of both actual received
 interpolants.
 
-## 5. Boundary-gradient evidence
+## 5. Exact compatible-boundary STOP
 
 The order-seven packet is weighted homogeneous. In formal covariant
 coordinates `(J,C1,C2)`, every packet polynomial `P` satisfies
@@ -221,64 +227,56 @@ coordinates `(J,C1,C2)`, every packet polynomial `P` satisfies
 J*d_J P + 2*C1*d_C1 P + 3*C2*d_C2 P = 7 P.
 ```
 
-Since the target characteristic does not divide seven, the formal
-three-gradient map is injective on the abstract weighted-order-seven space.
-The raw change of variables from `(Y,R,S)` to `(J,C1,C2)` is triangular with
-diagonal `(1,-N,2*N^2)` and determinant `-2*N^3`. Over the fraction field of
-`K[X,Z]`, this proves faithfulness when `N` is the nonzero locator and the
-characteristic is not two. It does **not** say that evaluation of four
-gradients at one fresh point is independent: on the stratum
-`J=C1=C2=0`, all order-seven first gradients vanish, and other `J=0` strata
-require separate rank analysis.
-
-The Lean receipt proves the weighted Euler identity for all eight
-covariants and the resulting zero-gradient implication.
-
-For a pointwise discriminator,
-`k0_order7_bivariate_approximant_probe_6900.py` builds the exact convolution
-matrix over `GF(1000003)` and appends four literal fresh-boundary gradient
-rows. Representative results:
+The abstract Euler identity still proves that the *polynomial* gradient map
+is faithful. That fact does not survive evaluation at one compatible point.
+At `J=0`, the only relevant basis behavior is:
 
 ```text
-gap=3,  m=8,  k=3: rank 111, nullity 177, boundary increment 4
-gap=5,  m=4,  k=1: rank  69, nullity  11, boundary increment 4
-gap=8,  m=12, k=5: rank 245, nullity 379, boundary increment 4
-gap=30, m=35, k=1: rank 548, nullity  28, boundary increment 4
-gap=30, m=10, k=10: rank 665, nullity 303, boundary increment 4
+J*C1^3 : dJ axis proportional to C1^3
+J*C2^2 : dJ axis proportional to C2^2
+C1^2*C2: (dC1,dC2) = (2*C1*C2, C1^2)
 ```
 
-Every tested random specialization and scale had boundary increment four.
-These are exact modular ranks, not floating-point ranks. They prove that the
-desired augmented minor is not formally identically zero, but they do not
-prove it nonzero for every received word/fresh point.
-
-## 6. The remaining exact OPEN for rung seven
-
-The next theorem is now sharply isolated:
+Differentiating the coefficient polynomials can add a `dZ` axis. Therefore
+every evaluated packet gradient is annihilated in covariant coordinates by
 
 ```text
-Identify the exact scalar residual quotient produced by the completed first
-six recurrence rungs. Then prove that, for every actual U0,U1 and every
-admissible fresh point on the required nonvanishing stratum, the joint
-top-cancellation/error-quotient/four-boundary map has full target rank.
+(0, C1, -2*C2, 0).
 ```
 
-The boundary-only subproblem says no nonzero boundary dual lies in the row
-span of the top-coefficient equations. The right attack is the transpose
-Toeplitz recurrence: a hypothetical row-span relation forces eight
-simultaneous finite recurrences against
+If `(C1,C2) != (0,0)`, this is a nonzero covector (the target characteristic
+is not two), so rank is at most three. If `C1=C2=0`, every first gradient is
+zero. The triangular raw change of variables cannot restore rank: it merely
+applies an invertible coordinate change when `N != 0`.
 
-```text
-g^7, g^5 Dg, g^3(Dg)^2, g(Dg)^3,
-g^4 D2g, g^2(Dg)(D2g), (Dg)^2(D2g), g(D2g)^2.
-```
+`K0OrderSevenBivariateApproximantDimension6900.lean` now proves this
+annihilation basiswise, gives the closed form of the full evaluated symbol,
+and proves that any linear map satisfying it is not surjective onto four
+boundary coordinates. This is uniform and does not depend on the error
+residual quotient or the top-cancellation matrix.
 
-One should use the actual fresh-point evaluation sequence and stratify the
-triangular `(J,C1,C2,Z)` boundary symbol rather than assuming `J != 0`.
-Separately, the recurrence residual must be shown to avoid the enormous
-unreachable part of the `Y^7` channel. Even after those theorems, the
-layerwise recurrence still needs legal actuators for error orders eight
-through 43 (or a separate jump that closes those layers).
+The old modular rank-four outputs are retained only as a regression lesson:
+they arose because the script chose `j0` randomly nonzero. The repaired probe
+sets `j0=0` and checks the structural rank loss.
+
+## 6. Decision and remaining pivot
+
+The transpose Toeplitz/Popov gate for this exact order-seven packet is no
+longer the next question: no cancellation kernel can have larger boundary
+image than the ambient packet. The packet is **RED for four-boundary K0**.
+
+A structural jump is possible only at another contact order. At order six,
+the formerly advertised packet `J^6,J^4*C1,J^3*C2,Z*J^6` actually has zero
+first gradient at `J=0`; its `J != 0` determinant does not apply to the
+compatible probe. Other order-six profiles (`J*C1*C2`, `C1^3`, `C2^2` and a
+passive multiple) can have four axes when both `C1` and `C2` are nonzero, but
+their global error-contact correction and source caps are not proved.
+
+At order eight there are two J-free profiles, `C1^4` and `C1*C2^2`, so the
+intrinsic `J=0` rank obstruction is not automatically the same. The numeric
+`M=13712,K=100` receipt above remains only a cap/dimension budget. A valid
+pivot must prove the actual compatible-boundary rank and show how order seven
+of the preceding residual vanishes before an order-eight source can act.
 
 ## Replay
 
