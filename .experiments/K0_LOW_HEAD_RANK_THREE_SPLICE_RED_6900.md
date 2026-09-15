@@ -89,7 +89,7 @@ hypotheses. Thus no nonzero scalar combination of the four bare carriers
 kills even the epsilon-zero contact at one error. Error-side correction is
 not optional; it starts with four independently prescribed values.
 
-## Taper result: first step GREEN, full schedule OPEN
+## Taper result: first step GREEN, fixed-family schedule RED
 
 One degree-`<e` error-value interpolant on each first equation is legal. Lean
 checks, with `g=180413`, `e=81731`, `w=131071`, `D=47g`,
@@ -101,39 +101,58 @@ checks, with `g=180413`, `e=81731`, `w=131071`, `D=47g`,
 44g+e       < D.
 ```
 
-So there is no first-step taper failure. This is a useful positive result:
-the four error epsilon-zero residuals can in principle be cancelled by the
-existing value-CRT primitive.
+So there is no first-step taper failure. But repeating that correction while
+staying inside the same four carrier families is decisively impossible.
 
-It is not yet a 44-layer recurrence. Higher epsilon coefficients contain
-Hasse derivatives of those four interpolants plus contact terms from the
-new corrections. A valid schedule must prove triangularity and stay below
-the two already formal cliffs:
+Indeed, after the epsilon-zero values vanish, the epsilon-one equation has
+the same invertible diagonal matrix acting on the first Hasse derivatives;
+all lower-derivative terms are already zero. It therefore forces all four
+first derivatives to vanish at every error. Induction through epsilon order
+43 forces every coefficient polynomial to have a zero depth-44 Hasse jet at
+every error. Equivalently it is divisible by the depth-44 error denominator,
+whose degree is
+
+```text
+44*e = 44*81731 = 3,596,164.
+```
+
+The largest of the four coefficient windows is only 590,583; the `H^44*W`
+window is 541,239. `K0FourCarrierErrorHermiteStop6900.lean` proves that any
+polynomial in the largest window with all these jets zero is identically
+zero, using the accepted injectivity of the Hasse jet map. Hence a nonzero
+old-low-head kernel vector cannot be made solely from these four carriers
+with polynomial coefficients. Layerwise *value* CRT does not evade the
+cost: preserving the previously killed jets introduces one further error
+locator factor at each step.
+
+A larger triangular recurrence may still escape by introducing genuinely
+new source shapes whose first nonzero local contact occurs at the next
+epsilon order. Such a schedule must stay below the two already formal cliffs:
 
 ```text
 q=14 plus error values does not fit on S*R*Y^43;
 q=1  plus error values does not fit on Y^64.
 ```
 
-The present audit does not claim every schedule necessarily hits either
-cliff. It says exactly what must be derived next: a shape-by-shape recurrence
-that reduces the higher-order residual before it requests those illegal
-grades. A bare appeal to `q*g+e` or to source dimension is insufficient.
+The STOP is therefore scoped to the fixed four-carrier coefficient module,
+not to every possible K0 recurrence. Any rescue must display its new shape at
+each order and reduce the higher-order residual before requesting those
+illegal grades. A bare appeal to `q*g+e` or to source dimension is
+insufficient.
 
 ## Decision
 
 - **STOP route F as an ASAP shortcut:** its rank-three premise is absent and
   the only proposed three axes use the wrong projection.
-- **GO one step on the four-carrier recurrence:** the agreement orders and
-  first error-value corrections fit, and the first error matrix is explicitly
-  nonsingular.
-- **Next binary gate:** write the epsilon-one correction equation after the
-  four value interpolants. If its residual can be assigned to a source-legal
-  next shape without moving toward `q14/SRY43` or `q1/Y64`, continue; otherwise
-  freeze the four-carrier path as RED.
+- **STOP the four fixed carriers plus polynomial coefficients:** invertibility
+  propagates to 44 error jets and exceeds the taper by more than three million
+  X degrees.
+- **Only possible rescue:** exhibit a genuinely new source shape at the
+  epsilon-one equation (then at each later equation), with a formal cap ledger
+  and no transition through `q14/SRY43` or `q1/Y64`.
 
 ## Verification
 
-The Lean file compiles under the 8-GiB capped runner in about eight seconds.
-Printed axioms are only `propext`, `Classical.choice`, and `Quot.sound`; there
-is no `sorry`, `decide`, or `native_decide`.
+Both Lean files compile under the 8-GiB capped runner in under ten seconds
+each. Printed axioms are only `propext`, `Classical.choice`, and `Quot.sound`;
+there is no `sorry`, `decide`, or `native_decide`.
