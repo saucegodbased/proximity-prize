@@ -182,15 +182,26 @@ Compiled and axiom-audited now:
 * worst-cardinality shortened Johnson;
 * old-arm shared-resource dominance and exact coupled caps;
 * skinny rest/exit caps, cleanup, absorption, and characteristic gates.
+* the exact four-way `ExtendedTerminal` and its three-way helper complement;
+* generic certified strict removal into exited/rest factor sets;
+* the shared primary/rest six-budget adapter;
+* the W133226 coupled arm-A and arm-B finite-family inequalities;
+* a generic reduced-cut two-incidence theorem and all four specialized
+  terminal consumers;
+* both skinny independent aggregate consumers;
+* the helper-exit one-incidence consumer; and
+* `extended_lshape_active_card_le_of_joint_step`, which proves the complete
+  active-factor cap `247945303343219481` from only the three-way semantic
+  helper-producing step.
 
 Remaining mechanical modules for an end-to-end W133226 theorem are:
 
 1. port the primary/helper target and column lower receipts to W133226;
 2. formalize the three relaxed band sums above;
-3. instantiate generic certified terminal selection with the extended
-   predicate;
-4. add the two skinny regular-family consumers and case-split the terminal;
-5. connect the result to the existing support-core retention theorem.
+3. use those band theorems to construct the semantic `JointRegularHelper`
+   premise for every nonterminal subset; and
+4. connect the active cap plus cleanup to the existing support-core retention
+   theorem.
 
 There is no remaining arithmetic or semantic-design uncertainty in this
 architecture.  The most delicate point—the zero `all` coordinate at sharp
@@ -206,6 +217,12 @@ g++ -std=c++17 -O2 -fopenmp \
 
 LEAN_PATH=.experiments lake env lean \
   .experiments/WeightedIdentityExtendedLShapeArithmeticW1332266900.lean
+
+LEAN_PATH=.experiments lake env lean \
+  .experiments/WeightedIdentityExtendedLShapeAggregationW1332266900.lean
+
+LEAN_PATH=.experiments lake env lean \
+  .experiments/WeightedIdentityExtendedLShapeIntegrationW1332266900.lean
 ```
 
 The Lean audit prints only `propext`, `Classical.choice`, and `Quot.sound`.
