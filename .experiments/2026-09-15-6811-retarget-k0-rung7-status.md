@@ -14,11 +14,13 @@ runs out of dimensions before the packing logic starts. The old packing and
 geometry code can be reused only after a genuinely new source theorem supplies
 the objects it expects.
 
-The new K0 work has crossed one real degree barrier. A bivariate covariant
-combination fits the seventh contact rung even though every individual
-order-seven monomial is too large. This is one legal stair, not the staircase:
-it still needs an exact residual-quotient rank theorem at rung seven, and then
-legal continuation through error orders 8--43 or a separate jump.
+The new K0 work found a nonzero bivariate top-cancellation space at the seventh
+contact rung even though every individual order-seven monomial is too large.
+An independent boundary audit then found a decisive incompatibility: the
+finite probes sampled `J != 0`, while the actual compatible fresh boundary
+forces `J = 0`. On that locus this entire eight-covariant packet has boundary
+rank at most three. Thus the degree cancellation is real, but this packet is
+**RED as the required four-signal next rung**.
 
 So the work is now **fundamentally new source/rank mathematics**, not final
 retuning or assembly.
@@ -55,7 +57,7 @@ Artifacts:
 The Lean audit uses only `propext`, `Classical.choice`, and `Quot.sound`; the
 replay is low-memory and takes about seven seconds.
 
-## K0 order-seven result and correction
+## K0 order-seven degree result and boundary STOP
 
 For the eight weighted-order-seven covariants in `J,C1,C2`, coefficients
 `p_i(X,Z)` with `deg_X <= 9450` and `deg_Z <= 7` give
@@ -70,7 +72,7 @@ Canceling 40322 reversed X coefficients makes the data face fit at degree
 `D-1`; active terms retain `90751` weighted-degree slack. This is uniform
 rank-nullity, not a genericity assumption.
 
-The important scope correction is that `H^37` supplies 37 extra contact
+The first scope correction is that `H^37` supplies 37 extra contact
 orders only at agreement roots. At error roots `H` is a unit, so the packet
 has contact order seven, not 44. It is a next-rung actuator, not a complete
 old-low-head kernel element.
@@ -78,14 +80,30 @@ old-low-head kernel element.
 A stage-sized box `(M,K)=(11119,7)` has dimension margin 80 over one scalar
 per error plus four boundary rows. That count is not surjectivity: the highest
 `Y^7` channel factors through only 11120 X coefficients and therefore cannot
-hit arbitrary values on 81731 error nodes (deficit `70611`). The exact next
-question is whether the residual left by the first six rungs lies in a much
-smaller quotient on which the joint top/error/boundary map is onto. The
-analysis must also stratify `J=0` and cannot infer pointwise boundary rank from
-generic finite probes.
+hit arbitrary values on 81731 error nodes (deficit `70611`).
 
-Artifact: `K0_ORDER_SEVEN_BIVARIATE_APPROXIMANT_BREAKTHROUGH_6900.md` and its
-axiom-clean Lean arithmetic/rank receipt.
+The sharper independent audit now stops the packet before that residual-map
+question. Compatibility at the fresh boundary gives
+
+```text
+J = Y-U0-U1*Z = 0.
+```
+
+At `J=0`, only `J*C1^3` and `J*C2^2` contribute the same `dJ` axis; only
+`C1^2*C2` survives among the other covariants, contributing the fixed
+combination `2*C1*C2*dC1 + C1^2*dC2`; coefficient differentiation can add the
+`dZ` axis. The covector `(0,C1,-2*C2,0)` annihilates this image, with the
+`C1=C2=0` case even more degenerate. Hence boundary rank is at most three
+before top cancellation. The earlier random probes' rank-four result was on
+the wrong `J != 0` stratum and is not target evidence.
+
+The nonzero top-cancellation space may remain useful for fewer signals, but it
+cannot be promoted as the four-boundary rung-seven breakthrough. The same
+compatibility audit is being applied retroactively to the purported rung-six
+determinant.
+
+The K0 artifact is being corrected to record this STOP. Its arithmetic
+rank-nullity receipt remains valid; its boundary interpretation does not.
 
 ## Same-witness route pruning
 
@@ -111,13 +129,12 @@ This checkpoint closes three false shortcuts:
 
 Live work is restricted to high-information gates:
 
-1. characterize the actual residual quotient after K0 rungs 1--6 and prove or
-   falsify the rung-seven joint map there;
-2. determine whether a globally liftable osculant tower exists despite the
+1. determine whether a globally liftable osculant tower with four independent
+   compatible-boundary signals exists despite the `J=0` degeneration and the
    auxiliary local `T` coordinate, or prove a structural stop;
-3. exhaust the only scalar-source region not already covered by the
+2. exhaust the only scalar-source region not already covered by the
    4,714,130-profile nontruncated scan: truncated supports;
-4. look for a new same-witness relation that is nonidentity on the frozen
+3. look for a new same-witness relation that is nonidentity on the frozen
    majority, with degree/incidence cost paid explicitly.
 
 Any GREEN result must be composed into the literal benchmark endpoint before
