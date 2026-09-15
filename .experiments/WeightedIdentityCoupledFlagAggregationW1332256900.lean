@@ -28,6 +28,12 @@ abbrev armAExitFlag :=
   RootWeightedIdentityCoupledBudgetArithmeticW1332256900.armAExitFlag
 abbrev armAAgreement :=
   RootWeightedIdentityCoupledBudgetArithmeticW1332256900.armAAgreement
+abbrev armBFlag :=
+  RootWeightedIdentityCoupledBudgetArithmeticW1332256900.armBFlag
+abbrev armBExitFlag :=
+  RootWeightedIdentityCoupledBudgetArithmeticW1332256900.armBExitFlag
+abbrev armBAgreement :=
+  RootWeightedIdentityCoupledBudgetArithmeticW1332256900.armBAgreement
 abbrev jointHelperFlag :=
   RootWeightedIdentityCoupledBudgetArithmeticW1332256900.jointHelperFlag
 abbrev primaryAgreement :=
@@ -54,6 +60,16 @@ theorem armA_mixed_cumulative (p : FlagDegree) :
     flagMixed]
   ring
 
+/-- Exact cumulative-basis expansion of the arm-B two-incidence cost. -/
+theorem armB_mixed_cumulative (p : FlagDegree) :
+    flagMixed p A.armBAgreement A.armBAgreement =
+      149516738865000*(p.zOnly+p.yz+p.all)+
+      581453998330400*(p.yz+p.all)+668689845701625*p.all := by
+  norm_num [A.armBAgreement,
+    RootWeightedIdentityCoupledBudgetArithmeticW1332256900.armBAgreement,
+    flagMixed]
+  ring
+
 /-- Exact cumulative-basis expansion of the unified cutoff-two helper cost. -/
 theorem joint_exit_mixed_cumulative (p : FlagDegree) :
     flagMixed p A.jointHelperFlag A.primaryAgreement =
@@ -72,6 +88,15 @@ theorem sum_armA_mixed_cumulative {R : Type*} [Fintype R]
       574070455670400*(∑ i,((f i).yz+(f i).all))+
       686935716077025*(∑ i,(f i).all) := by
   rw [Finset.sum_congr rfl (fun i _ => armA_mixed_cumulative (f i))]
+  simp only [Finset.sum_add_distrib,← Finset.mul_sum]
+
+theorem sum_armB_mixed_cumulative {R : Type*} [Fintype R]
+    (f : R→FlagDegree) :
+    (∑ i,flagMixed (f i) A.armBAgreement A.armBAgreement)=
+      149516738865000*(∑ i,((f i).zOnly+(f i).yz+(f i).all))+
+      581453998330400*(∑ i,((f i).yz+(f i).all))+
+      668689845701625*(∑ i,(f i).all) := by
+  rw [Finset.sum_congr rfl (fun i _ => armB_mixed_cumulative (f i))]
   simp only [Finset.sum_add_distrib,← Finset.mul_sum]
 
 theorem sum_joint_exit_mixed_cumulative {E : Type*} [Fintype E]
@@ -110,6 +135,30 @@ theorem coupled_armA_cost_le
     flagMixed]
   omega
 
+theorem coupled_armB_cost_le
+    (eJ eM eS rJ rM rS : Nat)
+    (hJ : eJ+rJ≤740) (hM : eM+rM≤244) (hS : eS+rS≤122)
+    (hrJ : rJ≤212) (hrM : rM≤54) (hrS : rS≤27) :
+    (A.n-A.v)*(A.a-A.v)*
+        (254845569600*eJ+692859796274*eM+782801992149*eS)+
+      (A.n-A.v)^2*
+        (149516738865000*rJ+581453998330400*rM+668689845701625*rS)≤
+      RootWeightedIdentityCoupledBudgetArithmeticW1332256900.jointCommonNumerator
+        A.armBFlag A.armBExitFlag A.armBAgreement := by
+  norm_num [A.n,A.a,A.v,A.armBFlag,A.armBExitFlag,A.armBAgreement,
+    A.jointHelperFlag,A.primaryAgreement,
+    RootWeightedIdentityCoupledBudgetArithmeticW1332256900.n,
+    RootWeightedIdentityCoupledBudgetArithmeticW1332256900.a,
+    RootWeightedIdentityCoupledBudgetArithmeticW1332256900.v,
+    RootWeightedIdentityCoupledBudgetArithmeticW1332256900.jointCommonNumerator,
+    RootWeightedIdentityCoupledBudgetArithmeticW1332256900.armBFlag,
+    RootWeightedIdentityCoupledBudgetArithmeticW1332256900.armBExitFlag,
+    RootWeightedIdentityCoupledBudgetArithmeticW1332256900.armBAgreement,
+    RootWeightedIdentityCoupledBudgetArithmeticW1332256900.jointHelperFlag,
+    RootWeightedIdentityCoupledBudgetArithmeticW1332256900.primaryAgreement,
+    flagMixed]
+  omega
+
 /-- The coupled mixed-cost inequality for two arbitrary finite families. -/
 theorem coupled_armA_mixed_sums_le
     {E R : Type*} [Fintype E] [Fintype R]
@@ -129,6 +178,26 @@ theorem coupled_armA_mixed_sums_le
       A.jointCommonNumerator A.armAFlag A.armAExitFlag A.armAAgreement := by
   rw [sum_joint_exit_mixed_cumulative,sum_armA_mixed_cumulative]
   exact coupled_armA_cost_le _ _ _ _ _ _ hJ hM hS hrJ hrM hrS
+
+theorem coupled_armB_mixed_sums_le
+    {E R : Type*} [Fintype E] [Fintype R]
+    (exitFlag : E→FlagDegree) (restFlag : R→FlagDegree)
+    (hJ : (∑ i,((exitFlag i).zOnly+(exitFlag i).yz+(exitFlag i).all))+
+        (∑ i,((restFlag i).zOnly+(restFlag i).yz+(restFlag i).all))≤740)
+    (hM : (∑ i,((exitFlag i).yz+(exitFlag i).all))+
+        (∑ i,((restFlag i).yz+(restFlag i).all))≤244)
+    (hS : (∑ i,(exitFlag i).all)+(∑ i,(restFlag i).all)≤122)
+    (hrJ : (∑ i,((restFlag i).zOnly+(restFlag i).yz+(restFlag i).all))≤212)
+    (hrM : (∑ i,((restFlag i).yz+(restFlag i).all))≤54)
+    (hrS : (∑ i,(restFlag i).all)≤27) :
+    (A.n-A.v)*(A.a-A.v)*
+        (∑ i,flagMixed (exitFlag i) A.jointHelperFlag A.primaryAgreement)+
+      (A.n-A.v)^2*
+        (∑ i,flagMixed (restFlag i) A.armBAgreement A.armBAgreement)≤
+      RootWeightedIdentityCoupledBudgetArithmeticW1332256900.jointCommonNumerator
+        A.armBFlag A.armBExitFlag A.armBAgreement := by
+  rw [sum_joint_exit_mixed_cumulative,sum_armB_mixed_cumulative]
+  exact coupled_armB_cost_le _ _ _ _ _ _ hJ hM hS hrJ hrM hrS
 
 /-- Direct count-facing form.  `exitCount` is charged by one incidence and
 `restCount` by two incidences; the common denominator is introduced only
@@ -183,6 +252,59 @@ theorem coupled_armA_counts_scaled
         (A.n-A.v)^2*(∑ i,flagMixed (restFlag i)
           A.armAAgreement A.armAAgreement) := by ring
     _ ≤ _ := coupled_armA_mixed_sums_le exitFlag restFlag hJ hM hS
+      hrJ hrM hrS
+
+theorem coupled_armB_counts_scaled
+    {E R : Type*} [Fintype E] [Fintype R]
+    (exitCount : E→Nat) (restCount : R→Nat)
+    (exitFlag : E→FlagDegree) (restFlag : R→FlagDegree)
+    (hexit : ∀ i,exitCount i*(A.a-A.v)≤
+      (A.n-A.v)*flagMixed (exitFlag i) A.jointHelperFlag A.primaryAgreement)
+    (hrest : ∀ i,restCount i*(A.a-A.v)^2≤
+      (A.n-A.v)^2*flagMixed (restFlag i) A.armBAgreement A.armBAgreement)
+    (hJ : (∑ i,((exitFlag i).zOnly+(exitFlag i).yz+(exitFlag i).all))+
+        (∑ i,((restFlag i).zOnly+(restFlag i).yz+(restFlag i).all))≤740)
+    (hM : (∑ i,((exitFlag i).yz+(exitFlag i).all))+
+        (∑ i,((restFlag i).yz+(restFlag i).all))≤244)
+    (hS : (∑ i,(exitFlag i).all)+(∑ i,(restFlag i).all)≤122)
+    (hrJ : (∑ i,((restFlag i).zOnly+(restFlag i).yz+(restFlag i).all))≤212)
+    (hrM : (∑ i,((restFlag i).yz+(restFlag i).all))≤54)
+    (hrS : (∑ i,(restFlag i).all)≤27) :
+    ((∑ i,exitCount i)+(∑ i,restCount i))*(A.a-A.v)^2≤
+      RootWeightedIdentityCoupledBudgetArithmeticW1332256900.jointCommonNumerator
+        A.armBFlag A.armBExitFlag A.armBAgreement := by
+  have he : (∑ i,exitCount i)*(A.a-A.v)≤
+      (A.n-A.v)*(∑ i,flagMixed (exitFlag i)
+        A.jointHelperFlag A.primaryAgreement) := by
+    calc
+      _ = ∑ i,exitCount i*(A.a-A.v) := Finset.sum_mul ..
+      _ ≤ ∑ i,(A.n-A.v)*flagMixed (exitFlag i)
+          A.jointHelperFlag A.primaryAgreement :=
+        Finset.sum_le_sum (fun i _ => hexit i)
+      _ = _ := (Finset.mul_sum ..).symm
+  have hr : (∑ i,restCount i)*(A.a-A.v)^2≤
+      (A.n-A.v)^2*(∑ i,flagMixed (restFlag i)
+        A.armBAgreement A.armBAgreement) := by
+    calc
+      _ = ∑ i,restCount i*(A.a-A.v)^2 := Finset.sum_mul ..
+      _ ≤ ∑ i,(A.n-A.v)^2*flagMixed (restFlag i)
+          A.armBAgreement A.armBAgreement :=
+        Finset.sum_le_sum (fun i _ => hrest i)
+      _ = _ := (Finset.mul_sum ..).symm
+  calc
+    ((∑ i,exitCount i)+(∑ i,restCount i))*(A.a-A.v)^2 =
+        ((∑ i,exitCount i)*(A.a-A.v))*(A.a-A.v)+
+          (∑ i,restCount i)*(A.a-A.v)^2 := by ring
+    _ ≤ ((A.n-A.v)*(∑ i,flagMixed (exitFlag i)
+          A.jointHelperFlag A.primaryAgreement))*(A.a-A.v)+
+        (A.n-A.v)^2*(∑ i,flagMixed (restFlag i)
+          A.armBAgreement A.armBAgreement) :=
+      Nat.add_le_add (Nat.mul_le_mul_right (A.a-A.v) he) hr
+    _ = (A.n-A.v)*(A.a-A.v)*
+          (∑ i,flagMixed (exitFlag i) A.jointHelperFlag A.primaryAgreement)+
+        (A.n-A.v)^2*(∑ i,flagMixed (restFlag i)
+          A.armBAgreement A.armBAgreement) := by ring
+    _ ≤ _ := coupled_armB_mixed_sums_le exitFlag restFlag hJ hM hS
       hrJ hrM hrS
 
 /-- Exact endpoint consequence, retaining the common-denominator statement
