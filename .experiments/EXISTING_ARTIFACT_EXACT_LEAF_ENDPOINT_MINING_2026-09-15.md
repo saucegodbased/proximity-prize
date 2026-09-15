@@ -175,6 +175,15 @@ consumer.
    theorem represented by mechanism 1; none of the accepted count theorems can
    be instantiated directly with the current leaf.
 
+7. **Unaugmented generic-locator determinants vanish identically.**
+   `ProjectiveHighLeafGenericLocatorDeterminantStop6900` consumes the exact leaf
+   and proves that the degree-`81731` generic locator matrix has kernel finrank
+   at least `7459`, hence rank at most `74273`; every `74274`-square (and every
+   maximal-column) minor is zero.  Therefore mechanism 1 cannot be finished by
+   simply taking a generic Hankel/locator determinant.  A viable determinant
+   route must derive candidate-dependent augmentations and pay both their seed
+   degree and their identity fibres.
+
 ## Scheduling consequence
 
 Do not spend another cycle packaging conditional wrappers.  The only route
