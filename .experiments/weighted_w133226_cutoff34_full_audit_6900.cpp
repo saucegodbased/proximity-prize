@@ -156,6 +156,7 @@ static void full_scope_max_node_route() {
   const u128 cleanup = corrected_cleanup(n, primary);
   const u128 helperExit = one_incidence_cap(n, primaryFlag, helperFlag,
     primaryAgreement);
+  const u128 helperPair = pair_eval(pair_coeff(1312), 2130677530);
 
   struct JointGate { uint64_t jet, derivative; const char *label; };
   for (const JointGate gate : {JointGate{213, 4, "J-heavy"},
@@ -176,6 +177,9 @@ static void full_scope_max_node_route() {
     << " helperKernelLower=" << showi(helperSource.kernel)
     << " helperExit=" << show(helperExit) << " cleanup=" << show(cleanup)
     << "\n";
+  std::cout << "FULL_HELPER_COLUMNS pairPolynomialSum=" << show(helperPair)
+    << " denominator=" << 2 * W << " certifiedLower="
+    << show(helperPair / (2 * W)) << "\n";
 
   struct Terminal { uint64_t M, S, T; const char *label; bool coupled; };
   for (const Terminal terminal : {
@@ -314,6 +318,7 @@ static void audit_case(uint64_t n, uint64_t terminalJ,
   std::cout << "\n";
 }
 
+#ifndef W133226_AUDIT_NO_MAIN
 int main(int argc, char **argv) {
   W = argc > 1 ? std::stoull(argv[1]) : 133226;
   if (W != 133226 && W != 133225) {
@@ -354,3 +359,4 @@ int main(int argc, char **argv) {
       << showi(rhs - i128(lhs)) << "\n";
   }
 }
+#endif

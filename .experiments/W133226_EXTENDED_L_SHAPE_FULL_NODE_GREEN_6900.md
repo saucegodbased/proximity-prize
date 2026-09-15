@@ -171,7 +171,7 @@ figures use `N=262144`; smaller actual identity sets follow by max-node
 monotonicity.  The derivative-skinny absorption itself is cardinality-safe
 because its agreement `all` coordinate already dominates `small`.
 
-## Formal state and remaining work
+## Formal state
 
 Compiled and axiom-audited now:
 
@@ -194,18 +194,41 @@ Compiled and axiom-audited now:
   active-factor cap `247945303343219481` from only the three-way semantic
   helper-producing step.
 
-Remaining mechanical modules for an end-to-end W133226 theorem are:
+The formerly mechanical remainder is now also compiled and axiom-audited:
 
-1. port the primary/helper target and column lower receipts to W133226;
-2. formalize the three relaxed band sums above;
-3. use those band theorems to construct the semantic `JointRegularHelper`
-   premise for every nonterminal subset; and
-4. connect the active cap plus cleanup to the existing support-core retention
-   theorem.
+* `WeightedHelperColumnsW1332266900` proves the exact helper column lower
+  bound;
+* `WeightedExtendedLShapeBandsW1332266900` proves all three relaxed band
+  bounds without finite evaluation;
+* `WeightedExtendedLShapeHelperKernelW1332266900` constructs the positive
+  dimensional all-node kernel and low-power escape;
+* `WeightedExtendedLShapeDeflatedCapacityW1332266900` and
+  `WeightedExtendedLShapeHelperCertificateW1332266900` turn that escape into
+  the exact nondivisible semantic helper for one selected factor;
+* `WeightedExtendedLShapeClosedW1332266900` supplies the concrete three-way
+  removal step and closes the active count;
+* `WeightedPrimary550ColumnsW1332266900`,
+  `WeightedPrimary550KernelW1332266900`, and
+  `WeightedPrimary550UniversalW1332266900` construct the primary source; and
+* `WeightedExtendedLShapeScalarClosureW1332266900` plus
+  `WeightedExtendedEndpointClosedW1332266900` prove the full contradiction
+  `hard_endpoint_coreFloor_contradiction`.
 
-There is no remaining arithmetic or semantic-design uncertainty in this
-architecture.  The most delicate point—the zero `all` coordinate at sharp
-`T=1`—is explicitly avoided rather than assumed away.
+The final exact ledger is
+
+```text
+247945303343219481 + 15607077754697448
+  = 263552381097916929
+  < 263611557201523206
+```
+
+with margin `59176103606277`.  The axiom audit reports only `propext`,
+`Classical.choice`, and `Quot.sound`; there is no `sorry`, `decide`, or
+`native_decide` in the new chain.
+
+This closes only the scalar endpoint `W=133226`.  It does not by itself cover
+the remaining high window `133227..149485`; that range still needs its own
+profile family or structural invariant.
 
 ## Reproduction
 
