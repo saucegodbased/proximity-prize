@@ -27,14 +27,19 @@ to the existing quotient-aware terminal detector proves that any compatible
 complete-contact dual with zero terminal component has zero boundary
 covector.
 
-The intended target specialization makes `probe` the low-head contact at one
-additional formal node and `readout` its four-coordinate boundary jet. This
-turns the vague phrase "prove head rank four" into two concrete obligations:
+The first intended target specialization was to make `probe` the low-head
+contact at one additional formal node and `readout` its four-coordinate
+boundary jet. There is a crucial semantic gate before that can be used:
+literal contact substitutes away the raw `Y` coordinate, so an ordinary
+contact block need not determine the transverse `Y` derivative. A valid
+probe may instead have to be an augmented ambient first jet (or include the
+`u0`-variation row). The theorem therefore turns the vague phrase "prove
+head rank four" into three concrete obligations:
 
-1. a simultaneous `(n+1)`-point low-head interpolation/CRT theorem for the
-   actual capped raw source; and
-2. a local surjective readout from the extra low-head block to the four
-   boundary coordinates.
+1. define a probe through which the literal four-boundary map really factors;
+2. prove its local readout is onto; and
+3. prove simultaneous old-head-plus-probe interpolation for the actual capped
+   raw source.
 
 ## Capacity and the remaining gap
 
@@ -48,9 +53,10 @@ to `213,740,910`. Thus the low-head source margin is
   = 9,030,892,006,920.
 ```
 
-Even subtracting one entire additional low-head block leaves
+Even subtracting one entire additional *ordinary* low-head block leaves
 `9,030,678,266,010`. Capacity is therefore overwhelmingly sufficient for
-the extra-probe formulation.
+that scale of extra-probe formulation, but a larger augmented probe must be
+counted separately.
 
 This arithmetic does **not** prove the joint map is onto. A dimension surplus
 only constructs kernel vectors and cannot force a boundary rank. The
