@@ -4,7 +4,7 @@
 For a raw last-face monomial ``X^a Y^y Z^(L-y)``, discard all contacted
 terms of passive total degree below ``L``.  The remaining column is
 
-    (x+eps)^a (u1 Z + eps R - eps^2 S)^y Z^(L-y)
+    (x+eps)^a (u1 Z + eps R - eps^2 S/2)^y Z^(L-y)
 
 for the second-jet controls used here.  (The Lean statement also includes
 the next ``+eps^3 T`` channel.)  Hence the raw-1 face is a weighted bivariate
@@ -37,6 +37,7 @@ import k0_target_ratio_constant_t_gate_6900 as Ratio  # noqa: E402
 
 
 P = 101
+S_FACTOR = (-pow(2, -1, P)) % P
 
 
 def multinomial4(a: int, b: int, c: int, d: int) -> int:
@@ -70,7 +71,12 @@ def associated_column(profile, receipt, monomial):
                 iZ = y - iR - iS
                 q = iR + 2 * iS
                 weight = multinomial4(iR, iS, 0, iZ)
-                weight = weight * pow(u1, iZ, P) * pow(-1, iS, P) % P
+                # `higher_jet_literal_matrix` uses the divided-power S
+                # coordinate, hence -eps^2/2.  The Lean associated theorem
+                # uses the rescaled S coordinate with coefficient -1; this
+                # is an invertible row scaling in F_101 and preserves ranks.
+                weight = (weight * pow(u1, iZ, P) *
+                          pow(S_FACTOR, iS, P)) % P
                 for hx in range(min(a, profile.m - 1 - q) + 1):
                     outer = q + hx
                     if outer >= profile.m:

@@ -163,9 +163,15 @@ Final receipt:
 
 ```text
 canonical SHA-256  88ab536e047246809af6919bc5db890a602d953cf399ef897b357044f78e50ba
-script SHA-256     09139a24acd5c3136f172a77751fa8f48e00913f1c4c32e87fdaed7558a3281e
-runtime / peak RSS 118.736 s / 831,388 KiB
+script SHA-256     e0790e0adc0444b4814ab2e4e0e69eb43c04fd7c4f61a3535b43f5a3c00841aa
+runtime / peak RSS 116.287 s / 837,416 KiB
 ```
+
+The finite literal matrix uses the divided-power coordinate
+`-eps^2 S / 2`, while the Lean identity below uses the invertibly rescaled
+coordinate `-eps^2 S`.  The script now matches the literal convention
+exactly.  Rescaling the `S` rows is invertible over `F_101`, so the ranks and
+the canonical mathematical receipt are unchanged.
 
 ## 4. Exact strictness condition
 
